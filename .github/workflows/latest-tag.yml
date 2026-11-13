@@ -1,0 +1,26 @@
+# Moves the tag "latest" to each new commit of main.
+# Consumers install the package from "#latest".
+name: Move the latest tag
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One run at a time, so an older commit cannot move the tag after a newer one.
+concurrency:
+  group: latest-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Move the tag
+        run: |
+          git tag --force latest "$GITHUB_SHA"
+          git push --force origin refs/tags/latest

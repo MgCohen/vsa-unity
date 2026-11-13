@@ -5,11 +5,13 @@ The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity 
 
 ## Install the package
 
-First copy `Packages/com.vsa.core/Documentation~/Default.globalconfig` to `Assets/Default.globalconfig` of the consumer project. Then add the git URL to `Packages/manifest.json`. The tag is the VSA version.
+First copy `Packages/com.vsa.core/Documentation~/Default.globalconfig` to `Assets/Default.globalconfig` of the consumer project. Then add the git URL to `Packages/manifest.json`. The tag `latest` is the last commit of `main`.
 
 ```json
-"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.26"
+"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
 ```
+
+Unity writes the commit hash of the package to `packages-lock.json`. To get the last commit, click **Update** in the Package Manager, or delete the `com.vsa.core` entry of `packages-lock.json`.
 
 For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` folder of the consumer project. The package documentation is in [`Packages/com.vsa.core/README.md`](Packages/com.vsa.core/README.md).
 
@@ -41,14 +43,17 @@ flowchart LR
     T[vsa-template tag] --> V[Change VsaVersion]
     V --> D[vendor.cs]
     D --> C[Tests and IL2CPP check]
-    C --> G[Same tag here]
-    G --> U[vsa-consumer-unity]
+    C --> M[Merge to main]
+    M --> L[Action moves latest]
+    L --> U[vsa-consumer-unity]
 ```
 
 1. Write the VSA version in `Vendor/VsaVendor.csproj` (`VsaVersion`).
 2. Run `dotnet run --file vendor.cs`. It also writes the version to `package.json`.
 3. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
-4. Commit, then add the tag `v<version>`.
+4. Merge the change to `main`.
+
+The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each commit of `main`. No other step adds a tag.
 
 ## The IL2CPP check
 
@@ -66,5 +71,6 @@ The check runs on a dev machine only. It needs the Windows IL2CPP module of Unit
 
 ## Open questions
 
+- Stable versions: `latest` has no pinned versions and no test gate. When do consumers need version tags?
 - Unity CI: a Unity license in GitHub Actions needs a license secret.
 - Automatic first install: the copy of `Default.globalconfig` is manual. A GitHub issue tracks the fix.

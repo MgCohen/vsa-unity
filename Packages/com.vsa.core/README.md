@@ -9,8 +9,10 @@ A Unity app starts with one `VsaHost` component. Views inherit `PresenterCompone
 2. Add the package to `Packages/manifest.json`:
 
 ```json
-"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.26"
+"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
 ```
+
+The tag `latest` is the last commit of `main`. To get a later commit, click **Update** in the Package Manager.
 
 Step 1 is necessary. Without the file, error VSA1000 stops the compile of each consumer assembly in the analyzer scope, so the editor script cannot write the file.
 

@@ -57,8 +57,18 @@ foreach (var (name, path) in dlls) {
 Directory.Delete(output, recursive: true);
 
 // The rule values of VSA.Sdk (PackageDownload). The ".txt" name stops Unity from reading the file as a .globalconfig.
-var rules = Path.Combine(GlobalPackages(), "vsa.sdk", version.ToLowerInvariant(), "Sdk", "VSA.Rules.globalconfig");
+var packages = GlobalPackages();
+var rules = Path.Combine(packages, "vsa.sdk", version.ToLowerInvariant(), "Sdk", "VSA.Rules.globalconfig");
 File.WriteAllBytes(Path.Combine(package, "Editor", "VSA.Rules.globalconfig.txt"), File.ReadAllBytes(rules));
+
+// The analyzers (PackageDownload). In the folder of the VSA.Unity asmdef, they run on VSA.Unity and on each assembly
+// that references it. The label RoslynAnalyzer in the .meta file makes Unity use the DLL as an analyzer, not as a library.
+var analyzers = Path.Combine(packages, "vsa.analyzers", version.ToLowerInvariant(), "analyzers", "dotnet", "cs", "VSA.Analyzers.dll");
+var analyzer = Path.Combine(package, "Runtime", "VSA.Analyzers.dll");
+File.WriteAllBytes(analyzer, File.ReadAllBytes(analyzers));
+if (!File.Exists(analyzer + ".meta")) {
+    File.WriteAllText(analyzer + ".meta", AnalyzerMeta.Replace("\r\n", "\n"));
+}
 
 var manifest = Path.Combine(package, "package.json");
 File.WriteAllText(manifest, Regex.Replace(File.ReadAllText(manifest), "\"version\": \"[^\"]*\"", $"\"version\": \"{version}\""));
@@ -75,3 +85,39 @@ static string GlobalPackages() {
 }
 
 static string Here([CallerFilePath] string path = "") => path;
+
+static partial class Program {
+    // No platform: Unity does not reference the DLL and does not put it in a player.
+    const string AnalyzerMeta = """
+        fileFormatVersion: 2
+        guid: 7c0a5e1d3b9f4e2a8d6c1b0f9e8a7d61
+        labels:
+        - RoslynAnalyzer
+        PluginImporter:
+          externalObjects: {}
+          serializedVersion: 2
+          iconMap: {}
+          executionOrder: {}
+          defineConstraints: []
+          isPreloaded: 0
+          isOverridable: 0
+          isExplicitlyReferenced: 0
+          validateReferences: 1
+          platformData:
+          - first:
+              Any:
+            second:
+              enabled: 0
+              settings: {}
+          - first:
+              Editor: Editor
+            second:
+              enabled: 0
+              settings:
+                DefaultValueInitialized: true
+          userData:
+          assetBundleName:
+          assetBundleVariant:
+
+        """;
+}

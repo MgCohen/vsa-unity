@@ -2,7 +2,7 @@
   <!-- Only for vendor.cs: dotnet publish of this project gives the VSA packages and their dependencies for Unity. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <VsaVersion>0.1.0-preview.24</VsaVersion>
+    <VsaVersion>0.1.0-preview.26</VsaVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Each portable VSA layer. VSA.Composition brings VSA.Architecture, VSA.Architecture.Vsa and VSA.Analyzers.Markers. -->
@@ -21,5 +21,7 @@
     <PackageReference Include="VSA.Composition" Version="$(VsaVersion)" />
     <!-- Only for the rule values (Sdk/VSA.Rules.globalconfig). The editor script writes them to Assets/Default.globalconfig. -->
     <PackageDownload Include="VSA.Sdk" Version="[$(VsaVersion)]" />
+    <!-- The analyzers (Roslyn 4.10 build). vendor.cs copies the DLL to Runtime/, the folder of the VSA.Unity asmdef. -->
+    <PackageDownload Include="VSA.Analyzers" Version="[$(VsaVersion)]" />
   </ItemGroup>
 </Project>

@@ -7,14 +7,12 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using VSA.Unity;
 
-// Builds the IL2CPP player of the check (managed stripping High). il2cpp-check.ps1 calls Build, then runs the player.
-//   Unity.exe -batchmode -projectPath . -executeMethod Il2cppCheck.Build -checkOutput <folder>
 public static class Il2cppCheck {
     const string Scene = "Assets/Check.unity";
 
     public static void Build() {
         var output = Argument("-checkOutput") ?? Path.GetFullPath("Il2cppCheck/Player");
-        MakeScene();
+        MakeSceneWithHostAndCheck();
         var target = NamedBuildTarget.Standalone;
         var backend = PlayerSettings.GetScriptingBackend(target);
         var stripping = PlayerSettings.GetManagedStrippingLevel(target);
@@ -33,12 +31,12 @@ public static class Il2cppCheck {
             PlayerSettings.SetManagedStrippingLevel(target, stripping);
             AssetDatabase.SaveAssets();
         }
-        Debug.Log($"CHECK build {report.summary.result} backend=IL2CPP stripping=High errors={report.summary.totalErrors}");
-        EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
+        var summary = report.summary;
+        Debug.Log($"CHECK build {summary.result} backend=IL2CPP stripping=High errors={summary.totalErrors}");
+        EditorApplication.Exit(summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 
-    // One scene: VsaHost with an empty App field (the app scan finds SampleApp), and the Check view.
-    static void MakeScene() {
+    static void MakeSceneWithHostAndCheck() {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         new GameObject("VsaHost").AddComponent<VsaHost>();
         new GameObject("Check").AddComponent<SampleApp.Check>();

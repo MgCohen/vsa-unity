@@ -132,6 +132,37 @@ namespace VSA.Unity.Editor.Tests {
         }
     }
 
+    public sealed class AnalyzerTests {
+        const string Analyzer = "Packages/com.vsa.core/Runtime/VSA.Analyzers.dll";
+
+        [Test]
+        public void The_analyzer_DLL_has_the_RoslynAnalyzer_label() =>
+            Assert.That(AssetDatabase.GetLabels(AssetDatabase.LoadMainAssetAtPath(Analyzer)), Does.Contain("RoslynAnalyzer"));
+
+        [Test]
+        public void The_analyzer_DLL_is_not_in_a_player_or_the_editor() {
+            var plugin = (PluginImporter)AssetImporter.GetAtPath(Analyzer);
+
+            Assert.That(plugin.GetCompatibleWithAnyPlatform(), Is.False);
+            Assert.That(plugin.GetCompatibleWithEditor(), Is.False);
+        }
+
+        [Test]
+        public void The_analyzers_run_on_an_assembly_that_references_VSA_Unity() {
+            var rsp = System.IO.Directory.GetFiles("Library/Bee/artifacts", "VSA.Unity.Editor.Tests.rsp", System.IO.SearchOption.AllDirectories);
+
+            Assert.That(rsp, Is.Not.Empty);
+            Assert.That(System.IO.File.ReadAllText(rsp[0]), Does.Contain("-analyzer:\"" + Analyzer + "\""));
+        }
+
+        [Test]
+        public void The_package_has_the_rule_values_for_the_editor_script() {
+            var text = CompilerFiles.GlobalConfig("", CompilerFiles.RulesText());
+
+            Assert.That(text, Does.Contain("vsa.VSA1008.max = ").And.Contain("vsa.VSA1012.kind_order = "));
+        }
+    }
+
     public sealed class LinkerTests {
         const string Package = "<linker><assembly fullname=\"VSA.Analyzers.Markers\" preserve=\"all\" /></linker>";
 

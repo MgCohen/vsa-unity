@@ -1,6 +1,6 @@
 {
   "name": "com.vsa.core",
-  "version": "0.1.0-preview.24",
+  "version": "0.1.0-preview.26",
   "displayName": "VSA Core",
   "description": "The VSA vertical slice framework for Unity: the portable core DLLs, the Unity host (VsaHost) and the uGUI view bases (PresenterComponent<T>, PresenterWatcher).",
   "unity": "6000.6",

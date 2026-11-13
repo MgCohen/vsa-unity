@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The VSA core for Unity 6000.6: the portable VSA DLLs (netstandard2.1), the Unity host and the uGUI view bases.
+The VSA core for Unity 6000.6: the portable VSA DLLs (netstandard2.1), the VSA analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one `VsaHost` component. Views inherit `PresenterComponent<T>` or `PresenterWatcher`.
 
 ## Contents
@@ -8,6 +8,7 @@ A Unity app starts with one `VsaHost` component. Views inherit `PresenterCompone
 | Path | Contains |
 |---|---|
 | `Runtime/Plugins/` | The VSA DLLs and their dependencies |
+| `Runtime/VSA.Analyzers.dll` | The VSA analyzers (Roslyn 4.10 build) |
 | `Runtime/` | `VsaHost`, the Unity host, the view bases, `UnityLogProvider` |
 | `Runtime/link.xml` | The IL2CPP keep rules of VSA |
 | `Editor/` | `CompilerFiles` and `VsaLinker` |
@@ -70,6 +71,21 @@ A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from
 - `Render` runs on the main thread. `Changed` from another thread goes to the main thread.
 - `OnDestroy` stops the watch. A component that made its own scope disposes it. An override of `Start` or `OnDestroy` calls the base method.
 
+## Analyzers
+
+`Runtime/VSA.Analyzers.dll` has the label `RoslynAnalyzer` and no platform. Unity uses it as an analyzer, not as a library.
+
+| Assembly | VSA rules | Rule values from |
+|---|---|---|
+| A consumer asmdef that references `VSA.Unity` | Yes | `Assets/Default.globalconfig` |
+| `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | `Assets/Default.globalconfig` |
+| A consumer asmdef with no `VSA.Unity` reference | No | None |
+| The package asmdefs | Off | `<AsmdefName>.globalconfig` |
+
+- The analyzer folder sets the scope: Unity runs the analyzer on `VSA.Unity` and on each assembly that references it.
+- Module asmdefs often do not reference `VSA.Unity`. The .NET test build checks the module code.
+- A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
+- The package code is framework code, so each package asmdef sets `VSA1000` to `VSA1014` to `none`.
 ## Editor scripts
 
 | Script | Does |
@@ -97,4 +113,5 @@ A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from
 ## Open questions
 
 - Runner rules: remove the `VSA.Handlers` rules when `IRunner` has `[RequireImplementors]` in VSA.
-- Analyzers: add VSA.Analyzers (Roslyn 4.10 build) to `Runtime/`.
+- First open: before `CompilerFiles` writes `Assets/Default.globalconfig`, VSA1000 stops the compile of each consumer assembly in the analyzer scope. Then `CompilerFiles` cannot run.
+- App class rule: remove the `VsaLinker` app rule when `VsaApp<TApp>` has a linker marker in VSA.

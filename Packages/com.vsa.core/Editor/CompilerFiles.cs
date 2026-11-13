@@ -67,7 +67,7 @@ namespace VSA.Unity.Editor {
         }
 
         // The rule values of the VSA version of the package (vendor.cs copies them).
-        static string RulesText() {
+        internal static string RulesText() {
             var package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(CompilerFiles).Assembly);
             var path = package == null ? null : Path.Combine(package.resolvedPath, "Editor", "VSA.Rules.globalconfig.txt");
             return path != null && File.Exists(path) ? File.ReadAllText(path) : null;

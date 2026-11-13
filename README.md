@@ -8,7 +8,7 @@ The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity 
 Add the git URL to `Packages/manifest.json` of the consumer project. The tag is the VSA version.
 
 ```json
-"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.24"
+"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.26"
 ```
 
 For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` folder of the consumer project. The package documentation is in [`Packages/com.vsa.core/README.md`](Packages/com.vsa.core/README.md).
@@ -22,13 +22,13 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | `Assets/SampleApp/` | `SampleApp` and the `Check` view of the IL2CPP check |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
 | `Vendor/VsaVendor.csproj` | The VSA version of the package |
-| `vendor.cs` | Copies the VSA DLLs into the package |
+| `vendor.cs` | Copies the VSA DLLs and analyzers into the package |
 
 ## Commands
 
 | Command | Does |
 |---|---|
-| `dotnet run --file vendor.cs` | Copies the DLLs of `VsaVersion` to `Runtime/Plugins/` |
+| `dotnet run --file vendor.cs` | Copies the DLLs of `VsaVersion` to the package |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
 
@@ -67,4 +67,4 @@ The check runs on a dev machine only. It needs the Windows IL2CPP module of Unit
 ## Open questions
 
 - Unity CI: a Unity license in GitHub Actions needs a license secret.
-- Analyzers: VSA.Analyzers for Unity must build against Roslyn 4.10. Add the DLL to `Runtime/` after that build is published.
+- First open: before the editor script writes `Assets/Default.globalconfig`, VSA1000 stops the compile of each consumer assembly that references `VSA.Unity`. Then the editor script cannot run. Options: one warning in VSA.Analyzers when the config has no `vsa.*` key, or an opt-in analyzer asmdef.

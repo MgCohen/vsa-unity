@@ -5,7 +5,6 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using VSA.Unity;
 
 public static class Il2cppCheck {
     const string Scene = "Assets/Check.unity";
@@ -38,7 +37,7 @@ public static class Il2cppCheck {
 
     static void MakeSceneWithHostAndCheck() {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        new GameObject("VsaHost").AddComponent<VsaHost>();
+        new GameObject("VsaHost").AddComponent<SampleApp.SampleHost>();
         new GameObject("Check").AddComponent<SampleApp.Check>();
         EditorSceneManager.SaveScene(scene, Scene);
     }

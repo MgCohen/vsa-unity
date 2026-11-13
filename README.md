@@ -21,7 +21,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 |---|---|
 | `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
 | `Assets/Sample/` | A small module in one asmdef |
-| `Assets/SampleApp/` | `SampleApp` and the `Check` view of the IL2CPP check |
+| `Assets/SampleApp/` | `SampleApp`, `SampleHost` and the `Check` view of the IL2CPP check |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
 | `Vendor/VsaVendor.csproj` | The VSA version of the package |
 | `vendor.cs` | Copies the VSA DLLs and analyzers into the package |
@@ -57,11 +57,11 @@ The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each c
 
 ## The IL2CPP check
 
-`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping High, and runs it. The player starts `SampleApp` through `VsaHost` and writes `CHECK` lines to its log.
+`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping High, and runs it. The player starts `SampleApp` through `SampleHost` (a `VsaHost<SampleApp>`) and writes `CHECK` lines to its log.
 
 | Line | Shows |
 |---|---|
-| `app`, `host` | The app scan finds `SampleApp`, the host scan finds the Unity host |
+| `app`, `host` | `SampleHost` runs `SampleApp`, `UseUnityHost` selects the Unity host |
 | `modules`, `typeArguments` | The module scan finds the one-asmdef module |
 | `request`, `presenter-event` | A request from a thread pool thread; the event runs on the main thread |
 | `struct-argument` | Handlers closed over struct type arguments |

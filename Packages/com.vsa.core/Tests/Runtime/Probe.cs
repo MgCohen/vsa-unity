@@ -47,6 +47,9 @@ namespace VSA.Unity.Tests {
 
         public Task PingAsync(string text) => Bus.Send(new PingRequest(text));
 
+        // A change of this presenter only: Run raises Changed two times, and no event goes to the other presenters.
+        public Task TouchAsync() => Run(new OpState(), () => Task.FromResult<Error>(null));
+
         public Task OnEventAsync(Ponged integrationEvent, CancellationToken ct) {
             Last = integrationEvent.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
@@ -59,8 +62,12 @@ namespace VSA.Unity.Tests {
         }
     }
 
-    // The app class of the tests. The NUnit reference keeps it out of the app scan of VsaHost.
+    // The app class of the tests. It selects the Unity host, so the host scan does not run.
     public sealed class ProbeApp : VsaApp<ProbeApp> {
-        protected override VsaBuilder Builder(string[] args) => VsaBuilder.Create(args).Modules(new ProbeModule());
+        protected override VsaBuilder Builder(string[] args) => VsaBuilder.Create(args).Modules(new ProbeModule()).UseUnityHost();
+    }
+
+    // The host component of the tests.
+    public sealed class ProbeHost : VsaHost<ProbeApp> {
     }
 }

@@ -1,7 +1,7 @@
 # com.vsa.core
 
 The VSA core for Unity 6000.6: the portable VSA DLLs (netstandard2.1), the VSA analyzers, the Unity host and the uGUI view bases.
-A Unity app starts with one `VsaHost` component. Views inherit `PresenterComponent<T>` or `PresenterWatcher`.
+A Unity app starts with one `VsaHost<TApp>` component. Views inherit `PresenterComponent<T>`.
 
 ## Install
 
@@ -22,35 +22,44 @@ Step 1 is necessary. Without the file, error VSA1000 stops the compile of each c
 |---|---|
 | `Runtime/Plugins/` | The VSA DLLs and their dependencies |
 | `Runtime/VSA.Analyzers.dll` | The VSA analyzers (Roslyn 4.10 build) |
-| `Runtime/` | `VsaHost`, the Unity host, the view bases, `UnityLogProvider` |
-| `Runtime/link.xml` | The IL2CPP keep rules of VSA |
+| `Runtime/` | `VsaHost<TApp>`, the Unity host, `PresenterComponent<T>`, `UnityLogProvider` |
+| `Runtime/link.xml` | The IL2CPP keep rule of VSA |
 | `Documentation~/Default.globalconfig` | The VSA rule values for the install step |
 | `Editor/` | `CompilerFiles` and `VsaLinker` |
 | `Tests/` | EditMode and PlayMode tests |
 
 ## Start the app
 
-Put `VsaHost` on one GameObject of the first scene.
+Write the app class and one host component, each in its own file. The file name of the host is its class name.
+
+```csharp
+public sealed class MyApp : VsaApp<MyApp> {
+    protected override VsaBuilder Builder(string[] args) => base.Builder(args).UseUnityHost();
+}
+
+public sealed class GameHost : VsaHost<MyApp> { }
+```
+
+Put `GameHost` on one GameObject of the first scene.
 
 ```
-VsaHost.Awake
+GameHost.Awake
 ├─ DontDestroyOnLoad          the app has the lifetime of the Unity app
-├─ find the app class         App field, else the one app class, else DefaultVsaApp
-└─ MyApp.Run(args)            VsaApp<TApp>
-   └─ host scan               finds UnityVsaHost, the IVsaHost of this package
-      └─ Run                  starts the IHost and returns at once
+└─ MyApp.Run(args)            VsaApp<TApp>, a direct call
+   ├─ UseUnityHost            selects UnityVsaHost, the IVsaHost of this package
+   └─ Run                     starts the IHost and returns at once
 ```
 
 | `VsaHost` member | Use |
 |---|---|
-| `App` (field) | Full name of the app class. Empty: the scan |
 | `Arguments` (field) | The `args` of `Run`, for example `--Modules:Counter:Max=5` |
+| `AppType` | The app class, `TApp` |
 | `Services` (static) | The services of the running app, else null |
 | `IsRunning` (static) | True from `Run` until the app stops |
+| `Owner` (static) | The host component that owns the app, else null |
 | `Stop()`, `Run()` | Stop the app, and start it again |
 
-- An app class is a class that inherits `VsaApp<TApp>`, with no constructor parameters. If the project has none, `DefaultVsaApp` runs.
-- The scan skips the test assemblies (they reference NUnit). A test selects its app class with the `App` field.
+- If the app does not call `UseUnityHost`, the host scan of VSA finds `UnityVsaHost`.
 - A second `VsaHost` disables itself and does nothing. A scene change does not stop the app.
 
 ## The Unity host
@@ -60,7 +69,7 @@ VsaHost.Awake
 | Builder | `Host.CreateEmptyApplicationBuilder`, plus command line, Unity log |
 | Content root | `Application.dataPath` |
 | Lifetime | `IHostLifetime` that does not wait for a signal |
-| Presenter events | `LivePresenters.Dispatch` posts to the main thread |
+| Presenter events | `LivePresenters.Dispatch` runs them after `Awaitable.MainThreadAsync()` |
 | Stop | `Application.quitting`, play mode exit, domain reload, `VsaApp.Stop()` |
 
 The empty builder is necessary: the default .NET host fails in Unity (EventLog logger on Mono, content root `Unity.exe\`).
@@ -75,15 +84,15 @@ public sealed class CounterLabel : PresenterComponent<CounterPresenter> {
 }
 ```
 
-| Base | Gets its presenters | Renders |
-|---|---|---|
-| `PresenterComponent<T>` | `Bind`, else an app scope in `Start` | On `Bind` and on `Changed` |
-| `PresenterWatcher` | `Watch(a, b, ...)` | On a changed `Watch` and on `Changed` |
+| Item | Behavior |
+|---|---|
+| Presenter | `Bind`, else an app scope in `Start` |
+| Render | On `Bind` and on `Changed`, on the main thread |
+| `Bind` again | Same presenter: nothing. Other presenter: stops to listen to the last one. |
+| `OnDestroy` | Stops to listen. Disposes the scope that the view made. |
 
-A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from a new scope of the running app.
-
-- `Render` runs on the main thread. `Changed` from another thread goes to the main thread.
-- `OnDestroy` stops the watch. A component that made its own scope disposes it. An override of `Start` or `OnDestroy` calls the base method.
+- A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from a new scope of the running app.
+- An override of `Start` or `OnDestroy` calls the base method.
 
 ## Analyzers
 
@@ -100,32 +109,29 @@ A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from
 - Module asmdefs often do not reference `VSA.Unity`. The .NET test build checks the module code.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
 - The package code is framework code, so each package asmdef sets `VSA1000` to `VSA1014` to `none`.
+
 ## Editor scripts
 
 | Script | Does |
 |---|---|
-| `CompilerFiles` | Writes `Assets/csc.rsp`, updates `Assets/Default.globalconfig` |
-| `VsaLinker` | Gives `link.xml` and a rule for each app class to the UnityLinker |
+| `CompilerFiles` | Updates `Assets/Default.globalconfig` |
+| `VsaLinker` | Gives `Runtime/link.xml` to the UnityLinker |
 
-- `Assets/csc.rsp` gets `-langversion:12`, the highest version of the Roslyn 4.10 compiler of Unity. It applies to each assembly with no own `csc.rsp`.
 - `Assets/Default.globalconfig` gets the VSA rule values of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. Unity reads only this name for all assemblies. After a package update, the script writes the rule values of the new VSA version.
-- Each script changes only its own lines. The menu item **Tools > VSA > Write Compiler Files** runs `CompilerFiles` again.
-- The package code is C# 9, so it compiles before `Assets/csc.rsp` exists.
+- The script changes only its own lines. The menu item **Tools > VSA > Write Compiler Files** runs `CompilerFiles` again.
+- The package code is C# 9, the default language version of Unity 6000.6.
 
 ## IL2CPP
 
-`Runtime/link.xml` keeps these types:
+VSA marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them. `Runtime/link.xml` keeps one more assembly:
 
-| Assembly | Kept | Reason |
-|---|---|---|
-| `VSA.Analyzers.Markers` | All | The marker attributes |
-| `VSA.Handlers` | The four runners | `ActivatorUtilities` makes them |
-| `VSA.Composition` | `VsaApp<TApp>` | `VsaHost` calls it by reflection |
+```xml
+<assembly fullname="VSA.Analyzers.Markers" preserve="all" />
+```
 
-`VsaLinker` adds each app class of the player assemblies, because `VsaHost` makes the app class by reflection.
+The scan reads `[AutoRegister]` on the VSA bases. Without the rule, stripping High removes the markers assembly. The UnityLinker reads the `link.xml` files of `Assets/` only, so `VsaLinker` gives the package file.
 
 ## Open questions
 
-- Runner rules: remove the `VSA.Handlers` rules when `IRunner` has `[RequireImplementors]` in VSA.
 - Automatic first install: the install step 1 is manual. A GitHub issue tracks a fix in VSA.Analyzers or an opt-in analyzer asmdef.
-- App class rule: remove the `VsaLinker` app rule when `VsaApp<TApp>` has a linker marker in VSA.
+- Stripping: does the package need `link.xml` and `VsaLinker`, or does a consumer use stripping Minimal only?

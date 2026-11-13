@@ -152,7 +152,7 @@ namespace VSA.Unity.Editor.Tests {
             var rsp = System.IO.Directory.GetFiles("Library/Bee/artifacts", "VSA.Unity.Editor.Tests.rsp", System.IO.SearchOption.AllDirectories);
 
             Assert.That(rsp, Is.Not.Empty);
-            Assert.That(System.IO.File.ReadAllText(rsp[0]), Does.Contain("-analyzer:\"" + Analyzer + "\""));
+            Assert.That(System.IO.File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/VSA\\.Analyzers\\.dll\""));
         }
 
         [Test]

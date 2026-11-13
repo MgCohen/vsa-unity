@@ -5,7 +5,7 @@ The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity 
 
 ## Install the package
 
-Add the git URL to `Packages/manifest.json` of the consumer project. The tag is the VSA version.
+First copy `Packages/com.vsa.core/Documentation~/Default.globalconfig` to `Assets/Default.globalconfig` of the consumer project. Then add the git URL to `Packages/manifest.json`. The tag is the VSA version.
 
 ```json
 "com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.26"
@@ -67,4 +67,4 @@ The check runs on a dev machine only. It needs the Windows IL2CPP module of Unit
 ## Open questions
 
 - Unity CI: a Unity license in GitHub Actions needs a license secret.
-- First open: before the editor script writes `Assets/Default.globalconfig`, VSA1000 stops the compile of each consumer assembly that references `VSA.Unity`. Then the editor script cannot run. Options: one warning in VSA.Analyzers when the config has no `vsa.*` key, or an opt-in analyzer asmdef.
+- Automatic first install: the copy of `Default.globalconfig` is manual. A GitHub issue tracks the fix.

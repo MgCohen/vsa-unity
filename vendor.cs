@@ -56,10 +56,18 @@ foreach (var (name, path) in dlls) {
 }
 Directory.Delete(output, recursive: true);
 
-// The rule values of VSA.Sdk (PackageDownload). The ".txt" name stops Unity from reading the file as a .globalconfig.
+// The rule values of VSA.Sdk (PackageDownload), as the file that a consumer copies to Assets/Default.globalconfig.
+// Unity does not import a folder that ends with "~". The editor script CompilerFiles reads the block of this file,
+// and an EditMode test checks that the file is the same as the text that CompilerFiles writes.
 var packages = GlobalPackages();
-var rules = Path.Combine(packages, "vsa.sdk", version.ToLowerInvariant(), "Sdk", "VSA.Rules.globalconfig");
-File.WriteAllBytes(Path.Combine(package, "Editor", "VSA.Rules.globalconfig.txt"), File.ReadAllBytes(rules));
+var rules = File.ReadAllText(Path.Combine(packages, "vsa.sdk", version.ToLowerInvariant(), "Sdk", "VSA.Rules.globalconfig"))
+    .Replace("\r\n", "\n").TrimEnd('\n').Split('\n')
+    .Where(line => !Regex.IsMatch(line, @"^\s*(is_global|global_level)\s*="))
+    .SkipWhile(line => line.Trim().Length == 0);
+string[] config = ["is_global = true", "# BEGIN com.vsa.core: the editor script of the package writes these lines.", .. rules,
+    "# END com.vsa.core"];
+Directory.CreateDirectory(Path.Combine(package, "Documentation~"));
+File.WriteAllText(Path.Combine(package, "Documentation~", "Default.globalconfig"), string.Join("\n", config) + "\n");
 
 // The analyzers (PackageDownload). In the folder of the VSA.Unity asmdef, they run on VSA.Unity and on each assembly
 // that references it. The label RoslynAnalyzer in the .meta file makes Unity use the DLL as an analyzer, not as a library.

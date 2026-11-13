@@ -156,6 +156,11 @@ namespace VSA.Unity.Editor.Tests {
         }
 
         [Test]
+        public void The_shipped_config_is_the_text_that_the_editor_script_writes_in_a_new_project() =>
+            Assert.That(CompilerFiles.GlobalConfig("", CompilerFiles.RulesText()),
+                Is.EqualTo(System.IO.File.ReadAllText(CompilerFiles.ShippedConfigPath()).Replace("\r\n", "\n")));
+
+        [Test]
         public void The_package_has_the_rule_values_for_the_editor_script() {
             var text = CompilerFiles.GlobalConfig("", CompilerFiles.RulesText());
 

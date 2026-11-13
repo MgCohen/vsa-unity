@@ -3,6 +3,17 @@
 The VSA core for Unity 6000.6: the portable VSA DLLs (netstandard2.1), the VSA analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one `VsaHost` component. Views inherit `PresenterComponent<T>` or `PresenterWatcher`.
 
+## Install
+
+1. Copy [`Documentation~/Default.globalconfig`](Documentation~/Default.globalconfig) to `Assets/Default.globalconfig` before you add the package.
+2. Add the package to `Packages/manifest.json`:
+
+```json
+"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#v0.1.0-preview.26"
+```
+
+Step 1 is necessary. Without the file, error VSA1000 stops the compile of each consumer assembly in the analyzer scope, so the editor script cannot write the file.
+
 ## Contents
 
 | Path | Contains |
@@ -11,6 +22,7 @@ A Unity app starts with one `VsaHost` component. Views inherit `PresenterCompone
 | `Runtime/VSA.Analyzers.dll` | The VSA analyzers (Roslyn 4.10 build) |
 | `Runtime/` | `VsaHost`, the Unity host, the view bases, `UnityLogProvider` |
 | `Runtime/link.xml` | The IL2CPP keep rules of VSA |
+| `Documentation~/Default.globalconfig` | The VSA rule values for the install step |
 | `Editor/` | `CompilerFiles` and `VsaLinker` |
 | `Tests/` | EditMode and PlayMode tests |
 
@@ -90,11 +102,11 @@ A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from
 
 | Script | Does |
 |---|---|
-| `CompilerFiles` | Writes `Assets/csc.rsp` and `Assets/Default.globalconfig` when the editor loads |
+| `CompilerFiles` | Writes `Assets/csc.rsp`, updates `Assets/Default.globalconfig` |
 | `VsaLinker` | Gives `link.xml` and a rule for each app class to the UnityLinker |
 
 - `Assets/csc.rsp` gets `-langversion:12`, the highest version of the Roslyn 4.10 compiler of Unity. It applies to each assembly with no own `csc.rsp`.
-- `Assets/Default.globalconfig` gets the VSA rule values between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. Unity reads only this name for all assemblies.
+- `Assets/Default.globalconfig` gets the VSA rule values of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. Unity reads only this name for all assemblies. After a package update, the script writes the rule values of the new VSA version.
 - Each script changes only its own lines. The menu item **Tools > VSA > Write Compiler Files** runs `CompilerFiles` again.
 - The package code is C# 9, so it compiles before `Assets/csc.rsp` exists.
 
@@ -113,5 +125,5 @@ A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from
 ## Open questions
 
 - Runner rules: remove the `VSA.Handlers` rules when `IRunner` has `[RequireImplementors]` in VSA.
-- First open: before `CompilerFiles` writes `Assets/Default.globalconfig`, VSA1000 stops the compile of each consumer assembly in the analyzer scope. Then `CompilerFiles` cannot run.
+- Automatic first install: the install step 1 is manual. A GitHub issue tracks a fix in VSA.Analyzers or an opt-in analyzer asmdef.
 - App class rule: remove the `VsaLinker` app rule when `VsaApp<TApp>` has a linker marker in VSA.

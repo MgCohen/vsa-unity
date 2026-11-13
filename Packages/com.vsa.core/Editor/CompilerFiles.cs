@@ -66,11 +66,22 @@ namespace VSA.Unity.Editor {
             return true;
         }
 
-        // The rule values of the VSA version of the package (vendor.cs copies them).
+        // The rule values of the VSA version of the package: the block of Documentation~/Default.globalconfig,
+        // the file that the install step copies to Assets/Default.globalconfig (vendor.cs writes it).
         internal static string RulesText() {
+            var path = ShippedConfigPath();
+            if (path == null || !File.Exists(path)) {
+                return null;
+            }
+            var lines = Lines(File.ReadAllText(path)).ToList();
+            var start = lines.IndexOf(Begin);
+            var end = lines.IndexOf(End);
+            return start >= 0 && end > start ? string.Join("\n", lines.Skip(start + 1).Take(end - start - 1)) + "\n" : null;
+        }
+
+        internal static string ShippedConfigPath() {
             var package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(CompilerFiles).Assembly);
-            var path = package == null ? null : Path.Combine(package.resolvedPath, "Editor", "VSA.Rules.globalconfig.txt");
-            return path != null && File.Exists(path) ? File.ReadAllText(path) : null;
+            return package == null ? null : Path.Combine(package.resolvedPath, "Documentation~", "Default.globalconfig");
         }
 
         static bool IsKey(string line, string key) {

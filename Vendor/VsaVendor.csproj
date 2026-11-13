@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Only for vendor.cs: dotnet publish of this project gives the VSA packages and their dependencies for Unity. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <VsaVersion>0.1.0-preview.24</VsaVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Each portable VSA layer. VSA.Composition brings VSA.Architecture, VSA.Architecture.Vsa and VSA.Analyzers.Markers. -->
+    <PackageReference Include="VSA.Domain" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Contracts" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Contracts.Requests" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Contracts.Events" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Contracts.Commands" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Handlers" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Handlers.Requests" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Handlers.Events" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Handlers.Commands" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Infrastructure" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Presenters" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Module" Version="$(VsaVersion)" />
+    <PackageReference Include="VSA.Composition" Version="$(VsaVersion)" />
+    <!-- Only for the rule values (Sdk/VSA.Rules.globalconfig). The editor script writes them to Assets/Default.globalconfig. -->
+    <PackageDownload Include="VSA.Sdk" Version="[$(VsaVersion)]" />
+  </ItemGroup>
+</Project>

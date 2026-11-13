@@ -1,0 +1,18 @@
+<!-- The IL2CPP keep rules of VSA. The editor script VsaLinker gives this file to the UnityLinker,
+     and adds the app classes of the project (VsaApp<TApp>), because VsaHost makes them by reflection. -->
+<linker>
+  <!-- The marker attributes ([AutoRegister], [TypeArgument], [RequireDerived], [RequireImplementors]). -->
+  <assembly fullname="VSA.Analyzers.Markers" preserve="all" />
+  <!-- The pipeline makes its runner with ActivatorUtilities. VSA 0.1.0-preview.24 has no [RequireImplementors] on IRunner,
+       so the linker removes the runner constructors. Remove these rules when VSA.Handlers has the marker. -->
+  <assembly fullname="VSA.Handlers">
+    <type fullname="VSA.Handlers.InlineRunner" preserve="all" />
+    <type fullname="VSA.Handlers.DrainRunner" preserve="all" />
+    <type fullname="VSA.Handlers.QueuedRunner" preserve="all" />
+    <type fullname="VSA.Handlers.StackRunner" preserve="all" />
+  </assembly>
+  <!-- VsaHost calls Run, Stop and IsRunning of VsaApp<TApp> by reflection. -->
+  <assembly fullname="VSA.Composition">
+    <type fullname="VSA.Composition.VsaApp`1" preserve="all" />
+  </assembly>
+</linker>

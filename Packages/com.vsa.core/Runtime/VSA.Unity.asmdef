@@ -1,0 +1,6 @@
+{
+  "name": "VSA.Unity",
+  "rootNamespace": "VSA.Unity",
+  "references": ["UnityEngine.UI"],
+  "autoReferenced": true
+}

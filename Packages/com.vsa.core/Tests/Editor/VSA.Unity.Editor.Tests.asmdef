@@ -1,0 +1,18 @@
+{
+  "name": "VSA.Unity.Editor.Tests",
+  "rootNamespace": "VSA.Unity.Editor.Tests",
+  "references": ["VSA.Unity", "VSA.Unity.Editor", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "VSA.Composition.dll",
+    "VSA.Module.dll",
+    "VSA.Architecture.dll",
+    "VSA.Architecture.Vsa.dll",
+    "Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+    "Microsoft.Extensions.Hosting.Abstractions.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

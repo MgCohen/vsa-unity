@@ -1,0 +1,25 @@
+# The values of the VSA analyzer rules (VSA1xxx). This file is the only place of these values: no rule has a default.
+# If a value is missing or not valid, the build reports VSA1000, and that rule does not run.
+# A consumer changes a value in its own .editorconfig. Severity uses the standard key: dotnet_diagnostic.VSA1001.severity = none
+# Keys: vsa.<rule ID>.<key> for one rule, vsa.<key> for all rules that read the key. A rule key wins.
+# In a list, write a comma between the items: a semicolon starts a comment.
+is_global = true
+global_level = -1
+
+# VSA1001: true checks the responses too, false checks only the requests.
+vsa.VSA1001.check_responses = true
+# VSA1007: the bases that a Domain.Shared type can use, apart from the Domain.Shared projects.
+# Empty: an interface such as IComparable<T> needs a method, and VSA1006 does not permit methods.
+# An app adds its own bases, for example: vsa.VSA1007.allowed_bases = Card.TypeKeys.TypeKey, Card.Entities.IComponent
+vsa.VSA1007.allowed_bases =
+
+# Formatting (warnings): the maximum characters in a line, lines in a method and lines in a file.
+vsa.VSA1008.max = 120
+vsa.VSA1009.max = 40
+vsa.VSA1010.max = 300
+# VSA1011: one top-level type in a file. true: types with the same name can share a file, for example Module and Module<TSettings>.
+vsa.VSA1011.allow_same_name = true
+# VSA1012: the order of the members in a type: by kind, then by access, then static before instance (static_first = true).
+vsa.VSA1012.kind_order = constant, field, constructor, finalizer, property, event, method, nested_type
+vsa.VSA1012.access_order = public, internal, protected_internal, protected, private_protected, private
+vsa.VSA1012.static_first = true

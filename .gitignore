@@ -1,0 +1,22 @@
+# Unity
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Ll]ogs/
+/[Uu]serSettings/
+/*.sln
+/*.slnx
+/*.csproj
+TestResults*.xml
+
+# vendor.cs
+/Vendor/bin/
+/Vendor/obj/
+
+# il2cpp-check.ps1
+/Il2cppCheck/
+
+# Il2cppCheck.cs writes the scene of the check
+/Assets/Check.unity
+/Assets/Check.unity.meta

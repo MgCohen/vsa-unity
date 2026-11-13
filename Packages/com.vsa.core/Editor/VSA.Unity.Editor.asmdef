@@ -1,0 +1,7 @@
+{
+  "name": "VSA.Unity.Editor",
+  "rootNamespace": "VSA.Unity.Editor",
+  "references": ["VSA.Unity"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

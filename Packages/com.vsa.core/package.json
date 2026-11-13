@@ -1,0 +1,19 @@
+{
+  "name": "com.vsa.core",
+  "version": "0.1.0-preview.24",
+  "displayName": "VSA Core",
+  "description": "The VSA vertical slice framework for Unity: the portable core DLLs, the Unity host (VsaHost) and the uGUI view bases (PresenterComponent<T>, PresenterWatcher).",
+  "unity": "6000.6",
+  "unityRelease": "6f1",
+  "author": {
+    "name": "MgCohen",
+    "url": "https://github.com/MgCohen"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MgCohen/vsa-unity.git"
+  },
+  "dependencies": {
+    "com.unity.ugui": "2.6.0"
+  }
+}

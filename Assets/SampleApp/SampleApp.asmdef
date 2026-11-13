@@ -1,0 +1,5 @@
+{
+  "name": "SampleApp",
+  "rootNamespace": "SampleApp",
+  "references": ["Sample", "VSA.Unity"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Sample",
+  "rootNamespace": "Sample",
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "VSA.Module.dll",
+    "VSA.Contracts.dll",
+    "VSA.Contracts.Commands.dll",
+    "VSA.Contracts.Events.dll",
+    "VSA.Contracts.Requests.dll",
+    "VSA.Handlers.dll",
+    "VSA.Handlers.Commands.dll",
+    "VSA.Handlers.Requests.dll",
+    "VSA.Presenters.dll",
+    "VSA.Analyzers.Markers.dll",
+    "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+  ],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

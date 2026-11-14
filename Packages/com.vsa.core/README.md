@@ -94,6 +94,18 @@ public sealed class CounterLabel : PresenterComponent<CounterPresenter> {
 - A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from a new scope of the running app.
 - An override of `Start` or `OnDestroy` calls the base method.
 
+### Scene views
+
+Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallback gives these views a presenter. It has these limits:
+
+| Limit | Result |
+|---|---|
+| Each scene view makes its own scope | Two views of one presenter type get two presenters. They do not share state. |
+| The view reads the static `VsaHost.Services` | A service locator: an exception to the composition rule of VSA |
+| No app runs at `Start` | The view gets no presenter and shows no error |
+
+If a consumer needs shared presenters or injection into scene objects, use a DI library for Unity, for example VContainer. Call `Bind` from its scene scope. A view that has a presenter before `Start` does not use the fallback.
+
 ## Analyzers
 
 `Runtime/VSA.Analyzers.dll` has the label `RoslynAnalyzer` and no platform. Unity uses it as an analyzer, not as a library.

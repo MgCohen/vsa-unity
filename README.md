@@ -22,6 +22,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
 | `Assets/Sample/` | A small module in one asmdef |
 | `Assets/SampleApp/` | `SampleApp`, `SampleHost` and the `Check` view of the IL2CPP check |
+| `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `VSA.Unity.VContainer` |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
 | `Vendor/VsaVendor.csproj` | The VSA version of the package |
 | `vendor.cs` | Copies the VSA DLLs and analyzers into the package |

@@ -1,0 +1,14 @@
+{
+  "name": "VSA.Unity.VContainer",
+  "rootNamespace": "VSA.Unity.VContainer",
+  "references": ["VSA.Unity", "VContainer"],
+  "autoReferenced": true,
+  "defineConstraints": ["VSA_VCONTAINER"],
+  "versionDefines": [
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "1.16.0",
+      "define": "VSA_VCONTAINER"
+    }
+  ]
+}

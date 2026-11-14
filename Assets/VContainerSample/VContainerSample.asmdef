@@ -1,0 +1,5 @@
+{
+  "name": "VContainerSample",
+  "rootNamespace": "VContainerSample",
+  "references": ["Greeter", "VSA.Unity", "VSA.Unity.VContainer", "VContainer", "UnityEngine.UI"]
+}

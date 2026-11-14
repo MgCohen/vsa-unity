@@ -23,6 +23,7 @@ Step 1 is necessary. Without the file, error VSA1000 stops the compile of each c
 | `Runtime/Plugins/` | The VSA DLLs and their dependencies |
 | `Runtime/VSA.Analyzers.dll` | The VSA analyzers (Roslyn 4.10 build) |
 | `Runtime/` | `VsaHost<TApp>`, the Unity host, `PresenterComponent<T>`, `UnityLogProvider` |
+| `Runtime/VContainer/` | `VsaLifetimeScope<TApp>`, `RegisterVsa`, `UseVContainer`, if VContainer is installed |
 | `Runtime/link.xml` | The IL2CPP keep rule of VSA |
 | `Documentation~/Default.globalconfig` | The VSA rule values for the install step |
 | `Editor/` | `CompilerFiles` and `VsaLinker` |
@@ -104,7 +105,76 @@ Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallba
 | The view reads the static `VsaHost.Services` | A service locator: an exception to the composition rule of VSA |
 | No app runs at `Start` | The view gets no presenter and shows no error |
 
-If a consumer needs shared presenters or injection into scene objects, use a DI library for Unity, for example VContainer. Call `Bind` from its scene scope. A view that has a presenter before `Start` does not use the fallback.
+If a consumer needs shared presenters or injection into scene objects, use [VContainer](#vcontainer). A view that has a presenter before `Start` does not use the fallback.
+
+## VContainer
+
+The assembly `VSA.Unity.VContainer` connects VContainer and the VSA app in two directions. Unity compiles it only if the project has VContainer 1.16.0 or later (`jp.hadashikick.vcontainer`).
+
+| Direction | API | Use |
+|---|---|---|
+| Out: VContainer gets VSA services | `builder.RegisterVsa<T>()`, `RegisterVsaPresenters(modules)` | Scene objects get presenters, `IBus` |
+| In: VSA gets VContainer services | `Import(VsaImports)`, `UseVContainer()` | Handlers get Unity services |
+
+### Start the app from the root scope
+
+`VsaLifetimeScope<TApp>` is the VContainer root scope. It starts the app, so it replaces `VsaHost<TApp>`.
+
+```csharp
+public sealed class MyApp : VsaApp<MyApp> {
+    protected override VsaBuilder Builder(string[] args) => base.Builder(args).UseUnityHost().UseVContainer();
+}
+
+public sealed class GameScope : VsaLifetimeScope<MyApp> {
+    protected override void ConfigureScope(IContainerBuilder builder) => builder.Register<IAudio, UnityAudio>(Lifetime.Singleton);
+
+    protected override void Import(VsaImports imports) => imports.Add<IAudio>();
+}
+```
+
+```
+GameScope.Awake
+├─ Configure            registers VsaScope, then ConfigureScope
+├─ VContainer build     the root scope
+├─ build callback
+│  ├─ Resolve imports   one time, from the root scope
+│  ├─ MyApp.Run         UseVContainer adds the imports as singletons
+│  └─ Inject            autoInjectGameObjects of the root scope
+└─ Entry points         IInitializable, IStartable: the app runs
+```
+
+| Item | Behavior |
+|---|---|
+| Imports | Singletons in the app. VContainer owns them, so the app does not dispose them. |
+| No `UseVContainer` | If the scope has imports, the build fails and the app stops. |
+| A running app | If a `VsaHost` started an app, the build fails. |
+| `OnDestroy` | Disposes the VContainer scope, then stops the app. |
+
+### Give presenters to a scene
+
+Each VContainer scope has one `VsaScope`, a VSA `IServiceScope`. A VSA service resolves from the `VsaScope` of the scope that resolves it.
+
+```csharp
+public sealed class LevelScope : LifetimeScope {
+    protected override void Configure(IContainerBuilder builder) => builder.RegisterVsaPresenters(new LevelModule());
+}
+
+public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
+    [Inject] public void Construct(ScorePresenter presenter) => Bind(presenter);
+    protected override void Render() => ...;
+}
+```
+
+| Item | Behavior |
+|---|---|
+| One scope | All views share one presenter |
+| Two scopes | Two presenters |
+| Scope destroyed | The `VsaScope` disposes its presenters |
+| No app runs | The resolve fails with "No VSA app runs" |
+
+- `RegisterVsa` works in each scope, also with an app that a `VsaHost` started. Only the In direction needs `VsaLifetimeScope`.
+- VContainer does not keep or dispose a VSA service. The `VsaScope` does both.
+- `Assets/VContainerSample/` of the repository is a sample scene of the two directions.
 
 ## Analyzers
 

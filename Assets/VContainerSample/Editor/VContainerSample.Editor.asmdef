@@ -1,0 +1,6 @@
+{
+  "name": "VContainerSample.Editor",
+  "rootNamespace": "VContainerSample.Editor",
+  "references": ["VContainerSample", "VSA.Unity", "VSA.Unity.VContainer", "VContainer", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"]
+}

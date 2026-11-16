@@ -48,6 +48,7 @@ unity command ui.click_object --path Canvas/Play      1 command: CLI args to one
 | `ui.drag_screen --x X --y Y --to-x X2 --to-y Y2 [--steps 10]` | `DragScreen` | Same as `drag_object` |
 | `game.wait_frames [--count 1]` | `WaitFrames` | Time and frames |
 | `game.wait_seconds [--seconds 1]` | `WaitSeconds` | Time and frames |
+| `game.info` | `ReadInfo` | Platform, Editor or player, frame, time, scene, process id |
 | `game.load_scene --scene S` | `LoadScene` | Scene name, path, time |
 | `game.reset [--scene S] [--seed N]` | `ResetGame` | Scene, seed, names of the reset steps |
 
@@ -119,6 +120,18 @@ Add `Runs/` to `.gitignore`.
 
 The Input System path queues state events and does not call `InputSystem.Update()`. In Editor Play Mode, a manual update loses the event. A click takes 3 frames: move, press, release.
 
+## Players
+
+The same commands, actions and scripts work in a development player:
+
+1. Turn on the runtime pipeline for development builds (Pipeline settings).
+2. Make a development build.
+3. Start each player from its own folder. The player writes its descriptor `.unity-pipeline-runtime-port` beside the executable, and two players in one folder write the same file.
+
+IL2CPP builds strip code that is not referenced. The package keeps its own types with `Runtime/link.xml`. Mark your own scripts, and actions that only data scripts use, with `[UnityEngine.Scripting.Preserve]`.
+
+In a player, the run folder is `Application.persistentDataPath/Runs/`.
+
 ## Client outside Unity
 
 `Client~/` is a .NET 8 library for tests that run outside Unity. Unity does not import folders whose name ends with `~`.
@@ -128,7 +141,7 @@ The Input System path queues state events and does not call `InputSystem.Update(
 | `Instance` | Reads the Pipeline descriptor of an Editor (`ForEditor`) or a player (`ForPlayer`) |
 | `HttpTransport` | Sends commands over HTTP, about 20 ms each. Reconnects after a domain reload. Retries on 503. |
 | `Health` | Classifies the instance: `Ready`, `Busy`, `Dialog`, `Frozen`, `Unreachable`, `Dead` |
-| `Game` | One method for each action, plus `EnterPlayMode`, `ExitPlayMode` and `Command` |
+| `Game` | One method for each action, plus `EnterPlayMode`, `ExitPlayMode` and `Command`. `LaunchPlayer` starts a player and `StopPlayer` stops only that player. |
 
 ```csharp
 using var game = await Game.AttachEditor(@"C:\Projects\MyGame");
@@ -151,7 +164,12 @@ A failed action throws `ActionFailedException` with `Code`, `Reason` and the ste
 
 A long synchronous command also gives `Frozen`. A long async action, for example a wait, keeps the main thread free and gives `Ready`.
 
-`Samples/e2e.cs` is an end-to-end check against the lab project: `dotnet run --file e2e.cs -- <project path>`.
+A player has no `/api/editor_status`. There, step 3 sends `game.info` with a time limit of 2 s. That command waits in the command queue, so in a player a long command also gives `Frozen`.
+
+| Sample | Checks |
+|---|---|
+| `Samples/e2e.cs` | The Editor of the lab project: `dotnet run --file e2e.cs -- <project path>` |
+| `Samples/player.cs` | A development player of the lab project: `dotnet run --file player.cs -- <path of Lab.exe>` |
 
 ## Scripts inside Unity
 
@@ -227,5 +245,6 @@ To replace a default part, give your own part to the root, for example `new Test
 ## Limits of version 0.1
 
 - A domain reload stops a running action. The next command builds the runtime again.
-- Only Editor Play Mode is tested. Players are not tested yet.
+- Tested in Editor Play Mode and in a Windows development player (Mono). Android, Linux and IL2CPP players are not tested yet.
+- During development with a local `file:` package, `unity recompile` does not always see changes in the package. Call `AssetDatabase.Refresh()` first.
 - No capture action yet. A failed step saves a screenshot through the hook only.

@@ -85,9 +85,23 @@ namespace VSA.TestSuite.Client
 
             // /api/status is cached off the main thread: it says "ready" also when the main thread
             // is frozen. /api/editor_status needs the main thread, so it is the real probe.
+            // A player has no /api/editor_status: there, game.info is the probe. It waits in the command
+            // queue, so a long command in a player also gives Frozen.
             try
             {
-                await transport.Get("/api/editor_status", ProbeTimeoutMs, cancel);
+                if (instance.IsPlayer)
+                {
+                    var r = await transport.Exec(new[] { "game.info" }, ProbeTimeoutMs, cancel);
+                    if (r.Http == 504) return Done(await AfterTimeout(cancel), watch);
+                }
+                else
+                {
+                    await transport.Get("/api/editor_status", ProbeTimeoutMs, cancel);
+                }
+            }
+            catch (TimeoutException)
+            {
+                return Done(await AfterTimeout(cancel), watch);
             }
             catch (OperationCanceledException) when (!cancel.IsCancellationRequested)
             {

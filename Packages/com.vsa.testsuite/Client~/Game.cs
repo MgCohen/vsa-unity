@@ -56,6 +56,67 @@ namespace VSA.TestSuite.Client
             return game;
         }
 
+        /// <summary>The player process that this client started. Null for an Editor or an attached player.</summary>
+        public System.Diagnostics.Process OwnedProcess { get; private set; }
+
+        /// <summary>Attaches to a running player that writes its descriptor to <paramref name="playerFolder"/>.</summary>
+        public static async Task<Game> AttachPlayer(string playerFolder, int readyTimeoutMs = 60000)
+        {
+            var game = new Game(new HttpTransport(Instance.ForPlayer(playerFolder)));
+            await game.Health.WaitReady(readyTimeoutMs);
+            return game;
+        }
+
+        /// <summary>
+        /// Starts a development player and waits until it is ready. Give each player its own folder:
+        /// two players in one folder write the same descriptor file.
+        /// </summary>
+        public static async Task<Game> LaunchPlayer(string exePath, string arguments = "-screen-fullscreen 0", int readyTimeoutMs = 60000)
+        {
+            var folder = Path.GetDirectoryName(Path.GetFullPath(exePath));
+            var instance = Instance.ForPlayer(folder);
+            // A descriptor from an earlier run points at a dead process or at another player.
+            if (File.Exists(instance.DescriptorPath)) File.Delete(instance.DescriptorPath);
+
+            // Without -logFile, the player writes its log to the console of the test.
+            if (!arguments.Contains("-logFile")) arguments += " -logFile \"" + Path.Combine(folder, "player.log") + "\"";
+            var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exePath, arguments)
+            {
+                WorkingDirectory = folder,
+                UseShellExecute = false,
+                // Unity prints some lines to the console before it opens the log file. Drop them.
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            });
+            process.OutputDataReceived += (_, _) => { };
+            process.ErrorDataReceived += (_, _) => { };
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            var game = new Game(new HttpTransport(instance)) { OwnedProcess = process };
+            try
+            {
+                await game.Health.WaitReady(readyTimeoutMs);
+            }
+            catch
+            {
+                game.StopPlayer();
+                throw;
+            }
+            return game;
+        }
+
+        /// <summary>Stops the player that this client started. It never stops other processes.</summary>
+        public void StopPlayer(int graceMs = 5000)
+        {
+            var p = OwnedProcess;
+            if (p == null || p.HasExited) return;
+            p.CloseMainWindow();
+            if (!p.WaitForExit(graceMs)) p.Kill();
+            OwnedProcess = null;
+        }
+
+        public Task<JsonElement> Info() => Act("game.info");
+
         // ui
         public Task<JsonElement> FindObject(string path) => Act("ui.find_object", "--path", path);
         public Task<JsonElement> ClickObject(string path) => Act("ui.click_object", "--path", path);
@@ -145,6 +206,10 @@ namespace VSA.TestSuite.Client
         static string I(int v) => v.ToString(CultureInfo.InvariantCulture);
         static string F(double v) => v.ToString(CultureInfo.InvariantCulture);
 
-        public void Dispose() => (Transport as IDisposable)?.Dispose();
+        public void Dispose()
+        {
+            StopPlayer();
+            (Transport as IDisposable)?.Dispose();
+        }
     }
 }

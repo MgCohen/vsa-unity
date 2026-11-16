@@ -1,0 +1,5 @@
+<!-- Keeps all types of the test suite in IL2CPP builds with managed code stripping:
+     the Pipeline and the script system find commands, actions and scripts by reflection. -->
+<linker>
+  <assembly fullname="VSA.TestSuite" preserve="all" />
+</linker>

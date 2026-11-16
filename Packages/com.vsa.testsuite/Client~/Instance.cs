@@ -9,19 +9,25 @@ namespace VSA.TestSuite.Client
         /// <summary>The descriptor file. Unity writes it again after each domain reload.</summary>
         public string DescriptorPath { get; }
 
+        /// <summary>True for a player, false for an Editor.</summary>
+        public bool IsPlayer { get; }
         public int Port { get; private set; }
         public int Pid { get; private set; }
         internal string Token { get; private set; }
 
-        Instance(string descriptorPath) => DescriptorPath = descriptorPath;
+        Instance(string descriptorPath, bool isPlayer)
+        {
+            DescriptorPath = descriptorPath;
+            IsPlayer = isPlayer;
+        }
 
         /// <summary>An Editor: the descriptor is in the Library folder of the project.</summary>
         public static Instance ForEditor(string projectPath)
-            => new Instance(Path.Combine(projectPath, "Library", "Pipeline", ".unity-pipeline-port"));
+            => new Instance(Path.Combine(projectPath, "Library", "Pipeline", ".unity-pipeline-port"), false);
 
         /// <summary>A player: the descriptor is beside the executable. Start each player from its own folder.</summary>
         public static Instance ForPlayer(string playerFolder)
-            => new Instance(Path.Combine(playerFolder, ".unity-pipeline-runtime-port"));
+            => new Instance(Path.Combine(playerFolder, ".unity-pipeline-runtime-port"), true);
 
         /// <summary>Reads the descriptor. Returns false if the file is missing or not complete.</summary>
         public bool TryLoad()

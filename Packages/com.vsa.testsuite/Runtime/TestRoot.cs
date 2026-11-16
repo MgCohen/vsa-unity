@@ -16,6 +16,7 @@ namespace VSA.TestSuite
         public ResetSystem Reset { get; }
         /// <summary>Scripts are found by type. Add a script instance here if it needs constructor arguments.</summary>
         public ScriptSystem Scripts { get; }
+        public AppSystem App { get; }
 
         /// <param name="pointerInput">The input path for clicks. Null: the default for this project.</param>
         public TestRoot(IPointerInput pointerInput = null)
@@ -26,6 +27,7 @@ namespace VSA.TestSuite
             Scenes = new SceneSystem();
             Reset = new ResetSystem(Scenes);
             Scripts = new ScriptSystem();
+            App = new AppSystem();
         }
 
         public HandlerSet DefaultHandlers() => new HandlerSet()
@@ -44,7 +46,8 @@ namespace VSA.TestSuite
             .Add(new LoadSceneHandler(Scenes))
             .Add(new ResetGameHandler(Reset))
             .Add(new RunScriptHandler(Scripts))
-            .Add(new ListScriptsHandler(Scripts));
+            .Add(new ListScriptsHandler(Scripts))
+            .Add(new ReadInfoHandler(App));
 
         // Hooks run Before in this order and After in the reverse order,
         // so the console hook sees the log lines of all other hooks.

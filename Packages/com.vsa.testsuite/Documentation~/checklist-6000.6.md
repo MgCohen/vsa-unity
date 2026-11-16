@@ -2,7 +2,7 @@
 
 This checklist examines `com.vsa.testsuite` (PR #20) in the vsa-unity project on Unity 6000.6.6f1. The earlier tests used `pipeline-lab` on Unity 6000.7. A review subagent checked the claims against the code before the run. Its corrections are in this version.
 
-Run on 2026-11-16. Result: all items are `working`, except the items in [Open items](#open-items).
+Run on 2026-11-16 in a batch mode Editor. D4 ran again in a windowed Editor. Result: all items are `working`, except the items in [Open items](#open-items).
 
 ## Differences from the earlier tests
 
@@ -58,7 +58,7 @@ Result: 25 of 25 pass.
 | D1 | Each root step writes `step.json` | 39 of 39 | working |
 | D2 | `summary.json` has one row for each root step | 39 rows, 32 passed, 7 failed | working |
 | D3 | A failed step writes `console.json` | Present for each failed step | working |
-| D4 | A failed step writes `fail.png` | A PNG file | failed: see [Open items](#open-items) |
+| D4 | A failed step writes `fail.png` | A PNG file | working in a windowed Editor. failed in batch mode: see [Open items](#open-items) |
 | D5 | The success result has `folder` | The step folder | working |
 
 ## E. Recording and overlay without the Recorder
@@ -96,7 +96,7 @@ The player ran with `-batchmode`, so it opened no window and took no focus.
 
 | ID | Problem | Cause | Action |
 |---|---|---|---|
-| D4 | No `fail.png` in a 6000.6 batch mode Editor | `ScreenCapture.CaptureScreenshot` writes no file in 6000.6 batch mode, also after 30 frames. 6000.7 batch mode writes it | The hook now logs a warning into `console.json`. Not tested: a 6000.6 Editor with a window |
+| D4 | No `fail.png` in a 6000.6 batch mode Editor | `ScreenCapture.CaptureScreenshot` writes no file in 6000.6 batch mode, also after 30 frames. A windowed 6000.6 Editor writes it (tested: 977x498, correct image). 6000.7 batch mode writes it | The hook logs a warning into `console.json`. For screenshots on 6000.6, use a windowed Editor |
 | C15 | The unsaved scene check did not run | The Editor opens a saved scene | Run it from an Untitled scene |
 | — | Stripping is not tested | Mono with stripping off | Run `player.cs` on an IL2CPP build |
 | — | `ui-events` limits | No pointer enter or exit, no drag threshold, no `initializePotentialDrag` | Document. Use the Input System path for full UI behavior |

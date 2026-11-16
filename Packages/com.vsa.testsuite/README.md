@@ -311,7 +311,7 @@ To replace a default part, give your own part to the root, for example `new Test
 - During development with a local `file:` package, `unity recompile` does not always see changes in the package. Call `AssetDatabase.Refresh()` first.
 - No capture action yet. A failed step saves a screenshot through the hook only.
 - Video recording works only in the Editor, in Play Mode. A player gives `NoDevice`.
-- In a Unity 6000.6 batch mode Editor, `ScreenCapture` writes no file, so a failed step has no `fail.png`. The hook then logs a warning into `console.json`. Unity 6000.7 in batch mode writes the file.
+- In a Unity 6000.6 batch mode Editor, `ScreenCapture` writes no file, so a failed step has no `fail.png`. The hook then logs a warning into `console.json`. A windowed 6000.6 Editor and a 6000.7 batch mode Editor write the file.
 - The `ui-events` input path sends no pointer enter or exit, uses no drag threshold and does not call `initializePotentialDrag`. For full UI behavior, install the Input System.
 
 The checklist of the last full run is in `Documentation~/checklist-6000.6.md`.

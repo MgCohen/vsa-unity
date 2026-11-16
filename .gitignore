@@ -24,3 +24,6 @@ TestResults*.xml
 # com.vsa.testsuite client
 /Packages/com.vsa.testsuite/Client~/bin/
 /Packages/com.vsa.testsuite/Client~/obj/
+
+# com.vsa.testsuite run folders
+/Runs/

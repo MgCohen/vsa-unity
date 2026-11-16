@@ -63,6 +63,11 @@ namespace VSA.TestSuite
             ScreenCapture.CaptureScreenshot(path);
             // The file is written at the end of the frame.
             await Frames.Wait(2, System.Threading.CancellationToken.None, 2000);
+            // Some Unity versions do not render the Game view in a batch mode Editor (6000.6 does not).
+            // Then no file comes. Say so, so the evidence does not look lost.
+            if (!System.IO.File.Exists(path))
+                Debug.LogWarning("[TestSuite] No fail.png: the screen capture wrote no file in 2 frames"
+                    + (Application.isBatchMode ? " (batch mode: the Game view may not render)" : ""));
         }
     }
 }

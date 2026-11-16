@@ -1,7 +1,8 @@
 #:project ../VSA.TestSuite.Client.csproj
 #nullable disable
 // End-to-end check of com.vsa.testsuite in a Windows development player of the lab project.
-// Run: dotnet run --file player.cs -- <path of Lab.exe>
+// Run: dotnet run --file player.cs -- <path of Lab.exe> ["<player arguments>"]
+// Use "-batchmode" as the player arguments to start the player with no window, so it takes no focus.
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
@@ -32,7 +33,8 @@ async Task<string> ExpectFail(Func<Task> body, string code)
 }
 
 var launch = System.Diagnostics.Stopwatch.StartNew();
-using var game = await Game.LaunchPlayer(exe, "-screen-fullscreen 0 -screen-width 960 -screen-height 540");
+var playerArgs = args.Length > 1 ? args[1] : "-screen-fullscreen 0 -screen-width 960 -screen-height 540";
+using var game = await Game.LaunchPlayer(exe, playerArgs);
 Console.WriteLine($"Launched: {game.Transport.Instance} in {launch.ElapsedMilliseconds} ms");
 
 try
@@ -64,6 +66,7 @@ try
         var r = await game.RunScript("lab_click");
         return $"{r.GetProperty("Steps")} steps in {r.GetProperty("Ms")} ms";
     });
+    await Check("recording gives NoDevice", () => ExpectFail(() => game.StartRecording("player"), "NoDevice"));
     await Check("10 clicks", async () =>
     {
         var times = new List<double>();

@@ -56,7 +56,7 @@ unity command ui.click_object --path Canvas/Play      1 command: CLI args to one
 | `record.stop` | `StopRecording` | The stopped recording: file, seconds, stop reason, bytes |
 | `record.status` | `ReadRecording` | Recorder, why it cannot record, current and last recording |
 
-A state is `Active`, `Inactive` or `Missing`. A path starts at a root object of a loaded scene, for example `Canvas/Menu/Play`.
+A state is `Active`, `Inactive` or `Missing`. A path starts at a root object of a loaded scene or of `DontDestroyOnLoad`, for example `Canvas/Menu/Play`.
 
 Each command writes one JSON result:
 
@@ -187,7 +187,8 @@ The same commands, actions and scripts work in a development player:
 
 1. Turn on the runtime pipeline for development builds (Pipeline settings).
 2. Make a development build.
-3. Start each player from its own folder. The player writes its descriptor `.unity-pipeline-runtime-port` beside the executable, and two players in one folder write the same file.
+3. Turn on `PlayerSettings.runInBackground`. Without it, a player with no focus stops its loop, and waits give `TimedOut`.
+4. Start each player from its own folder. The player writes its descriptor `.unity-pipeline-runtime-port` beside the executable, and two players in one folder write the same file.
 
 IL2CPP builds strip code that is not referenced. The package keeps its own types with `Runtime/link.xml`. Mark your own scripts, and actions that only data scripts use, with `[UnityEngine.Scripting.Preserve]`.
 
@@ -310,3 +311,7 @@ To replace a default part, give your own part to the root, for example `new Test
 - During development with a local `file:` package, `unity recompile` does not always see changes in the package. Call `AssetDatabase.Refresh()` first.
 - No capture action yet. A failed step saves a screenshot through the hook only.
 - Video recording works only in the Editor, in Play Mode. A player gives `NoDevice`.
+- In a Unity 6000.6 batch mode Editor, `ScreenCapture` writes no file, so a failed step has no `fail.png`. The hook then logs a warning into `console.json`. Unity 6000.7 in batch mode writes the file.
+- The `ui-events` input path sends no pointer enter or exit, uses no drag threshold and does not call `initializePotentialDrag`. For full UI behavior, install the Input System.
+
+The checklist of the last full run is in `Documentation~/checklist-6000.6.md`.

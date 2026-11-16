@@ -59,6 +59,12 @@ namespace VSA.TestSuite.Editor.Tests
             }
         }
 
+        sealed class ThrowBeforeHook : IActionHook
+        {
+            public Task Before(ActionContext ctx) => throw new InvalidOperationException("hook failed");
+            public Task After(ActionContext ctx) => throw new AssertionException("After must not run for a hook whose Before failed");
+        }
+
         List<string> trace;
         ActionPipeline pipeline;
         StepFolder step;
@@ -106,6 +112,16 @@ namespace VSA.TestSuite.Editor.Tests
             var e = Assert.ThrowsAsync<ActionFailed>(() => Run(new Fail("no")));
             Assert.AreEqual(FailCode.AssertFailed, e.Code);
             CollectionAssert.AreEqual(new[] { "a>Fail@0", "b>Fail@0", "b<Fail!", "a<Fail!" }, trace);
+        }
+
+        [Test]
+        public void FailedBeforeHookStillGivesAfterToEarlierHooks()
+        {
+            // A hook that starts something (a recording) must always get After, also if a later hook fails.
+            var p = new ActionPipeline(new HandlerSet().Add(new AddHandler()),
+                new IActionHook[] { new TraceHook("a", trace), new ThrowBeforeHook(), new TraceHook("c", trace) });
+            Assert.ThrowsAsync<InvalidOperationException>(() => p.Run(new Add(1, 1), null, CancellationToken.None, step));
+            CollectionAssert.AreEqual(new[] { "a>Add@0", "a<Add!" }, trace);
         }
 
         [Test]

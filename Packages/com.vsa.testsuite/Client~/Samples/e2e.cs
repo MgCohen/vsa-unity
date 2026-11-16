@@ -1,12 +1,14 @@
 #:project ../VSA.TestSuite.Client.csproj
 // End-to-end check of com.vsa.testsuite against the lab project.
-// Run: dotnet run --file e2e.cs -- <project path>
-// The project needs the lab commands labrt.* and labsuite.* (see pipeline-lab).
+// Run: dotnet run --file e2e.cs -- <project path> [<lab scene name>]
+// The project needs the lab commands labrt.* and labsuite.* (vsa-unity: Assets/TestSuiteLab).
 #nullable disable
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
 var project = args.Length > 0 ? args[0] : @"C:\Users\matheus.cohen\Documents\Projects\pipeline-lab";
+// The scene that the reset and load checks use. It must be in the build scene list.
+var scene = args.Length > 1 ? args[1] : "SampleScene";
 int pass = 0, fail = 0;
 
 async Task Check(string name, Func<Task<string>> body)
@@ -113,20 +115,20 @@ await Check("reset of an unsaved scene fails clearly", async () =>
 });
 await Check("reset loads the scene", async () =>
 {
-    var r = await game.Reset("SampleScene");
+    var r = await game.Reset(scene);
     await game.AssertState("LabCanvas", "Missing");
     return r.GetProperty("Scene").GetString() + " in " + r.GetProperty("Ms") + " ms";
 });
 await Check("reset with a seed repeats random values", async () =>
 {
-    await game.Reset("SampleScene", seed: 42);
+    await game.Reset(scene, seed: 42);
     int a = (await Info()).GetProperty("random").GetInt32();
     await game.Reset(seed: 42);
     int b = (await Info()).GetProperty("random").GetInt32();
     if (a != b) throw new Exception(a + " != " + b);
     return "both " + a;
 });
-await Check("load scene by name", async () => (await game.LoadScene("SampleScene")).GetProperty("Scene").GetString());
+await Check("load scene by name", async () => (await game.LoadScene(scene)).GetProperty("Scene").GetString());
 await Check("unknown scene is NotFound", () => ExpectFail(() => game.LoadScene("NoSuchScene"), "NotFound"));
 await Check("list scripts", async () => string.Join(", ", (await game.ListScripts()).EnumerateArray().Select(x => x.GetString())));
 await Check("script lab_click passes", async () =>
@@ -144,7 +146,8 @@ await Check("frozen main thread is Frozen", async () =>
     var freeze = game.Transport.Exec(new[] { "lab.freeze_now", "--seconds", "6" }, 20000);
     await Task.Delay(1500);
     var during = await game.Health.Probe();
-    await freeze;
+    var frozeFor = await freeze;
+    if (!frozeFor.Success) throw new Exception("The freeze command failed: " + frozeFor);
     var after = await game.Health.Probe();
     if (during.State != HealthState.Frozen) throw new Exception("During the freeze: " + during);
     if (after.State != HealthState.Ready) throw new Exception("After the freeze: " + after);

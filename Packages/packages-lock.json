@@ -88,7 +88,9 @@
       "source": "embedded",
       "dependencies": {
         "com.unity.pipeline": "1.0.0",
-        "com.unity.ugui": "2.6.0"
+        "com.unity.ugui": "2.6.0",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.modules.screencapture": "1.0.0"
       }
     },
     "jp.hadashikick.vcontainer": {

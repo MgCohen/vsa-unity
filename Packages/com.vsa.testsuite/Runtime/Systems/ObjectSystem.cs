@@ -112,6 +112,24 @@ namespace VSA.TestSuite
                 if (scene.isLoaded)
                     foreach (var go in scene.GetRootGameObjects()) yield return go;
             }
+            // Many games keep their UI in DontDestroyOnLoad. SceneManager does not list that scene.
+            var ddol = DontDestroyScene();
+            if (ddol.IsValid() && ddol.isLoaded)
+                foreach (var go in ddol.GetRootGameObjects()) yield return go;
+        }
+
+        static Scene ddolScene;
+
+        // The only way to get the DontDestroyOnLoad scene is from an object in it.
+        static Scene DontDestroyScene()
+        {
+            if (!Application.isPlaying) return default;
+            if (ddolScene.IsValid() && ddolScene.isLoaded) return ddolScene;
+            var probe = new GameObject("VSA.SceneProbe");
+            Object.DontDestroyOnLoad(probe);
+            ddolScene = probe.scene;
+            Object.DestroyImmediate(probe);
+            return ddolScene;
         }
 
         static IEnumerable<string> Children(GameObject go)

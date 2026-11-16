@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike
         {
             var target = objects.Find(action.Path);
             var point = objects.ScreenPoint(target);
-            return Task.FromResult(new FindResult(action.Path, target.name, point.x, point.y));
+            return Task.FromResult(new FindResult(action.Path, target.name, point));
         }
     }
 }

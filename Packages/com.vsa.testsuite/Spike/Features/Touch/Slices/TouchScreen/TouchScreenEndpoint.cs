@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Unity.Pipeline.Commands;
-using UnityEngine;
 
 namespace VSA.TestSuite.Spike
 {
@@ -11,6 +10,6 @@ namespace VSA.TestSuite.Spike
         public static Task<TouchResult> Run(
             [CliArg("x", "Pixels from the left")] float x,
             [CliArg("y", "Pixels from the bottom")] float y)
-            => Actions.Run(new TouchScreen(new Vector2(x, y)));
+            => Actions.Run(new TouchScreen(new Point(x, y)));
     }
 }

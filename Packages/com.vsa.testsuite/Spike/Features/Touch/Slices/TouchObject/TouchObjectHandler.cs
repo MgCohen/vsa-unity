@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace VSA.TestSuite.Spike
 {
@@ -9,8 +8,8 @@ namespace VSA.TestSuite.Spike
         protected override async Task<TouchObjectResult> Handle(TouchObject action, ActionContext context)
         {
             var found = await context.Run(new FindObject(action.Path));
-            await context.Run(new TouchScreen(new Vector2(found.X, found.Y)));
-            return new TouchObjectResult(found.Path, found.Name, found.X, found.Y);
+            await context.Run(new TouchScreen(found.Point));
+            return new TouchObjectResult(found.Path, found.Name, found.Point);
         }
     }
 }

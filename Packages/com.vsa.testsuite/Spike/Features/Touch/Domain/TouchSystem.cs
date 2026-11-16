@@ -13,11 +13,12 @@ namespace VSA.TestSuite.Spike
     /// </summary>
     public sealed class TouchSystem
     {
-        public async Task Touch(Vector2 point, CancellationToken cancel)
+        public async Task Touch(Point point, CancellationToken cancel)
         {
+            var position = new Vector2(point.X, point.Y);
             var events = EventSystem.current
                 ?? throw new InvalidOperationException("No EventSystem in the scene");
-            var data = new PointerEventData(events) { position = point, pressPosition = point };
+            var data = new PointerEventData(events) { position = position, pressPosition = position };
 
             var target = Press(events, data);
             await Awaitable.NextFrameAsync(cancel);

@@ -18,7 +18,7 @@ namespace VSA.TestSuite.Spike
         }
 
         /// <summary>The center of a UI object, or the screen projection of a world object.</summary>
-        public Vector2 ScreenPoint(GameObject target)
+        public Point ScreenPoint(GameObject target)
         {
             if (target.transform is RectTransform rect)
             {
@@ -26,11 +26,13 @@ namespace VSA.TestSuite.Spike
                 var camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay
                     ? null
                     : canvas.worldCamera;
-                return RectTransformUtility.WorldToScreenPoint(camera, rect.TransformPoint(rect.rect.center));
+                var screen = RectTransformUtility.WorldToScreenPoint(camera, rect.TransformPoint(rect.rect.center));
+                return new Point(screen.x, screen.y);
             }
             var main = Camera.main
                 ?? throw new InvalidOperationException("No main camera to project a world object");
-            return main.WorldToScreenPoint(target.transform.position);
+            var world = main.WorldToScreenPoint(target.transform.position);
+            return new Point(world.x, world.y);
         }
     }
 }

@@ -8,8 +8,8 @@ namespace VSA.TestSuite.Spike
         protected override async Task<TouchObjectResult> Handle(TouchObject action, ActionContext context)
         {
             var found = await context.Run(new FindObject(action.Path));
-            await context.Run(new TouchScreen(found.Point));
-            return new TouchObjectResult(found.Path, found.Name, found.Point);
+            var touched = await context.Run(new TouchScreen(found.Point));
+            return new TouchObjectResult(found.Path, found.Name, found.Point, touched.Hit);
         }
     }
 }

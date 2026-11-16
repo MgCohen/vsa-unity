@@ -10,8 +10,8 @@ namespace VSA.TestSuite.Spike
 
         protected override async Task<TouchResult> Handle(TouchScreen action, ActionContext context)
         {
-            await touch.Touch(action.Point, context.Cancel);
-            return new TouchResult(action.Point);
+            var hit = await touch.Touch(action.Point, context.Cancel);
+            return new TouchResult(action.Point, hit != null ? hit.name : null);
         }
     }
 }

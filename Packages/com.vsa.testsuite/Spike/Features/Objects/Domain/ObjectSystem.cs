@@ -13,7 +13,6 @@ namespace VSA.TestSuite.Spike
         {
             var target = GameObject.Find(path)
                 ?? throw new InvalidOperationException($"No active object at '{path}'");
-            Debug.Log($"{LogHook.Tag} found {path}");
             return target;
         }
 

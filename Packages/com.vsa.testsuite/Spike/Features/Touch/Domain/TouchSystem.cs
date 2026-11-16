@@ -10,10 +10,11 @@ namespace VSA.TestSuite.Spike
     /// <summary>
     /// Touches a screen point with uGUI pointer events: press, then release and click,
     /// with one frame between each step. It reaches UI objects only.
+    /// Returns the object that received the touch, or null if the touch hit nothing.
     /// </summary>
     public sealed class TouchSystem
     {
-        public async Task Touch(Point point, CancellationToken cancel)
+        public async Task<GameObject> Touch(Point point, CancellationToken cancel)
         {
             var position = new Vector2(point.X, point.Y);
             var events = EventSystem.current
@@ -24,22 +25,18 @@ namespace VSA.TestSuite.Spike
             await Awaitable.NextFrameAsync(cancel);
             Release(data, target);
             await Awaitable.NextFrameAsync(cancel);
+            return target;
         }
 
         static GameObject Press(EventSystem events, PointerEventData data)
         {
             var hits = new List<RaycastResult>();
             events.RaycastAll(data, hits);
-            if (hits.Count == 0)
-            {
-                Debug.Log($"{LogHook.Tag} touch on nothing");
-                return null;
-            }
+            if (hits.Count == 0) return null;
             data.pointerPressRaycast = data.pointerCurrentRaycast = hits[0];
             var target = ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, data, ExecuteEvents.pointerDownHandler)
                 ?? ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject);
             data.pointerPress = target;
-            Debug.Log($"{LogHook.Tag} touch on {(target != null ? target.name : "nothing")}");
             return target;
         }
 

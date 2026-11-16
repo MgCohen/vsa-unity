@@ -89,6 +89,40 @@ Add `Runs/` to `.gitignore`.
 
 The Input System path queues state events and does not call `InputSystem.Update()`. In Editor Play Mode, a manual update loses the event. A click takes 3 frames: move, press, release.
 
+## Client outside Unity
+
+`Client~/` is a .NET 8 library for tests that run outside Unity. Unity does not import folders whose name ends with `~`.
+
+| Type | Does |
+|---|---|
+| `Instance` | Reads the Pipeline descriptor of an Editor (`ForEditor`) or a player (`ForPlayer`) |
+| `HttpTransport` | Sends commands over HTTP, about 20 ms each. Reconnects after a domain reload. Retries on 503. |
+| `Health` | Classifies the instance: `Ready`, `Busy`, `Dialog`, `Frozen`, `Unreachable`, `Dead` |
+| `Game` | One method for each action, plus `EnterPlayMode`, `ExitPlayMode` and `Command` |
+
+```csharp
+using var game = await Game.AttachEditor(@"C:\Projects\MyGame");
+await game.EnterPlayMode();
+await game.ClickObject("Canvas/Menu/Play");
+await game.WaitForObject("Canvas/Hud");
+await game.AssertText("Canvas/Hud/Score", "0");
+```
+
+A failed action throws `ActionFailedException` with `Code`, `Reason` and the step `Folder`. If a command gets no answer, the client probes the health and puts the state in the message.
+
+### How the health probe works
+
+`/api/status` is cached off the main thread. It reports `ready` also when the main thread is frozen. So the probe uses these steps:
+
+1. If the process of the descriptor does not run: `Dead`.
+2. If `/api/status` gives no connection: `Unreachable`. If it reports `settling`: `Busy`. If it reports `blocked_by_dialog`: `Dialog`.
+3. If it reports `ready`, call `/api/editor_status`. That endpoint needs the main thread.
+4. If `/api/editor_status` gives no answer in 2 s, check `/api/dialog` and `/api/progress`. The result is `Dialog` or `Frozen`.
+
+A long synchronous command also gives `Frozen`. A long async action, for example a wait, keeps the main thread free and gives `Ready`.
+
+`Samples/e2e.cs` is an end-to-end check against the lab project: `dotnet run --file e2e.cs -- <project path>`.
+
 ## Scripts inside Unity
 
 A C# script calls the runtime directly, not the CLI. The hooks and the step folders are the same.

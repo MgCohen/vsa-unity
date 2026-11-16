@@ -20,3 +20,7 @@ TestResults*.xml
 # Il2cppCheck.cs writes the scene of the check
 /Assets/Check.unity
 /Assets/Check.unity.meta
+
+# com.vsa.testsuite client
+/Packages/com.vsa.testsuite/Client~/bin/
+/Packages/com.vsa.testsuite/Client~/obj/

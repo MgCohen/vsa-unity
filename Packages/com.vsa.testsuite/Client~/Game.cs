@@ -64,10 +64,20 @@ namespace VSA.TestSuite.Client
             => Act("ui.wait_for_object", "--path", path, "--state", state, "--timeout-ms", timeoutMs.ToString(CultureInfo.InvariantCulture));
         public Task<JsonElement> AssertState(string path, string state = "Active") => Act("ui.assert_state", "--path", path, "--state", state);
         public Task<JsonElement> AssertText(string path, string text) => Act("ui.assert_text", "--path", path, "--text", text);
+        public Task<JsonElement> HoldObject(string path, int ms) => Act("ui.hold_object", "--path", path, "--ms", I(ms));
+        public Task<JsonElement> HoldScreen(float x, float y, int ms) => Act("ui.hold_screen", "--x", F(x), "--y", F(y), "--ms", I(ms));
+        public Task<JsonElement> DragObject(string path, string toPath, int steps = 10) => Act("ui.drag_object", "--path", path, "--to", toPath, "--steps", I(steps));
+        public Task<JsonElement> DragScreen(float x, float y, float toX, float toY, int steps = 10)
+            => Act("ui.drag_screen", "--x", F(x), "--y", F(y), "--to-x", F(toX), "--to-y", F(toY), "--steps", I(steps));
 
         // game
         public Task<JsonElement> WaitFrames(int count) => Act("game.wait_frames", "--count", count.ToString(CultureInfo.InvariantCulture));
         public Task<JsonElement> WaitSeconds(double seconds) => Act("game.wait_seconds", "--seconds", F(seconds));
+        public Task<JsonElement> LoadScene(string scene) => Act("game.load_scene", "--scene", scene);
+
+        /// <summary>Runs the reset steps, sets the seed, and loads <paramref name="scene"/> (null: reload the active scene).</summary>
+        public Task<JsonElement> Reset(string scene = null, int? seed = null)
+            => Act("game.reset", "--scene", scene ?? "", "--seed", seed.HasValue ? I(seed.Value) : "");
 
         /// <summary>Enters Play Mode and waits until the player loop runs frames.</summary>
         public async Task EnterPlayMode(int timeoutMs = 60000)
@@ -127,6 +137,7 @@ namespace VSA.TestSuite.Client
         static string Str(JsonElement e, string name)
             => e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 
+        static string I(int v) => v.ToString(CultureInfo.InvariantCulture);
         static string F(double v) => v.ToString(CultureInfo.InvariantCulture);
 
         public void Dispose() => (Transport as IDisposable)?.Dispose();

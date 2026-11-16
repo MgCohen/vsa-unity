@@ -42,8 +42,14 @@ unity command ui.click_object --path Canvas/Play      1 command: CLI args to one
 | `ui.wait_for_object --path P [--state Active] [--timeout-ms 10000]` | `WaitForObject` | Time and frames |
 | `ui.assert_state --path P [--state Active]` | `AssertState` | The state |
 | `ui.assert_text --path P --text T` | `AssertText` | The text |
+| `ui.hold_object --path P [--ms 500]` | `HoldObject` (composite) | Same as `click_screen` |
+| `ui.hold_screen --x X --y Y [--ms 500]` | `HoldScreen` | Same as `click_screen` |
+| `ui.drag_object --path P --to P2 [--steps 10]` | `DragObject` (composite) | Start, end, steps, top UI object, frames |
+| `ui.drag_screen --x X --y Y --to-x X2 --to-y Y2 [--steps 10]` | `DragScreen` | Same as `drag_object` |
 | `game.wait_frames [--count 1]` | `WaitFrames` | Time and frames |
 | `game.wait_seconds [--seconds 1]` | `WaitSeconds` | Time and frames |
+| `game.load_scene --scene S` | `LoadScene` | Scene name, path, time |
+| `game.reset [--scene S] [--seed N]` | `ResetGame` | Scene, seed, names of the reset steps |
 
 A state is `Active`, `Inactive` or `Missing`. A path starts at a root object of a loaded scene, for example `Canvas/Menu/Play`.
 
@@ -52,6 +58,29 @@ Each command writes one JSON result:
 ```json
 { "ok": true, "action": "ui.click_object", "step": "s-003_ui-click_object", "ms": 32.4,
   "result": { "Point": [489, 249], "Hit": "LabButton", "Adapter": "input-system-queue" } }
+```
+
+## Reset
+
+`game.reset` puts the game in a known state:
+
+1. It runs the reset steps of the consumer, in the order that they were added.
+2. If a seed is given, it calls `UnityEngine.Random.InitState(seed)`.
+3. It loads the given scene, or reloads the active scene.
+
+A scene can be a name or an asset path. In the Editor, a scene that is not in the build list also loads. An unsaved scene cannot reload: give the scene to load.
+
+A reset step resets state outside the scene, for example save data or a static cache:
+
+```csharp
+sealed class ClearSaveData : IResetStep
+{
+    public string Name => "clear save data";
+    public Task Run(CancellationToken cancel) { PlayerPrefs.DeleteAll(); return Task.CompletedTask; }
+}
+
+var root = new TestRoot();
+root.Reset.Add(new ClearSaveData());
 ```
 
 ## Failures
@@ -180,4 +209,4 @@ To replace a default part, give your own part to the root, for example `new Test
 
 - A domain reload stops a running action. The next command builds the runtime again.
 - Only Editor Play Mode is tested. Players are not tested yet.
-- No reset, scene or capture actions yet.
+- No capture action yet. A failed step saves a screenshot through the hook only.

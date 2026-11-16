@@ -45,11 +45,28 @@ namespace VSA.TestSuite
     public sealed class UiEventPointer : IPointerInput
     {
         GameObject pressed;
+        GameObject dragged;
         PointerEventData data;
 
         public string Name => "ui-events";
 
-        public void Move(Vector2 p) { }
+        public void Move(Vector2 p)
+        {
+            if (data == null) return;
+            data.delta = p - data.position;
+            data.position = p;
+            if (dragged == null && data.pointerPressRaycast.gameObject != null)
+            {
+                dragged = ExecuteEvents.GetEventHandler<IDragHandler>(data.pointerPressRaycast.gameObject);
+                if (dragged != null)
+                {
+                    data.dragging = true;
+                    data.pointerDrag = dragged;
+                    ExecuteEvents.Execute(dragged, data, ExecuteEvents.beginDragHandler);
+                }
+            }
+            if (dragged != null) ExecuteEvents.Execute(dragged, data, ExecuteEvents.dragHandler);
+        }
 
         public void Press(Vector2 p, bool down)
         {
@@ -57,7 +74,7 @@ namespace VSA.TestSuite
                 ?? throw new ActionFailed(FailCode.NoDevice, "No EventSystem in the scene for UI events");
             if (down)
             {
-                data = new PointerEventData(es) { position = p, button = PointerEventData.InputButton.Left };
+                data = new PointerEventData(es) { position = p, pressPosition = p, button = PointerEventData.InputButton.Left };
                 var results = new List<RaycastResult>();
                 es.RaycastAll(data, results);
                 if (results.Count == 0) { pressed = null; return; }
@@ -67,10 +84,22 @@ namespace VSA.TestSuite
                 data.pointerPress = pressed;
                 return;
             }
-            if (pressed == null) return;
-            ExecuteEvents.Execute(pressed, data, ExecuteEvents.pointerUpHandler);
-            ExecuteEvents.Execute(pressed, data, ExecuteEvents.pointerClickHandler);
-            pressed = null;
+            if (data == null) return;
+            data.position = p;
+            if (pressed != null) ExecuteEvents.Execute(pressed, data, ExecuteEvents.pointerUpHandler);
+            if (dragged != null)
+            {
+                var results = new List<RaycastResult>();
+                es.RaycastAll(data, results);
+                if (results.Count > 0) ExecuteEvents.ExecuteHierarchy(results[0].gameObject, data, ExecuteEvents.dropHandler);
+                ExecuteEvents.Execute(dragged, data, ExecuteEvents.endDragHandler);
+            }
+            else if (pressed != null)
+            {
+                ExecuteEvents.Execute(pressed, data, ExecuteEvents.pointerClickHandler);
+            }
+            pressed = dragged = null;
+            data = null;
         }
     }
 

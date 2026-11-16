@@ -2,6 +2,7 @@
 // End-to-end check of com.vsa.testsuite against the lab project.
 // Run: dotnet run --file e2e.cs -- <project path>
 // The project needs the lab commands labrt.* and labsuite.* (see pipeline-lab).
+#nullable disable
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
@@ -87,6 +88,46 @@ await Check("long async action stays Ready", async () =>
     if (during.State != HealthState.Ready) throw new Exception("During the wait: " + during);
     return $"{during.State} in {during.Ms} ms";
 });
+async Task<JsonElement> Info() => await game.Command("labsuite.info");
+await Check("hold object 400 ms", async () =>
+{
+    await game.Command("labsuite.setup_drag");
+    await game.HoldObject("LabCanvas/LabDrag", 400);
+    int held = (await Info()).GetProperty("holdMs").GetInt32();
+    if (held < 380 || held > 700) throw new Exception("Held " + held + " ms");
+    return "game measured " + held + " ms";
+});
+await Check("drag object onto target", async () =>
+{
+    var r = await game.DragObject("LabCanvas/LabDrag", "LabCanvas/LabDrop", 12);
+    var info = await Info();
+    if (info.GetProperty("drags").GetInt32() != 1) throw new Exception("Drags: " + info.GetProperty("drags"));
+    if (info.GetProperty("dropped").GetString() != "LabDrop") throw new Exception("Dropped on: " + info.GetProperty("dropped"));
+    return $"x now {info.GetProperty("dragX")}, frames {r.GetProperty("FrameAfter").GetInt32() - r.GetProperty("FrameBefore").GetInt32()}";
+});
+await Check("reset of an unsaved scene fails clearly", async () =>
+{
+    var scene = (await Info()).GetProperty("scene").GetString();
+    if (scene != "") return "skipped: the active scene is '" + scene + "'";
+    return await ExpectFail(() => game.Reset(), "Failed");
+});
+await Check("reset loads the scene", async () =>
+{
+    var r = await game.Reset("SampleScene");
+    await game.AssertState("LabCanvas", "Missing");
+    return r.GetProperty("Scene").GetString() + " in " + r.GetProperty("Ms") + " ms";
+});
+await Check("reset with a seed repeats random values", async () =>
+{
+    await game.Reset("SampleScene", seed: 42);
+    int a = (await Info()).GetProperty("random").GetInt32();
+    await game.Reset(seed: 42);
+    int b = (await Info()).GetProperty("random").GetInt32();
+    if (a != b) throw new Exception(a + " != " + b);
+    return "both " + a;
+});
+await Check("load scene by name", async () => (await game.LoadScene("SampleScene")).GetProperty("Scene").GetString());
+await Check("unknown scene is NotFound", () => ExpectFail(() => game.LoadScene("NoSuchScene"), "NotFound"));
 await Check("exit play mode", async () => { await game.ExitPlayMode(); return ""; });
 
 // Health: freeze the main thread, then probe from outside.

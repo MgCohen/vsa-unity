@@ -29,7 +29,7 @@ namespace VSA.Unity.Tests {
         }
 
         [Test]
-        public void The_host_scan_selects_the_Unity_host() {
+        public void UseUnityHost_selects_the_Unity_host() {
             Host.Start();
 
             Assert.That(VsaHost.Services.GetRequiredService<IHostLifetime>().GetType().Name, Is.EqualTo("UnityLifetime"));
@@ -64,7 +64,7 @@ namespace VSA.Unity.Tests {
         [Test]
         public void A_host_on_a_child_object_moves_to_the_root() {
             var parent = new GameObject("Parent");
-            var host = Host.StartWith(typeof(ProbeApp).FullName, parent.transform);
+            var host = Host.StartWith(parent.transform);
 
             Assert.That(host.transform.parent, Is.Null);
             Assert.That(host.gameObject.scene.name, Is.EqualTo("DontDestroyOnLoad"));
@@ -107,15 +107,6 @@ namespace VSA.Unity.Tests {
             Assert.That(VsaHost.Owner, Is.Null);
         }
 
-        [Test]
-        public void An_unknown_app_class_stops_the_start() {
-            LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex("no app class Not.An.App"));
-
-            Host.StartWith("Not.An.App");
-
-            Assert.That(VsaHost.IsRunning, Is.False);
-        }
-
         [UnityTest]
         public IEnumerator A_presenter_event_from_another_thread_runs_on_the_main_thread() {
             Host.Start();
@@ -131,16 +122,15 @@ namespace VSA.Unity.Tests {
     }
 
     static class Host {
-        internal static VsaHost Start(params string[] arguments) => StartWith(typeof(ProbeApp).FullName, null, arguments);
+        internal static VsaHost Start(params string[] arguments) => StartWith(null, arguments);
 
-        internal static VsaHost StartWith(string app, Transform parent = null, params string[] arguments) {
+        internal static VsaHost StartWith(Transform parent, params string[] arguments) {
             var go = new GameObject("VsaHost");
             go.SetActive(false);
             if (parent != null) {
                 go.transform.SetParent(parent);
             }
-            var host = go.AddComponent<VsaHost>();
-            host.App = app;
+            var host = go.AddComponent<ProbeHost>();
             host.Arguments = arguments;
             go.SetActive(true);
             return host;

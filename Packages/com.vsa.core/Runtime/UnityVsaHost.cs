@@ -16,7 +16,7 @@ using UnityEditor;
 #endif
 
 namespace VSA.Unity {
-    // The Unity IVsaHost. The host scan of VsaApp finds it (one IVsaHost class in the loaded assemblies).
+    // The Unity IVsaHost. The app selects it with UseUnityHost, else the host scan of VsaApp finds it.
     // Run starts the app and returns at once: Unity owns the process and the frame loop.
     // The app stops on Application.quitting, at the exit of the play mode, before a domain reload, or on VsaApp.Stop().
     [Preserve]
@@ -27,7 +27,6 @@ namespace VSA.Unity {
         internal static IHost Current => current;
 
         public IHostApplicationBuilder CreateBuilder(string[] args) {
-            MainThread.Capture();
             // No defaults: the default .NET host fails in Unity (EventLog logger on Mono, content root Unity.exe\).
             var builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings {
                 Args = args,
@@ -89,20 +88,9 @@ namespace VSA.Unity {
             }
         }
 
-        static Task OnMainThread(Func<Task> work) {
-            if (MainThread.IsCurrent) {
-                return work();
-            }
-            var done = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            MainThread.Post(async () => {
-                try {
-                    await work();
-                    done.SetResult(true);
-                } catch (Exception e) {
-                    done.SetException(e);
-                }
-            });
-            return done.Task;
+        static async Task OnMainThread(Func<Task> work) {
+            await Awaitable.MainThreadAsync();
+            await work();
         }
 
         // Unity starts and stops the process, so the host does not wait for a signal.
@@ -111,5 +99,11 @@ namespace VSA.Unity {
 
             public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         }
+    }
+
+    public static class UnityHostExtensions {
+        // Selects the Unity host in the Builder step of the app:
+        //   protected override VsaBuilder Builder(string[] args) => base.Builder(args).UseUnityHost();
+        public static VsaBuilder UseUnityHost(this VsaBuilder builder) => builder.UseHost(new UnityVsaHost());
     }
 }

@@ -1,0 +1,20 @@
+is_global = true
+
+# com.vsa.core is framework code, as framework/ in vsa-template: the VSA rules are for the consumer code.
+# Unity uses this file in place of Assets/Default.globalconfig for this asmdef, so VSA1000 does not stop the build
+# before the editor script writes Assets/Default.globalconfig. VsaAnalyzer reads the severity of each rule ID, not of a category.
+dotnet_diagnostic.VSA1000.severity = none
+dotnet_diagnostic.VSA1001.severity = none
+dotnet_diagnostic.VSA1002.severity = none
+dotnet_diagnostic.VSA1003.severity = none
+dotnet_diagnostic.VSA1004.severity = none
+dotnet_diagnostic.VSA1005.severity = none
+dotnet_diagnostic.VSA1006.severity = none
+dotnet_diagnostic.VSA1007.severity = none
+dotnet_diagnostic.VSA1008.severity = none
+dotnet_diagnostic.VSA1009.severity = none
+dotnet_diagnostic.VSA1010.severity = none
+dotnet_diagnostic.VSA1011.severity = none
+dotnet_diagnostic.VSA1012.severity = none
+dotnet_diagnostic.VSA1013.severity = none
+dotnet_diagnostic.VSA1014.severity = none

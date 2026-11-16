@@ -18,15 +18,6 @@ namespace VSA.Unity.Tests {
         }
     }
 
-    // A view of two presenters.
-    public sealed class PingPair : PresenterWatcher {
-        public int Renders;
-
-        public void Show(PingPresenter left, PingPresenter right) => Watch(left, right);
-
-        protected override void Render() => Renders++;
-    }
-
     public sealed class ViewTests {
         [TearDown]
         public void StopTheApp() {
@@ -89,38 +80,50 @@ namespace VSA.Unity.Tests {
         }
 
         [UnityTest]
-        public IEnumerator A_watcher_renders_the_changes_of_each_presenter() {
+        public IEnumerator Bind_of_the_same_presenter_changes_nothing() {
             Host.Start();
             using var scope = VsaHost.Services.CreateScope();
-            var left = scope.ServiceProvider.GetRequiredService<PingPresenter>();
-            using var other = VsaHost.Services.CreateScope();
-            var right = other.ServiceProvider.GetRequiredService<PingPresenter>();
-            var view = new GameObject("Pair").AddComponent<PingPair>();
+            var given = scope.ServiceProvider.GetRequiredService<PingPresenter>();
+            var view = Label();
 
-            view.Show(left, right);
-            view.Show(left, right);
-            Assert.That(view.Renders, Is.EqualTo(1), "The same presenters again change nothing.");
-
-            var send = right.PingAsync("right");
-            yield return new WaitUntil(() => send.IsCompleted);
+            view.Bind(given);
+            view.Bind(given);
             yield return null;
 
-            Assert.That(view.Renders, Is.GreaterThan(1));
-            Object.DestroyImmediate(view.gameObject);
+            Assert.That(view.Renders, Is.EqualTo(1));
         }
 
         [UnityTest]
-        public IEnumerator A_destroyed_watcher_does_not_render() {
+        public IEnumerator Bind_of_another_presenter_stops_the_last_one() {
+            Host.Start();
+            using var scope = VsaHost.Services.CreateScope();
+            var first = scope.ServiceProvider.GetRequiredService<PingPresenter>();
+            using var other = VsaHost.Services.CreateScope();
+            var second = other.ServiceProvider.GetRequiredService<PingPresenter>();
+            var view = Label();
+            view.Bind(first);
+            view.Bind(second);
+            var renders = view.Renders;
+
+            var touch = first.TouchAsync();
+            yield return new WaitUntil(() => touch.IsCompleted);
+            yield return null;
+
+            Assert.That(view.Renders, Is.EqualTo(renders));
+        }
+
+        [UnityTest]
+        public IEnumerator A_destroyed_view_does_not_render() {
             Host.Start();
             using var scope = VsaHost.Services.CreateScope();
             var presenter = scope.ServiceProvider.GetRequiredService<PingPresenter>();
-            var view = new GameObject("Pair").AddComponent<PingPair>();
-            view.Show(presenter, presenter);
+            var view = Label();
+            view.Bind(presenter);
             var renders = view.Renders;
 
             Object.DestroyImmediate(view.gameObject);
             var send = presenter.PingAsync("late");
-            yield return new WaitUntil(() => send.IsCompleted);
+            yield return new WaitUntil(() => send.IsCompleted && presenter.Last == "late");
             yield return null;
 
             Assert.That(view.Renders, Is.EqualTo(renders));

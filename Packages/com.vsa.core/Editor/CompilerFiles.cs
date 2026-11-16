@@ -4,15 +4,11 @@ using System.Linq;
 using UnityEditor;
 
 namespace VSA.Unity.Editor {
-    // Writes two compiler files of the consumer project when the editor loads:
-    //   Assets/csc.rsp             -langversion:12 (Unity 6000.6 has Roslyn 4.10: C# 12 is the highest).
-    //                              It applies to each assembly with no own csc.rsp, also the package assemblies.
-    //   Assets/Default.globalconfig  the VSA rule values, for the VSA analyzers. Unity reads only this name
-    //                              (all assemblies) or <AsmdefName>.globalconfig next to an asmdef.
-    // The script changes only its own lines, and writes a file only if its text changes.
+    // Writes the VSA rule values to Assets/Default.globalconfig of the consumer project when the editor loads,
+    // for the VSA analyzers. Unity reads only this name (all assemblies) or <AsmdefName>.globalconfig next to an asmdef.
+    // The script changes only its own lines, and writes the file only if its text changes.
     [InitializeOnLoad]
     static class CompilerFiles {
-        internal const string LangVersion = "-langversion:12";
         internal const string Begin = "# BEGIN com.vsa.core: the editor script of the package writes these lines.";
         internal const string End = "# END com.vsa.core";
 
@@ -20,18 +16,10 @@ namespace VSA.Unity.Editor {
 
         [MenuItem("Tools/VSA/Write Compiler Files")]
         static void Write() {
-            var rsp = Change("Assets/csc.rsp", Rsp);
             var rules = RulesText();
-            var config = rules != null && Change("Assets/Default.globalconfig", existing => GlobalConfig(existing, rules));
-            if (rsp || config) {
+            if (rules != null && Change("Assets/Default.globalconfig", existing => GlobalConfig(existing, rules))) {
                 AssetDatabase.Refresh();
             }
-        }
-
-        // One -langversion line, first. The other lines stay.
-        internal static string Rsp(string existing) {
-            var kept = Lines(existing).Where(line => !line.TrimStart().StartsWith("-langversion:", StringComparison.Ordinal));
-            return string.Join("\n", new[] { LangVersion }.Concat(kept)).TrimEnd('\n') + "\n";
         }
 
         // The VSA block between Begin and End. The lines of the consumer stay. One is_global line, first.

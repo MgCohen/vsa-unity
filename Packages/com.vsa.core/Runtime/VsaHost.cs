@@ -1,19 +1,27 @@
 using System;
 using UnityEngine;
+using VSA.Composition;
 
 namespace VSA.Unity {
-    // The entry of a VSA app in Unity: put it on one GameObject of the first scene.
-    // Awake calls Run on the app class (VsaApp<TApp>): the class in the App field, else the one app class
-    // of the project, else DefaultVsaApp. The app has the lifetime of the Unity app (DontDestroyOnLoad):
-    // a scene change does not stop it, and a second VsaHost does nothing.
+    // The entry of a VSA app in Unity. The consumer closes it over its app class, in a file of the same name:
+    //   public sealed class GameHost : VsaHost<MyApp> { }
+    // Put the component on one GameObject of the first scene. Awake calls MyApp.Run. The app has the lifetime
+    // of the Unity app (DontDestroyOnLoad): a scene change does not stop it, and a second VsaHost does nothing.
+    public abstract class VsaHost<TApp> : VsaHost where TApp : VsaApp<TApp>, new() {
+        public override Type AppType => typeof(TApp);
+
+        protected override bool AppIsRunning => VsaApp<TApp>.IsRunning;
+
+        protected override void RunApp(string[] args) => VsaApp<TApp>.Run(args);
+
+        protected override void StopApp() => VsaApp<TApp>.Stop();
+    }
+
+    // The part of the host that does not know the app class: the running app for the views, and the Unity events.
     [DefaultExecutionOrder(-10000)]
     [DisallowMultipleComponent]
-    [AddComponentMenu("VSA/Vsa Host")]
-    public sealed class VsaHost : MonoBehaviour {
+    public abstract class VsaHost : MonoBehaviour {
         static VsaHost owner;
-
-        [SerializeField, Tooltip("The full name of the app class. Empty: the one app class of the project, else DefaultVsaApp.")]
-        string app = "";
 
         [SerializeField, Tooltip("The arguments of Run, for example --Modules:Counter:Max=5.")]
         string[] arguments = Array.Empty<string>();
@@ -27,31 +35,31 @@ namespace VSA.Unity {
         // The VsaHost that owns the app, else null.
         public static VsaHost Owner => owner;
 
-        public string App {
-            get => app;
-            set => app = value ?? "";
-        }
-
         public string[] Arguments {
             get => arguments;
             set => arguments = value ?? Array.Empty<string>();
         }
 
-        // The app class that Run uses. Set in Awake.
-        public Type AppType { get; private set; }
+        // The app class that the host runs.
+        public abstract Type AppType { get; }
+
+        protected abstract bool AppIsRunning { get; }
+
+        protected abstract void RunApp(string[] args);
+
+        protected abstract void StopApp();
 
         // Starts the app again after Stop. If the app runs, it does nothing.
         public void Run() {
-            if (owner != this || Apps.IsRunning(AppType)) {
-                return;
+            if (owner == this && !AppIsRunning) {
+                RunApp(arguments);
             }
-            Apps.Run(AppType, arguments);
         }
 
         // Stops the app. Run can start it again.
         public void Stop() {
             if (owner == this) {
-                Apps.Stop(AppType);
+                StopApp();
             }
         }
 
@@ -65,8 +73,7 @@ namespace VSA.Unity {
                 transform.SetParent(null);
             }
             DontDestroyOnLoad(gameObject);
-            AppType = Apps.Find(app, Apps.Assemblies(tests: !string.IsNullOrEmpty(app)));
-            Apps.Run(AppType, arguments);
+            RunApp(arguments);
         }
 
         void OnDestroy() {
@@ -74,9 +81,7 @@ namespace VSA.Unity {
                 return;
             }
             owner = null;
-            if (AppType != null) {
-                Apps.Stop(AppType);
-            }
+            StopApp();
         }
 
         // Without a domain reload (Enter Play Mode Options), the static fields keep their values.

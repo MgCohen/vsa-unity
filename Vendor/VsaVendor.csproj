@@ -2,7 +2,7 @@
   <!-- Only for vendor.cs: dotnet publish of this project gives the VSA packages and their dependencies for Unity. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <VsaVersion>0.1.0-preview.26</VsaVersion>
+    <VsaVersion>0.1.0-preview.30</VsaVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Each portable VSA layer. VSA.Composition brings VSA.Architecture, VSA.Architecture.Vsa and VSA.Analyzers.Markers. -->

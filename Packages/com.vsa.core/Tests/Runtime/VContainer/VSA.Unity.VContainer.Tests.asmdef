@@ -1,0 +1,31 @@
+{
+  "name": "VSA.Unity.VContainer.Tests",
+  "rootNamespace": "VSA.Unity.VContainer.Tests",
+  "references": ["VSA.Unity", "VSA.Unity.VContainer", "VContainer", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "VSA.Composition.dll",
+    "VSA.Contracts.dll",
+    "VSA.Contracts.Events.dll",
+    "VSA.Contracts.Requests.dll",
+    "VSA.Handlers.dll",
+    "VSA.Handlers.Requests.dll",
+    "VSA.Module.dll",
+    "VSA.Presenters.dll",
+    "VSA.Architecture.dll",
+    "VSA.Architecture.Vsa.dll",
+    "Microsoft.Extensions.Configuration.Abstractions.dll",
+    "Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+    "Microsoft.Extensions.Hosting.Abstractions.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS", "VSA_VCONTAINER"],
+  "versionDefines": [
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "1.16.0",
+      "define": "VSA_VCONTAINER"
+    }
+  ]
+}

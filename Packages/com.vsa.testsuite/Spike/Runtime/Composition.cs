@@ -6,8 +6,10 @@ namespace VSA.TestSuite.Spike
         public static ActionRuntime Build()
         {
             var touch = new TouchSystem();
+            var objects = new ObjectSystem();
             var registry = new ActionRegistry()
-                .Add(new TouchScreenHandler(touch));
+                .Add(new TouchScreenHandler(touch))
+                .Add(new FindObjectHandler(objects));
             return new ActionRuntime(registry, new IActionHook[] { new LogHook() });
         }
     }

@@ -30,6 +30,45 @@ namespace VSA.TestSuite.Client
         public CommandFailedException(string command, ExecResult exec) : base(command + ": " + exec) => Exec = exec;
     }
 
+    /// <summary>A running recording. Dispose stops it. A second stop does nothing.</summary>
+    public sealed class RecordingHandle : IAsyncDisposable
+    {
+        readonly Game game;
+        JsonElement? stopped;
+
+        /// <summary>The result of record.start: the file and the start time.</summary>
+        public JsonElement Started { get; }
+        /// <summary>The video file.</summary>
+        public string File => Started.GetProperty("File").GetString();
+
+        internal RecordingHandle(Game game, JsonElement started)
+        {
+            this.game = game;
+            Started = started;
+        }
+
+        /// <summary>Stops the recording and returns the result of record.stop.</summary>
+        public async Task<JsonElement> Stop()
+        {
+            stopped ??= await game.StopRecording();
+            return stopped.Value;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (stopped != null) return;
+            try
+            {
+                await Stop();
+            }
+            catch (Exception e)
+            {
+                // The instance can be gone. The recorder stops by itself at Play Mode exit and at its time limit.
+                Console.Error.WriteLine("Recording stop failed: " + e.Message);
+            }
+        }
+    }
+
     /// <summary>
     /// The client DSL: one method for each action. Each method sends the CLI command of the action,
     /// so the call goes through the same commands, actions, systems and hooks as the CLI.
@@ -131,6 +170,9 @@ namespace VSA.TestSuite.Client
         public Task<JsonElement> DragScreen(float x, float y, float toX, float toY, int steps = 10)
             => Act("ui.drag_screen", "--x", F(x), "--y", F(y), "--to-x", F(toX), "--to-y", F(toY), "--steps", I(steps));
 
+        /// <summary>Shows or hides the touch overlay: a burst at each press and a trail for each drag.</summary>
+        public Task<JsonElement> ShowTouches(bool on = true) => Act("ui.show_touches", "--on", on ? "true" : "false");
+
         // game
         public Task<JsonElement> WaitFrames(int count) => Act("game.wait_frames", "--count", count.ToString(CultureInfo.InvariantCulture));
         public Task<JsonElement> WaitSeconds(double seconds) => Act("game.wait_seconds", "--seconds", F(seconds));
@@ -144,6 +186,24 @@ namespace VSA.TestSuite.Client
         /// <summary>Runs a C# test script inside Unity. Fails with the code of the first failed step.</summary>
         public Task<JsonElement> RunScript(string script) => Act("suite.run", "--script", script);
         public Task<JsonElement> ListScripts() => Act("suite.list");
+
+        // record
+        /// <summary>Starts a video recording in the step folder of the command. A running recording stops first.</summary>
+        public Task<JsonElement> StartRecording(string name = "session", int maxSeconds = 0)
+            => Act("record.start", "--name", name, "--max-seconds", I(maxSeconds));
+
+        /// <summary>Stops the video recording. With no recording, it returns the last one. It is safe to call at all times.</summary>
+        public Task<JsonElement> StopRecording() => Act("record.stop");
+
+        /// <summary>The recorder, the current recording and the last recording.</summary>
+        public Task<JsonElement> RecordingStatus() => Act("record.status");
+
+        /// <summary>
+        /// Starts a recording and returns a handle. Use it with <c>await using</c>: the dispose stops
+        /// the recording, also when the test throws.
+        /// </summary>
+        public async Task<RecordingHandle> Record(string name = "session", int maxSeconds = 0)
+            => new RecordingHandle(this, await StartRecording(name, maxSeconds));
 
         /// <summary>Enters Play Mode and waits until the player loop runs frames.</summary>
         public async Task EnterPlayMode(int timeoutMs = 60000)

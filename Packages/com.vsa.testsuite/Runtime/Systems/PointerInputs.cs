@@ -22,8 +22,15 @@ namespace VSA.TestSuite
 
         public void Press(Vector2 p, bool down) => Queue(p, CurrentMouse().leftButton, down);
 
-        static Mouse CurrentMouse() => Mouse.current
-            ?? throw new ActionFailed(FailCode.NoDevice, "No mouse device in the Input System");
+        // A batch mode Editor or a touch device has no mouse. Then add one virtual mouse, so the
+        // clicks still go through the Input System and its UI module.
+        static Mouse CurrentMouse()
+        {
+            if (Mouse.current != null) return Mouse.current;
+            var mouse = InputSystem.AddDevice<Mouse>("VSA TestSuite Mouse");
+            mouse.MakeCurrent();
+            return mouse;
+        }
 
         static void Queue(Vector2 p, ButtonControl button, bool pressed)
         {

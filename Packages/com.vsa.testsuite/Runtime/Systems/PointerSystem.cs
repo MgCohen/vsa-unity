@@ -38,6 +38,17 @@ namespace VSA.TestSuite
     }
 
     /// <summary>
+    /// Code that sees each pointer step after it goes to the game, for example a touch overlay.
+    /// A hook must not change the input.
+    /// </summary>
+    public interface IPointerHook
+    {
+        void Moved(Vector2 p, bool down);
+        void Pressed(Vector2 p);
+        void Released(Vector2 p);
+    }
+
+    /// <summary>
     /// Clicks, holds and drags at screen points. Before it sends input, it checks that the
     /// expected object is the top UI hit. Each input step takes one frame, so the player loop
     /// processes it.
@@ -46,7 +57,29 @@ namespace VSA.TestSuite
     {
         readonly IPointerInput input;
 
+        /// <summary>The pointer hooks, in call order. Add or remove hooks in the composition root.</summary>
+        public List<IPointerHook> Hooks { get; } = new List<IPointerHook>();
+
         public PointerSystem(IPointerInput input) => this.input = input;
+
+        void Move(Vector2 p, bool down)
+        {
+            input.Move(p);
+            foreach (var h in Hooks) Safe(() => h.Moved(p, down));
+        }
+
+        void Press(Vector2 p, bool down)
+        {
+            input.Press(p, down);
+            foreach (var h in Hooks) Safe(() => { if (down) h.Pressed(p); else h.Released(p); });
+        }
+
+        // A hook problem must not fail the input step.
+        static void Safe(System.Action a)
+        {
+            try { a(); }
+            catch (System.Exception e) { Debug.LogException(e); }
+        }
 
         public Task<ClickResult> Click(Vector2 p, GameObject expected, CancellationToken cancel)
             => Hold(p, 0, expected, cancel);
@@ -56,12 +89,12 @@ namespace VSA.TestSuite
         {
             var hit = CheckTarget(p, expected);
             int f0 = Time.frameCount;
-            input.Move(p);
+            Move(p, false);
             await Frames.Wait(1, cancel);
-            input.Press(p, true);
+            Press(p, true);
             await Frames.Wait(1, cancel);
             if (holdMs > 0) await Seconds(holdMs, cancel);
-            input.Press(p, false);
+            Press(p, false);
             await Frames.Wait(1, cancel);
 
             return new ClickResult
@@ -80,16 +113,16 @@ namespace VSA.TestSuite
             steps = Mathf.Max(1, steps);
             var hit = CheckTarget(from, expected);
             int f0 = Time.frameCount;
-            input.Move(from);
+            Move(from, false);
             await Frames.Wait(1, cancel);
-            input.Press(from, true);
+            Press(from, true);
             await Frames.Wait(1, cancel);
             for (int i = 1; i <= steps; i++)
             {
-                input.Move(Vector2.Lerp(from, to, i / (float)steps));
+                Move(Vector2.Lerp(from, to, i / (float)steps), true);
                 await Frames.Wait(1, cancel);
             }
-            input.Press(to, false);
+            Press(to, false);
             await Frames.Wait(1, cancel);
 
             return new DragResult

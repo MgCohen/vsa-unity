@@ -51,6 +51,10 @@ unity command ui.click_object --path Canvas/Play      1 command: CLI args to one
 | `game.info` | `ReadInfo` | Platform, Editor or player, frame, time, scene, process id |
 | `game.load_scene --scene S` | `LoadScene` | Scene name, path, time |
 | `game.reset [--scene S] [--seed N]` | `ResetGame` | Scene, seed, names of the reset steps |
+| `ui.show_touches [--on true]` | `ShowTouches` | True if the touch overlay shows |
+| `record.start [--name session] [--max-seconds 0]` | `StartRecording` | Name, file, start time |
+| `record.stop` | `StopRecording` | The stopped recording: file, seconds, stop reason, bytes |
+| `record.status` | `ReadRecording` | Recorder, why it cannot record, current and last recording |
 
 A state is `Active`, `Inactive` or `Missing`. A path starts at a root object of a loaded scene, for example `Canvas/Menu/Play`.
 
@@ -58,6 +62,7 @@ Each command writes one JSON result:
 
 ```json
 { "ok": true, "action": "ui.click_object", "step": "s-003_ui-click_object", "ms": 32.4,
+  "folder": "C:/.../Runs/2026-11-16_053816/s-003_ui-click_object",
   "result": { "Point": [489, 249], "Hit": "LabButton", "Adapter": "input-system-queue" } }
 ```
 
@@ -106,6 +111,7 @@ Runs/2026-11-16_053816/
   s-003_ui-click_object/step.json     the action tree with arguments, times and results
   s-009_ui-click_object/fail.png      screenshot, only in Play Mode, only on failure
   s-009_ui-click_object/console.json  log lines of the step, on failure or on a warning
+  s-012_suite-run/lab_demo.mp4        video of the script, if a recorder is installed
   summary.json                        one row for each step of the run
 ```
 
@@ -118,7 +124,62 @@ Add `Runs/` to `.gitignore`.
 | `input-system-queue` | `com.unity.inputsystem` is installed | All game code that reads the mouse |
 | `ui-events` | No Input System | uGUI objects only |
 
-The Input System path queues state events and does not call `InputSystem.Update()`. In Editor Play Mode, a manual update loses the event. A click takes 3 frames: move, press, release.
+The Input System path queues state events and does not call `InputSystem.Update()`. In Editor Play Mode, a manual update loses the event. A click takes 3 frames: move, press, release. If the Input System has no mouse, for example in a batch mode Editor, the path adds one virtual mouse.
+
+## Touch overlay
+
+A pointer hook shows the test input on the screen, as in a tutorial video:
+
+- a burst at each press and a smaller burst at each release
+- a dot under the pointer while it is down
+- a fading trail during a drag
+
+The overlay is a screen space canvas on top of the game. Its images take no raycasts, so it does not change what a click hits. It is on by default.
+
+```csharp
+root.Touches.Enabled = false;                  // in the composition root
+root.Touches.Options.Color = Color.cyan;       // DotSize, BurstSize, BurstSeconds, TrailSeconds
+```
+
+At run time, use `ui.show_touches --on false`. Add your own pointer hook with `root.Pointer.Hooks.Add(hook)`. A pointer hook gets each move, press and release after the input goes to the game.
+
+## Video recording
+
+If `com.unity.recorder` (5.0 or later) is installed, each `suite.run` step records an MP4 video of the Game view into its step folder. The Editor assembly `VSA.TestSuite.Recorder` compiles only when the package is installed. Without it, `record.status` gives the reason and scripts run with no video.
+
+The recorder always stops. Each stop path closes the MP4 file:
+
+| Stop path | Stop reason |
+|---|---|
+| The script passes | `Stopped` |
+| The script fails, throws, or the command time limit cancels it | `StepFailed` |
+| A new recording starts | `Replaced` |
+| No stop comes before `MaxSeconds` | `MaxTime` |
+| Play Mode stops | `PlayModeExit` |
+| A domain reload starts | `DomainReload` |
+| The Editor quits | `Quit` |
+
+The pipeline calls `After` for each hook whose `Before` ran, so the recording hook stops the video also if a later hook fails. `record.stop` with no recording does nothing.
+
+For a recording that the client controls, use a handle. The dispose stops it, also when the test throws:
+
+```csharp
+await using var rec = await game.Record("checkout");
+await game.ClickObject("Canvas/Buy");
+```
+
+Change the settings in the composition root:
+
+```csharp
+root.Recording.Options.Width = 1280;        // null (default): the Game view size, not changed
+root.Recording.Options.Height = 720;
+root.Recording.Options.FrameRate = 30;      // the highest frame rate of the video
+root.Recording.Options.Audio = false;
+root.Recording.Options.MaxSeconds = 600;
+root.Recording.Options.RecordScripts = true;
+```
+
+The adapter uses the Variable frame rate mode. The Constant mode sets `Time.captureFramerate`, and that changes the game timing. In Variable mode, the Recorder still limits the frame rate to `FrameRate`. To use another recorder, give an `IVideoRecorder` to the `TestRoot` constructor.
 
 ## Players
 
@@ -248,3 +309,4 @@ To replace a default part, give your own part to the root, for example `new Test
 - Tested in Editor Play Mode and in a Windows development player (Mono). Android, Linux and IL2CPP players are not tested yet.
 - During development with a local `file:` package, `unity recompile` does not always see changes in the package. Call `AssetDatabase.Refresh()` first.
 - No capture action yet. A failed step saves a screenshot through the hook only.
+- Video recording works only in the Editor, in Play Mode. A player gives `NoDevice`.

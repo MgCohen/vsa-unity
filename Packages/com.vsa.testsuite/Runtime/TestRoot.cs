@@ -17,9 +17,14 @@ namespace VSA.TestSuite
         /// <summary>Scripts are found by type. Add a script instance here if it needs constructor arguments.</summary>
         public ScriptSystem Scripts { get; }
         public AppSystem App { get; }
+        /// <summary>Video recording. Change <c>Recording.Options</c> here, for example the resolution.</summary>
+        public RecordingSystem Recording { get; }
+        /// <summary>The touch overlay pointer hook. Set <c>Touches.Enabled = false</c> to hide it.</summary>
+        public TouchOverlayHook Touches { get; }
 
         /// <param name="pointerInput">The input path for clicks. Null: the default for this project.</param>
-        public TestRoot(IPointerInput pointerInput = null)
+        /// <param name="videoRecorder">The video recorder. Null: the Unity Recorder in the Editor, if it is installed.</param>
+        public TestRoot(IPointerInput pointerInput = null, IVideoRecorder videoRecorder = null)
         {
             Wait = new WaitSystem();
             Objects = new ObjectSystem(Wait);
@@ -28,6 +33,9 @@ namespace VSA.TestSuite
             Reset = new ResetSystem(Scenes);
             Scripts = new ScriptSystem();
             App = new AppSystem();
+            Recording = new RecordingSystem(videoRecorder ?? VideoRecorders.Default());
+            Touches = new TouchOverlayHook();
+            Pointer.Hooks.Add(Touches);
         }
 
         public HandlerSet DefaultHandlers() => new HandlerSet()
@@ -47,13 +55,19 @@ namespace VSA.TestSuite
             .Add(new ResetGameHandler(Reset))
             .Add(new RunScriptHandler(Scripts))
             .Add(new ListScriptsHandler(Scripts))
-            .Add(new ReadInfoHandler(App));
+            .Add(new ReadInfoHandler(App))
+            .Add(new StartRecordingHandler(Recording))
+            .Add(new StopRecordingHandler(Recording))
+            .Add(new ReadRecordingHandler(Recording))
+            .Add(new ShowTouchesHandler(Touches));
 
         // Hooks run Before in this order and After in the reverse order,
-        // so the console hook sees the log lines of all other hooks.
+        // so the console hook sees the log lines of all other hooks. The recording hook is last:
+        // its After runs first, so the video stops before the other hooks write their files.
         public List<IActionHook> DefaultHooks() => new List<IActionHook>
         {
             new ConsoleHook(), new LogHook(), new StepRecordHook(), new SummaryHook(), new ScreenshotOnFailHook(),
+            new RecordScriptHook(Recording),
         };
 
         public ActionRuntime Build() => Build(DefaultHandlers(), DefaultHooks());

@@ -74,6 +74,7 @@ namespace VSA.TestSuite
                     action = ActionNames.Of(action.GetType()),
                     step = step.Id,
                     ms = Math.Round(watch.Elapsed.TotalMilliseconds, 1),
+                    folder = step.Path,
                     result,
                 });
                 return ExitCode.Success;

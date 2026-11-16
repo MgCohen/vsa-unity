@@ -150,9 +150,12 @@ namespace VSA.TestSuite
         {
             var ctx = new ActionContext(this, action, ActionNames.Of(action.GetType()), parent, cancel, step);
             var outcome = new ActionOutcome();
-            foreach (var hook in hooks) await hook.Before(ctx);
+            // The count of hooks whose Before ran. Only these get After, and they always get it,
+            // so a hook that starts something (a recording) can always stop it.
+            int started = 0;
             try
             {
+                for (; started < hooks.Count; started++) await hooks[started].Before(ctx);
                 cancel.ThrowIfCancellationRequested();
                 var handler = handlers.Find(action.GetType())
                     ?? throw new ActionFailed(FailCode.NoHandler, "No handler for action " + ctx.Name);
@@ -168,7 +171,7 @@ namespace VSA.TestSuite
             {
                 outcome.Ms = ctx.ElapsedMs;
                 ctx.Outcome = outcome;
-                for (int i = hooks.Count - 1; i >= 0; i--)
+                for (int i = started - 1; i >= 0; i--)
                 {
                     try { await hooks[i].After(ctx); }
                     catch (Exception e) { UnityEngine.Debug.LogException(e); }

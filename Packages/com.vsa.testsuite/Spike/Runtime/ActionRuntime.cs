@@ -24,7 +24,7 @@ namespace VSA.TestSuite.Spike
             foreach (var hook in hooks) hook.Before(action);
             try
             {
-                var result = (TResult)await handler.Run(action, new ActionContext(stop.Token));
+                var result = (TResult)await handler.Run(action, new ActionContext(this, stop.Token));
                 foreach (var hook in hooks) hook.After(action, result, null);
                 return result;
             }

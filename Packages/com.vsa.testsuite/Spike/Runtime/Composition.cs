@@ -9,7 +9,8 @@ namespace VSA.TestSuite.Spike
             var objects = new ObjectSystem();
             var registry = new ActionRegistry()
                 .Add(new TouchScreenHandler(touch))
-                .Add(new FindObjectHandler(objects));
+                .Add(new FindObjectHandler(objects))
+                .Add(new TouchObjectHandler());
             return new ActionRuntime(registry, new IActionHook[] { new LogHook() });
         }
     }

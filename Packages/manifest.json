@@ -42,5 +42,5 @@
     "com.unity.ugui": "2.6.0",
     "com.unity.pipeline": "1.0.0"
   },
-  "testables": ["com.vsa.core"]
+  "testables": ["com.vsa.core", "com.vsa.testsuite"]
 }

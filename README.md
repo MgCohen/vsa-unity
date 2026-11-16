@@ -20,6 +20,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | Path | Contains |
 |---|---|
 | `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
+| `Packages/com.vsa.testsuite/` | The test suite package: drives a running game from the `unity` CLI. It has no VSA reference. See its [README](Packages/com.vsa.testsuite/README.md). |
 | `Assets/Sample/` | A small module in one asmdef |
 | `Assets/SampleApp/` | `SampleApp` and the `Check` view of the IL2CPP check |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |

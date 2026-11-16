@@ -8,7 +8,7 @@ namespace VSA.TestSuite.Spike
     /// Writes one console line when an action starts and one when it ends. A sub-action
     /// gets an indent, so the log shows the nesting.
     /// </summary>
-    internal sealed class LogHook : IActionHook
+    internal sealed class LogHook : IActionHook, IRunHook
     {
         public const string Tag = "[Spike]";
         readonly Stack<int> startFrames = new Stack<int>();
@@ -27,5 +27,8 @@ namespace VSA.TestSuite.Spike
             if (error == null) Debug.Log($"{Tag} {Indent}done {action.GetType().Name} frames={frames} result={result}");
             else Debug.LogWarning($"{Tag} {Indent}failed {action.GetType().Name} frames={frames} error={error.Message}");
         }
+
+        public void RunEnded(RunSummary summary)
+            => Debug.Log($"{Tag} run ended actions={summary.Actions} failed={summary.Failed}");
     }
 }

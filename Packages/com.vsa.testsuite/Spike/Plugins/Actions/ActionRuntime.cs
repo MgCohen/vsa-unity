@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 
 namespace VSA.TestSuite.Spike
 {
-    /// <summary>Runs an action with its handler, with the hooks before and after it.</summary>
+    /// <summary>
+    /// Runs an action with its handler, with the hooks before and after it.
+    /// One runtime is one run: End stops the actions that still run and calls the run hooks.
+    /// </summary>
     internal sealed class ActionRuntime
     {
         readonly ActionRegistry registry;
         readonly IReadOnlyList<IActionHook> hooks;
         readonly CancellationTokenSource stop = new CancellationTokenSource();
+        int actions;
+        int failed;
 
         public ActionRuntime(ActionRegistry registry, IReadOnlyList<IActionHook> hooks)
         {
@@ -21,6 +26,7 @@ namespace VSA.TestSuite.Spike
         public async Task<TResult> Run<TResult>(IAction<TResult> action)
         {
             var handler = registry.Find(action.GetType());
+            actions++;
             foreach (var hook in hooks) hook.Before(action);
             try
             {
@@ -30,9 +36,20 @@ namespace VSA.TestSuite.Spike
             }
             catch (Exception error)
             {
+                failed++;
                 foreach (var hook in hooks) hook.After(action, null, error);
                 throw;
             }
+        }
+
+        public RunSummary End()
+        {
+            stop.Cancel();
+            var summary = new RunSummary(actions, failed);
+            foreach (var hook in hooks)
+                if (hook is IRunHook runHook) runHook.RunEnded(summary);
+            stop.Dispose();
+            return summary;
         }
     }
 }

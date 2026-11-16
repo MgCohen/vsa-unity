@@ -128,6 +128,14 @@ await Check("reset with a seed repeats random values", async () =>
 });
 await Check("load scene by name", async () => (await game.LoadScene("SampleScene")).GetProperty("Scene").GetString());
 await Check("unknown scene is NotFound", () => ExpectFail(() => game.LoadScene("NoSuchScene"), "NotFound"));
+await Check("list scripts", async () => string.Join(", ", (await game.ListScripts()).EnumerateArray().Select(x => x.GetString())));
+await Check("script lab_click passes", async () =>
+{
+    var r = await game.RunScript("lab_click");
+    return $"{r.GetProperty("Steps")} steps in {r.GetProperty("Ms")} ms";
+});
+await Check("script lab_fail stops at the assert", () => ExpectFail(() => game.RunScript("lab_fail"), "AssertFailed"));
+await Check("unknown script is NotFound", () => ExpectFail(() => game.RunScript("no_such_script"), "NotFound"));
 await Check("exit play mode", async () => { await game.ExitPlayMode(); return ""; });
 
 // Health: freeze the main thread, then probe from outside.

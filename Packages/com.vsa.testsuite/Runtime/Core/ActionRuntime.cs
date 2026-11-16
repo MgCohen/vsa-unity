@@ -53,9 +53,10 @@ namespace VSA.TestSuite
         public static void Reset() => active = null;
 
         /// <summary>Runs one action as one step. Callers inside Unity use this method.</summary>
-        public Task<TResult> RunStep<TResult>(IAction<TResult> action, CancellationToken cancel)
+        /// <param name="script">The name of the script that runs the step, for the run summary. Null: no script.</param>
+        public Task<TResult> RunStep<TResult>(IAction<TResult> action, CancellationToken cancel, string script = null)
         {
-            var step = Run.NewStep(++stepCount, ActionNames.Of(action.GetType()));
+            var step = Run.NewStep(++stepCount, ActionNames.Of(action.GetType()), script);
             return pipeline.Run(action, null, cancel, step);
         }
 

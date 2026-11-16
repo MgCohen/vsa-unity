@@ -30,7 +30,7 @@ unity command ui.click_object --path Canvas/Play      1 command: CLI args to one
 | Command | Maps the CLI args to one action. No logic. |
 | Action | Calls one system, or other actions with `ctx.Run`. No logic. |
 | System | All logic. A plain class, no base class. |
-| Hook | Work for every action: log, console, step record, screenshot. |
+| Hook | Work for every action: log, console, step record, run summary, screenshot. |
 
 ## Commands
 
@@ -105,6 +105,7 @@ Runs/2026-11-16_053816/
   s-003_ui-click_object/step.json     the action tree with arguments, times and results
   s-009_ui-click_object/fail.png      screenshot, only in Play Mode, only on failure
   s-009_ui-click_object/console.json  log lines of the step, on failure or on a warning
+  summary.json                        one row for each step of the run
 ```
 
 Add `Runs/` to `.gitignore`.
@@ -154,14 +155,32 @@ A long synchronous command also gives `Frozen`. A long async action, for example
 
 ## Scripts inside Unity
 
-A C# script calls the runtime directly, not the CLI. The hooks and the step folders are the same.
+A test script is a C# class that implements `ITestScript`. Each call on the script context `s` is one step, with its own step folder and evidence. The first failed step stops the script.
 
 ```csharp
-var run = ActionRuntime.GetOrBuild();
-await run.RunStep(new ClickObject("Canvas/Menu/Play"), cancel);
-await run.RunStep(new WaitForObject("Canvas/Hud"), cancel);
-await run.RunStep(new AssertText("Canvas/Hud/Score", "0"), cancel);
+sealed class MenuScript : ITestScript
+{
+    public string Name => "menu";
+
+    public async Task Run(ScriptContext s)
+    {
+        await s.Reset("Menu", seed: 1);
+        await s.ClickObject("Canvas/Menu/Play");
+        await s.WaitForObject("Canvas/Hud");
+        await s.AssertText("Canvas/Hud/Score", "0");
+        await s.Run(new WalletAdd(5));          // your own action
+    }
+}
 ```
+
+| Command | Does |
+|---|---|
+| `suite.list` | Lists the scripts |
+| `suite.run --script menu` | Runs the script. On a failure it returns the code of the failed step. |
+
+The package finds each class that implements `ITestScript` and has a constructor with no parameters. A script that needs constructor arguments goes in the composition root: `root.Scripts.Add(new MyScript(service))`.
+
+`summary.json` in the run folder has one row for each step: step, action, script, result, time, failure code.
 
 ## Add your own command
 

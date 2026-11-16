@@ -14,6 +14,8 @@ namespace VSA.TestSuite
         public SceneSystem Scenes { get; }
         /// <summary>Add your reset steps here, for example <c>root.Reset.Add(new ClearSaveData())</c>.</summary>
         public ResetSystem Reset { get; }
+        /// <summary>Scripts are found by type. Add a script instance here if it needs constructor arguments.</summary>
+        public ScriptSystem Scripts { get; }
 
         /// <param name="pointerInput">The input path for clicks. Null: the default for this project.</param>
         public TestRoot(IPointerInput pointerInput = null)
@@ -23,6 +25,7 @@ namespace VSA.TestSuite
             Pointer = new PointerSystem(pointerInput ?? PointerInputs.Default());
             Scenes = new SceneSystem();
             Reset = new ResetSystem(Scenes);
+            Scripts = new ScriptSystem();
         }
 
         public HandlerSet DefaultHandlers() => new HandlerSet()
@@ -39,18 +42,24 @@ namespace VSA.TestSuite
             .Add(new DragScreenHandler(Pointer))
             .Add(new DragObjectHandler())
             .Add(new LoadSceneHandler(Scenes))
-            .Add(new ResetGameHandler(Reset));
+            .Add(new ResetGameHandler(Reset))
+            .Add(new RunScriptHandler(Scripts))
+            .Add(new ListScriptsHandler(Scripts));
 
         // Hooks run Before in this order and After in the reverse order,
         // so the console hook sees the log lines of all other hooks.
         public List<IActionHook> DefaultHooks() => new List<IActionHook>
         {
-            new ConsoleHook(), new LogHook(), new StepRecordHook(), new ScreenshotOnFailHook(),
+            new ConsoleHook(), new LogHook(), new StepRecordHook(), new SummaryHook(), new ScreenshotOnFailHook(),
         };
 
         public ActionRuntime Build() => Build(DefaultHandlers(), DefaultHooks());
 
         public ActionRuntime Build(HandlerSet handlers, IReadOnlyList<IActionHook> hooks)
-            => new ActionRuntime(new ActionPipeline(handlers, hooks), new RunFolder(RunFolder.DefaultRoot()));
+        {
+            var runtime = new ActionRuntime(new ActionPipeline(handlers, hooks), new RunFolder(RunFolder.DefaultRoot()));
+            Scripts.Attach(runtime);
+            return runtime;
+        }
     }
 }

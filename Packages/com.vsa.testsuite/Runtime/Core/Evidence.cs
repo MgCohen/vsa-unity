@@ -23,10 +23,10 @@ namespace VSA.TestSuite
                 ? System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, "..", "Runs"))
                 : System.IO.Path.Combine(Application.persistentDataPath, "Runs");
 
-        public StepFolder NewStep(int index, string actionName)
+        public StepFolder NewStep(int index, string actionName, string script = null)
         {
             var id = "s-" + index.ToString("000") + "_" + actionName.Replace('.', '-');
-            return new StepFolder(id, System.IO.Path.Combine(Path, id));
+            return new StepFolder(id, System.IO.Path.Combine(Path, id), this, script);
         }
     }
 
@@ -35,11 +35,17 @@ namespace VSA.TestSuite
     {
         public string Id { get; }
         public string Path { get; }
+        /// <summary>The run folder of the step. Null in unit tests.</summary>
+        public RunFolder Run { get; }
+        /// <summary>The script that runs the step. Null: a single command.</summary>
+        public string Script { get; }
 
-        public StepFolder(string id, string path)
+        public StepFolder(string id, string path, RunFolder run = null, string script = null)
         {
             Id = id;
             Path = path;
+            Run = run;
+            Script = script;
         }
 
         public string File(string name)

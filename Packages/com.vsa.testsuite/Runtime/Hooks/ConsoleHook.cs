@@ -13,7 +13,8 @@ namespace VSA.TestSuite
     public sealed class ConsoleHook : IActionHook
     {
         readonly object gate = new object();
-        List<Entry> entries;
+        // One list for each running top action. A script step runs inside the step of its script command.
+        readonly Dictionary<ActionContext, List<Entry>> active = new Dictionary<ActionContext, List<Entry>>();
         bool listening;
 
         sealed class Entry
@@ -26,7 +27,7 @@ namespace VSA.TestSuite
         public Task Before(ActionContext ctx)
         {
             if (ctx.Depth != 0) return Task.CompletedTask;
-            lock (gate) entries = new List<Entry>();
+            lock (gate) active[ctx] = new List<Entry>();
             if (!listening)
             {
                 Application.logMessageReceivedThreaded += OnLog;
@@ -39,7 +40,7 @@ namespace VSA.TestSuite
         {
             if (ctx.Depth != 0) return Task.CompletedTask;
             List<Entry> taken;
-            lock (gate) { taken = entries; entries = null; }
+            lock (gate) { active.TryGetValue(ctx, out taken); active.Remove(ctx); }
             if (taken == null || taken.Count == 0) return Task.CompletedTask;
 
             bool problem = taken.Exists(e => e.Level != nameof(LogType.Log));
@@ -52,13 +53,14 @@ namespace VSA.TestSuite
         {
             lock (gate)
             {
-                if (entries == null) return;
-                entries.Add(new Entry
+                if (active.Count == 0) return;
+                var entry = new Entry
                 {
                     Level = type.ToString(),
                     Message = message,
                     Stack = type == LogType.Log ? null : stack,
-                });
+                };
+                foreach (var list in active.Values) list.Add(entry);
             }
         }
     }

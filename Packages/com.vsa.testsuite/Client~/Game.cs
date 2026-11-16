@@ -79,6 +79,11 @@ namespace VSA.TestSuite.Client
         public Task<JsonElement> Reset(string scene = null, int? seed = null)
             => Act("game.reset", "--scene", scene ?? "", "--seed", seed.HasValue ? I(seed.Value) : "");
 
+        // suite
+        /// <summary>Runs a C# test script inside Unity. Fails with the code of the first failed step.</summary>
+        public Task<JsonElement> RunScript(string script) => Act("suite.run", "--script", script);
+        public Task<JsonElement> ListScripts() => Act("suite.list");
+
         /// <summary>Enters Play Mode and waits until the player loop runs frames.</summary>
         public async Task EnterPlayMode(int timeoutMs = 60000)
         {

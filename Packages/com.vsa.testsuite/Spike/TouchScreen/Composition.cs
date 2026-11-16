@@ -1,14 +1,18 @@
+using UnityEngine;
+
 namespace VSA.TestSuite.Spike
 {
-    /// <summary>Manual composition: builds the systems and adds the handlers.</summary>
+    /// <summary>Manual composition: builds the systems, adds the handlers and the hooks.</summary>
     internal static class Composition
     {
         public static ActionRuntime Build()
         {
-            var touch = new TouchSystem(TouchDevice());
+            var device = TouchDevice();
+            Debug.Log($"{LogHook.Tag} runtime built, device={device.GetType().Name}");
+            var touch = new TouchSystem(device);
             var registry = new ActionRegistry()
                 .Add(new TouchScreenHandler(touch));
-            return new ActionRuntime(registry);
+            return new ActionRuntime(registry, new IActionHook[] { new LogHook() });
         }
 
         static ITouchDevice TouchDevice()

@@ -22,11 +22,12 @@ namespace VSA.TestSuite.Spike
                 data = new PointerEventData(events) { position = point, pressPosition = point };
                 var hits = new List<RaycastResult>();
                 events.RaycastAll(data, hits);
-                if (hits.Count == 0) { pressed = null; return; }
+                if (hits.Count == 0) { pressed = null; Debug.Log($"{LogHook.Tag} ui-events press on nothing"); return; }
                 data.pointerPressRaycast = data.pointerCurrentRaycast = hits[0];
                 pressed = ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, data, ExecuteEvents.pointerDownHandler)
                     ?? ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject);
                 data.pointerPress = pressed;
+                Debug.Log($"{LogHook.Tag} ui-events press on {(pressed != null ? pressed.name : "nothing")}");
                 return;
             }
             if (data == null || pressed == null) return;

@@ -3,15 +3,7 @@
   "rootNamespace": "VSA.TestSuite.Spike",
   "references": [
     "Unity.Pipeline.Attributes",
-    "UnityEngine.UI",
-    "Unity.InputSystem"
+    "UnityEngine.UI"
   ],
-  "autoReferenced": true,
-  "versionDefines": [
-    {
-      "name": "com.unity.inputsystem",
-      "expression": "1.0.0",
-      "define": "VSA_SPIKE_INPUT_SYSTEM"
-    }
-  ]
+  "autoReferenced": true
 }

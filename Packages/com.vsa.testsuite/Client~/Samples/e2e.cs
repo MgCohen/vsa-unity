@@ -107,6 +107,79 @@ await Check("drag object onto target", async () =>
     if (info.GetProperty("dropped").GetString() != "LabDrop") throw new Exception("Dropped on: " + info.GetProperty("dropped"));
     return $"x now {info.GetProperty("dragX")}, frames {r.GetProperty("FrameAfter").GetInt32() - r.GetProperty("FrameBefore").GetInt32()}";
 });
+float[] Point(JsonElement found) => found.GetProperty("ScreenPoint").EnumerateArray().Select(v => v.GetSingle()).ToArray();
+await Check("find object gives a screen point", async () =>
+{
+    var p = Point(await game.FindObject("LabCanvas/LabButton"));
+    return $"({p[0]}, {p[1]})";
+});
+await Check("click screen at the button", async () =>
+{
+    var p = Point(await game.FindObject("LabCanvas/LabButton"));
+    int before = await Clicks();
+    var r = await game.ClickScreen(p[0], p[1]);
+    if (await Clicks() != before + 1) throw new Exception("The count did not change");
+    return "hit " + r.GetProperty("Hit").GetString();
+});
+await Check("assert state Active and Inactive", async () =>
+{
+    await game.AssertState("LabCanvas/LabButton", "Active");
+    await game.Command("labsuite.show", "--on", "false");
+    try { await game.AssertState("LabCanvas/LabButton", "Inactive"); }
+    finally { await game.Command("labsuite.show", "--on", "true"); }
+    return "Active, then Inactive";
+});
+await Check("hold screen 300 ms", async () =>
+{
+    var p = Point(await game.FindObject("LabCanvas/LabDrag"));
+    await game.HoldScreen(p[0], p[1], 300);
+    int held = (await Info()).GetProperty("holdMs").GetInt32();
+    if (held < 280 || held > 600) throw new Exception("Held " + held + " ms");
+    return "game measured " + held + " ms";
+});
+await Check("drag screen moves the square", async () =>
+{
+    var p = Point(await game.FindObject("LabCanvas/LabDrag"));
+    var before = await Info();
+    await game.DragScreen(p[0], p[1], p[0] - 100, p[1] + 50, 10);
+    var after = await Info();
+    if (after.GetProperty("drags").GetInt32() != before.GetProperty("drags").GetInt32() + 1) throw new Exception("No drag");
+    double dx = after.GetProperty("dragX").GetDouble() - before.GetProperty("dragX").GetDouble();
+    if (Math.Abs(dx + 100) > 2) throw new Exception("Moved " + dx + " px, expected -100");
+    return "moved " + dx + " px";
+});
+await Check("wait frames", async () =>
+{
+    var r = await game.WaitFrames(5);
+    return r.ToString().Replace("\n", " ").Replace("  ", "");
+});
+await Check("game info in the Editor", async () =>
+{
+    var i = await game.Info();
+    if (!i.GetProperty("IsEditor").GetBoolean() || !i.GetProperty("IsPlaying").GetBoolean()) throw new Exception(i.ToString());
+    return $"{i.GetProperty("Platform")} scene={i.GetProperty("Scene")}";
+});
+await Check("touch overlay is found and can hide", async () =>
+{
+    await game.FindObject("VSA.TouchOverlay");
+    var off = await game.ShowTouches(false);
+    var on = await game.ShowTouches(true);
+    if (off.GetBoolean() || !on.GetBoolean()) throw new Exception($"off={off} on={on}");
+    return "found in DontDestroyOnLoad, off and on";
+});
+await Check("lazy start builds the runtime again", async () =>
+{
+    var forgot = await game.Command("labsuite.forget");
+    if (forgot.GetProperty("built").GetBoolean()) throw new Exception("Still built");
+    await game.Info();
+    if (!(await Info()).GetProperty("built").GetBoolean()) throw new Exception("Not built after a command");
+    return "forgotten, then built by game.info";
+});
+await Check("caller inside Unity runs steps", async () =>
+{
+    var r = await game.Command("labsuite.inside");
+    return "clicks added: " + r.GetProperty("clicksAdded").GetInt32();
+});
 await Check("reset of an unsaved scene fails clearly", async () =>
 {
     var scene = (await Info()).GetProperty("scene").GetString();

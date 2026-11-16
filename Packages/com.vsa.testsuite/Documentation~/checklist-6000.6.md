@@ -40,16 +40,26 @@ Run on 2026-11-16 in a batch mode Editor. D4 ran again in a windowed Editor. Res
 
 ## C. Editor Play Mode (`dotnet run --file e2e.cs -- <vsa-unity path> TestSuiteLab`)
 
-Result: 25 of 25 pass.
+Result: 35 of 35 pass. The Editor started Play Mode from an Untitled scene, so C15 ran.
 
 | ID | Check | Result | Note |
 |---|---|---|---|
 | C1–C14 | health, Play Mode, click, assert, Blocked, NotFound, waits, unknown command, 10 clicks, long action, hold, drag | working | All clicks, the hold and the drag use `ui-events` |
-| C15 | reset of an unsaved scene fails clearly | skipped | The Editor opens the saved lab scene. The check runs only from an Untitled scene |
+| C15 | reset of an unsaved scene fails clearly | working | "The active scene is not saved, so it cannot reload." Runs only when Play Mode starts from an Untitled scene, else it says "skipped" |
 | C16–C17 | reset loads the scene, seed repeats values | working | |
 | C18 | load scene by name | working | In the Editor, the load also finds scenes outside the build list. F covers the build list path |
 | C19–C24 | unknown scene, scripts, exit Play Mode | working | |
 | C25 | frozen main thread is Frozen | working | Needs `lab.freeze_now` (`Assets/TestSuiteLab/Editor`). The check now fails clearly if the command is missing |
+| C26 | find object gives a screen point | working | `ui.find_object` |
+| C27 | click screen at the button | working | `ui.click_screen`, count +1 |
+| C28 | assert state Active and Inactive | working | `ui.assert_state` |
+| C29 | hold screen 300 ms | working | `ui.hold_screen`, the game measured 300 ms |
+| C30 | drag screen moves the square | working | `ui.drag_screen`, moved −100 px |
+| C31 | wait frames | working | `game.wait_frames` |
+| C32 | game info in the Editor | working | `game.info`: `IsEditor`, `IsPlaying` |
+| C33 | touch overlay is found and can hide | working | `ui.find_object` in `DontDestroyOnLoad`, `ui.show_touches` |
+| C34 | lazy start builds the runtime again | working | After `ActionRuntime.Reset()`, the next command builds it |
+| C35 | caller inside Unity runs steps | working | `ActionRuntime.RunStep` from a command adds 2 clicks |
 
 ## D. Evidence
 
@@ -79,9 +89,10 @@ Result: 25 of 25 pass.
 | ID | Claim | Check | Result |
 |---|---|---|---|
 | F1 | The development build has the Pipeline server | Build log: "Pipeline: Runtime server ENABLED in build." | working |
-| F2 | `player.cs` passes | `dotnet run --file player.cs -- Build/TestSuiteLab/Lab.exe "-batchmode"`: 10 of 10 | working |
+| F2 | `player.cs` passes | `dotnet run --file player.cs -- Build/TestSuiteLab/Lab.exe "-batchmode"`: 13 of 13 (hold, screen click and overlay added) | working |
 | F3 | The lab scripts are found in the player | `lab_click` passes | working. Stripping is off for Mono here, so this does not test stripping |
 | F4 | Recording in a player gives `NoDevice` | New check in `player.cs` | working |
+| F5 | A failed step in the player writes `fail.png` | Folder of the failed assert | n/a in a batch mode player: it renders nothing. A windowed player is not tested, because it takes the focus |
 
 The player ran with `-batchmode`, so it opened no window and took no focus.
 
@@ -97,7 +108,6 @@ The player ran with `-batchmode`, so it opened no window and took no focus.
 | ID | Problem | Cause | Action |
 |---|---|---|---|
 | D4 | No `fail.png` in a 6000.6 batch mode Editor | `ScreenCapture.CaptureScreenshot` writes no file in 6000.6 batch mode, also after 30 frames. A windowed 6000.6 Editor writes it (tested: 977x498, correct image). 6000.7 batch mode writes it | The hook logs a warning into `console.json`. For screenshots on 6000.6, use a windowed Editor |
-| C15 | The unsaved scene check did not run | The Editor opens a saved scene | Run it from an Untitled scene |
 | — | Stripping is not tested | Mono with stripping off | Run `player.cs` on an IL2CPP build |
 | — | `ui-events` limits | No pointer enter or exit, no drag threshold, no `initializePotentialDrag` | Document. Use the Input System path for full UI behavior |
 | — | `IsExternalInit` is public in `VSA.TestSuite` | A second public copy in another assembly would be ambiguous | Low risk now. The other copies in vsa-unity are internal |

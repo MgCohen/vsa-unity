@@ -60,6 +60,24 @@ try
         if (dropped != "LabDrop") throw new Exception("Dropped on " + dropped);
         return "dropped on LabDrop";
     });
+    await Check("hold object 300 ms", async () =>
+    {
+        await game.HoldObject("LabCanvas/LabDrag", 300);
+        int held = (await game.Command("labsuite.info")).GetProperty("holdMs").GetInt32();
+        if (held < 280 || held > 600) throw new Exception("Held " + held + " ms");
+        return "game measured " + held + " ms";
+    });
+    await Check("click screen at the button", async () =>
+    {
+        var p = (await game.FindObject("LabCanvas/LabButton")).GetProperty("ScreenPoint").EnumerateArray().Select(v => v.GetSingle()).ToArray();
+        var r = await game.ClickScreen(p[0], p[1]);
+        return "hit " + r.GetProperty("Hit").GetString();
+    });
+    await Check("touch overlay is found", async () =>
+    {
+        await game.FindObject("VSA.TouchOverlay");
+        return "found in DontDestroyOnLoad";
+    });
     await Check("failed assert saves evidence", () => ExpectFail(() => game.AssertText("LabCanvas/LabLabel", "wrong"), "AssertFailed"));
     await Check("script lab_click passes", async () =>
     {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace VSA.TestSuite.Spike
 {
@@ -25,6 +26,9 @@ namespace VSA.TestSuite.Spike
 
         public async Task<TResult> Run<TResult>(IAction<TResult> action)
         {
+            // Hooks, handlers and systems use Unity API, so they run on the main thread
+            // for every caller, also a thread pool thread.
+            await Awaitable.MainThreadAsync();
             var handler = registry.Find(action.GetType());
             actions++;
             foreach (var hook in hooks) hook.Before(action);

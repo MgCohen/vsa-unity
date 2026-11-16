@@ -2,11 +2,11 @@
 #nullable disable
 // End-to-end check of the video recording in the Editor of the lab project.
 // It examines that each stop path stops the recording and closes the file.
-// Run: dotnet run --file record.cs -- <project path>
+// Run: dotnet run --file record.cs [-- <project path>]. Default: the Unity project above the current folder.
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
-var project = args.Length > 0 ? args[0] : @"C:\Users\matheus.cohen\Documents\Projects\pipeline-lab";
+var project = ProjectPaths.ProjectFromArgs(args);
 int pass = 0, fail = 0;
 var videos = new List<string>();
 

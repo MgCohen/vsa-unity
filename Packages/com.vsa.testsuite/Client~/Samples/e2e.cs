@@ -1,14 +1,15 @@
 #:project ../VSA.TestSuite.Client.csproj
 // End-to-end check of com.vsa.testsuite against the lab project.
-// Run: dotnet run --file e2e.cs -- <project path> [<lab scene name>]
+// Run: dotnet run --file e2e.cs [-- <project path> [<lab scene name>]]
+// With no arguments: the Unity project above the current folder, and the scene TestSuiteLab.
 // The project needs the lab commands labrt.* and labsuite.* (vsa-unity: Assets/TestSuiteLab).
 #nullable disable
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
-var project = args.Length > 0 ? args[0] : @"C:\Users\matheus.cohen\Documents\Projects\pipeline-lab";
+var project = ProjectPaths.ProjectFromArgs(args);
 // The scene that the reset and load checks use. It must be in the build scene list.
-var scene = args.Length > 1 ? args[1] : "SampleScene";
+var scene = args.Length > 1 ? args[1] : "TestSuiteLab";
 int pass = 0, fail = 0;
 
 async Task Check(string name, Func<Task<string>> body)

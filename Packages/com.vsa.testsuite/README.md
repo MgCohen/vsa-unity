@@ -228,10 +228,15 @@ A long synchronous command also gives `Frozen`. A long async action, for example
 
 A player has no `/api/editor_status`. There, step 3 sends `game.info` with a time limit of 2 s. That command waits in the command queue, so in a player a long command also gives `Frozen`.
 
-| Sample | Checks |
-|---|---|
-| `Samples/e2e.cs` | The Editor of the lab project: `dotnet run --file e2e.cs -- <project path>` |
-| `Samples/player.cs` | A development player of the lab project: `dotnet run --file player.cs -- <path of Lab.exe>` |
+The samples test the lab fixtures in `Assets/TestSuiteLab` of vsa-unity. Run them from `Client~/Samples`. With no arguments, they use the Unity project above the current folder.
+
+| Sample | Checks | Run |
+|---|---|---|
+| `Samples/e2e.cs` | 35 checks in Editor Play Mode | `dotnet run --file e2e.cs [-- <project path> [<scene>]]` |
+| `Samples/record.cs` | 9 checks of the video recording. Needs `com.unity.recorder` | `dotnet run --file record.cs [-- <project path>]` |
+| `Samples/player.cs` | 13 checks in a development player | `dotnet run --file player.cs [-- <Lab.exe> ["-batchmode"]]` |
+
+Before `player.cs`, build the player to `Build/TestSuiteLab/Lab.exe`. Use `-batchmode` to start the player with no window, so it takes no focus.
 
 ## Scripts inside Unity
 

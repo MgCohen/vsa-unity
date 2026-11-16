@@ -1,12 +1,13 @@
 #:project ../VSA.TestSuite.Client.csproj
 #nullable disable
 // End-to-end check of com.vsa.testsuite in a Windows development player of the lab project.
-// Run: dotnet run --file player.cs -- <path of Lab.exe> ["<player arguments>"]
+// Run: dotnet run --file player.cs [-- <path of Lab.exe> ["<player arguments>"]]
+// Default: Build/TestSuiteLab/Lab.exe in the Unity project above the current folder.
 // Use "-batchmode" as the player arguments to start the player with no window, so it takes no focus.
 using System.Text.Json;
 using VSA.TestSuite.Client;
 
-var exe = args.Length > 0 ? args[0] : @"C:\Users\matheus.cohen\Documents\Projects\pipeline-lab\Builds\Win3\Lab.exe";
+var exe = args.Length > 0 ? args[0] : Path.Combine(ProjectPaths.FindProjectRoot() ?? ".", "Build", "TestSuiteLab", "Lab.exe");
 int pass = 0, fail = 0;
 
 async Task Check(string name, Func<Task<string>> body)

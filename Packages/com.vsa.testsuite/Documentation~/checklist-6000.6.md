@@ -10,7 +10,7 @@ Run on 2026-11-16 in a batch mode Editor. D4 ran again in a windowed Editor. Res
 |---|---|---|
 | Unity | 6000.7.0b9 | 6000.6.6f1 |
 | Input System | 6.7.0 | Not installed. Clicks use `ui-events`. Legacy input (`activeInputHandler: 0`) |
-| Unity Recorder | 5.1.8 | Not installed. `record.*` gives `NoDevice` |
+| Unity Recorder | 5.1.8 | Not installed for E1–E8. Installed (5.1.8) for E9 and E10 |
 | Render pipeline | URP | Built-in |
 | Lab fixtures | `Assets/Scripts`, `SampleScene` | `Assets/TestSuiteLab`, `TestSuiteLab` scene |
 
@@ -82,7 +82,9 @@ Result: 35 of 35 pass. The Editor started Play Mode from an Untitled scene, so C
 | E5 | The overlay takes no raycasts | No raycaster on `VSA.TouchOverlay`. `Blocked` comes only from the cover | working |
 | E6 | `ui.show_touches --on false` hides it | No overlay image becomes active after a click | working |
 | E7 | `ui.find_object` finds objects in `DontDestroyOnLoad` | `ui.find_object --path VSA.TouchOverlay` succeeds | working (fixed in this run) |
-| E8 | `record.cs` | Needs the Recorder | n/a |
+| E8 | `record.cs` | Needs the Recorder | working after the install (see E9) |
+| E9 | Recording on 6000.6 with `com.unity.recorder` 5.1.8 | `dotnet run --file record.cs` in a batch mode Editor: 9 of 9. The video is 482x796, the same size as on 6000.7 | working |
+| E10 | `e2e.cs` with the Recorder installed | 35 of 35. Each `suite.run` writes an `.mp4` | working |
 
 ## F. Windows development player (Mono), built with 6000.6
 

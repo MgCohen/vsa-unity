@@ -11,6 +11,7 @@
     <AssemblyName>VSA.TestSuite.Spike.Check</AssemblyName>
     <UnityEditor>C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor</UnityEditor>
     <UnityManaged>$(UnityEditor)\Data\Managed\UnityEngine</UnityManaged>
+    <VsaPlugins>$(MSBuildThisFileDirectory)..\Packages\com.vsa.core\Runtime\Plugins</VsaPlugins>
     <ScriptAssemblies>$(MSBuildThisFileDirectory)..\Library\ScriptAssemblies</ScriptAssemblies>
   </PropertyGroup>
   <ItemGroup>
@@ -24,5 +25,15 @@
     <Reference Include="UnityEngine.UI"><HintPath>$(ScriptAssemblies)\UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
     <!-- Pipeline package (com.unity.pipeline): CliCommand and CliArg -->
     <Reference Include="Unity.Pipeline.Attributes"><HintPath>$(ScriptAssemblies)\Unity.Pipeline.Attributes.dll</HintPath><Private>false</Private></Reference>
+    <!-- VSA (com.vsa.core): the request pipeline, the modules and the Unity host.
+         The DI abstractions come with Unity 6000.6 (BCLExtensions). -->
+    <Reference Include="VSA.Contracts"><HintPath>$(VsaPlugins)\VSA.Contracts.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Contracts.Requests"><HintPath>$(VsaPlugins)\VSA.Contracts.Requests.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Handlers.Requests"><HintPath>$(VsaPlugins)\VSA.Handlers.Requests.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Module"><HintPath>$(VsaPlugins)\VSA.Module.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Composition"><HintPath>$(VsaPlugins)\VSA.Composition.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Presenters"><HintPath>$(VsaPlugins)\VSA.Presenters.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions"><HintPath>$(UnityEditor)\Data\BCLExtensions\runtime\netstandard2.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Unity"><HintPath>$(ScriptAssemblies)\VSA.Unity.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 </Project>

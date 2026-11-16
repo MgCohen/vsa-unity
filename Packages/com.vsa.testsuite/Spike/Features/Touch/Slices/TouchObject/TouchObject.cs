@@ -1,4 +1,6 @@
+using VSA.Contracts.Requests;
+
 namespace VSA.TestSuite.Spike
 {
-    internal sealed record TouchObject(string Path) : IAction<TouchObjectResult>;
+    public sealed record TouchObject(string Path) : IRequest<TouchObjectResult>;
 }

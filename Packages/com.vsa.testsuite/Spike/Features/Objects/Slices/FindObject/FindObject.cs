@@ -1,4 +1,6 @@
+using VSA.Contracts.Requests;
+
 namespace VSA.TestSuite.Spike
 {
-    internal sealed record FindObject(string Path) : IAction<FindResult>;
+    public sealed record FindObject(string Path) : IRequest<FindResult>;
 }

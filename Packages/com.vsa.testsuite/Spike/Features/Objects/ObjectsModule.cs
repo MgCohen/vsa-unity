@@ -1,12 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace VSA.TestSuite.Spike
 {
-    /// <summary>Installs the objects feature: its systems and the handlers of its slices.</summary>
-    internal static class ObjectsModule
+    /// <summary>The objects feature. VSA finds its handlers. The module adds its systems.</summary>
+    public sealed class ObjectsModule : VSA.Module.Module
     {
-        public static void Install(ActionRegistry registry)
-        {
-            var objects = new ObjectSystem();
-            registry.Add(new FindObjectHandler(objects));
-        }
+        public override void Configure(VSA.Module.ModuleBuilder module)
+            => module.Services.AddSingleton<ObjectSystem>();
     }
 }

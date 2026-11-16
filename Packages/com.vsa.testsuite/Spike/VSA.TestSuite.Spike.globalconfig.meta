@@ -1,7 +1,6 @@
 fileFormatVersion: 2
-guid: b2c9e00a0fbf5fd48b01f515a1991d32
-folderAsset: yes
-DefaultImporter:
+guid: 4ea62a7f7e884594da72d51669c2339e
+RoslynAnalyzerConfigImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 

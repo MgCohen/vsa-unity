@@ -9,7 +9,7 @@ namespace VSA.TestSuite.Spike
     /// </summary>
     public static class Run
     {
-        [CliCommand("run.end", "End the run: stop the actions that still run, call the end hooks and clear the runtime")]
-        public static Task<RunSummary> End() => Task.FromResult(Actions.End());
+        [CliCommand("run.end", "End the run: stop the VSA app of the spike")]
+        public static Task<RunEnded> End() => Task.FromResult(new RunEnded(Actions.End()));
     }
 }

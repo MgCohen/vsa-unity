@@ -1,5 +1,6 @@
+using VSA.Contracts.Requests;
+
 namespace VSA.TestSuite.Spike
 {
-    /// <summary>The object that was found, and its screen point in pixels from the lower left.</summary>
-    public sealed record FindResult(string Path, string Name, Point Point);
+    public sealed record FindResult(string Path, string Name, Point Point) : IResponse;
 }

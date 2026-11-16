@@ -1,5 +1,6 @@
+using VSA.Contracts.Requests;
 
 namespace VSA.TestSuite.Spike
 {
-    internal sealed record TouchScreen(Point Point) : IAction<TouchResult>;
+    public sealed record TouchScreen(Point Point) : IRequest<TouchResult>;
 }

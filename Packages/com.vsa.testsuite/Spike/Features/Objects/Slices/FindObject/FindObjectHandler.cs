@@ -1,18 +1,21 @@
 using System.Threading.Tasks;
+using UnityEngine;
+using VSA.Contracts;
+using VSA.Handlers.Requests;
 
 namespace VSA.TestSuite.Spike
 {
-    internal sealed class FindObjectHandler : ActionHandler<FindObject, FindResult>
+    internal sealed class FindObjectHandler : RequestHandler<FindObject, FindResult>
     {
         readonly ObjectSystem objects;
 
         public FindObjectHandler(ObjectSystem objects) => this.objects = objects;
 
-        protected override Task<FindResult> Handle(FindObject action, ActionContext context)
+        public override async Task<Result<FindResult>> HandleAsync(Envelope<FindObject> envelope)
         {
-            var target = objects.Find(action.Path);
-            var point = objects.ScreenPoint(target);
-            return Task.FromResult(new FindResult(action.Path, target.name, point));
+            await Awaitable.MainThreadAsync();
+            var target = objects.Find(envelope.Message.Path);
+            return new FindResult(envelope.Message.Path, target.name, objects.ScreenPoint(target));
         }
     }
 }

@@ -61,6 +61,36 @@ namespace StatusLab
             return list;
         }
 
+        /// <summary>All top windows of the process, also hidden ones, with their visible flag.</summary>
+        public static List<(IntPtr Handle, bool Visible)> AllTopWindows(int pid)
+        {
+            var list = new List<(IntPtr, bool)>();
+            EnumWindows((h, _) =>
+            {
+                GetWindowThreadProcessId(h, out var p);
+                if (p == pid) list.Add((h, IsWindowVisible(h)));
+                return true;
+            }, IntPtr.Zero);
+            return list;
+        }
+
+        /// <summary>All child windows, at every depth.</summary>
+        public static List<IntPtr> Children(IntPtr parent)
+        {
+            var list = new List<IntPtr>();
+            EnumChildWindows(parent, (h, _) => { list.Add(h); return true; }, IntPtr.Zero);
+            return list;
+        }
+
+        /// <summary>Position and upper limit of a Win32 progress control (msctls_progress32). Null if it gives no answer.</summary>
+        public static (int Pos, int Max)? Progress(IntPtr bar)
+        {
+            const uint PbmGetPos = 0x0408, PbmGetRange = 0x0407;
+            if (SendPlain(bar, PbmGetPos, IntPtr.Zero, IntPtr.Zero, AbortIfHung, 200, out var pos) == IntPtr.Zero) return null;
+            SendPlain(bar, PbmGetRange, IntPtr.Zero, IntPtr.Zero, AbortIfHung, 200, out var max);
+            return ((int)pos, (int)max);
+        }
+
         /// <summary>Presses a button with BM_CLICK. The window does not get the focus.</summary>
         public static void Click(IntPtr button) => SendPlain(button, BmClick, IntPtr.Zero, IntPtr.Zero, AbortIfHung, 2000, out _);
     }

@@ -126,6 +126,45 @@ switch (verb)
         }
         return Envelope(verb, true, new { recordings = files });
     }
+    case "winprobe":
+    {
+        // statuslab winprobe [--start] [--full-import] [--recompile] [--slowimport] [--seconds N]
+        var target = new Target { ProjectPath = project };
+        var seconds = int.Parse(Option("--seconds", "120"));
+        var outPath = Path.Combine(resultsRoot, "winprobe-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt");
+        Directory.CreateDirectory(resultsRoot);
+        using var log = new StreamWriter(outPath) { AutoFlush = true };
+        void Write(string line) { log.WriteLine(line); Console.Error.WriteLine(line.Length > 400 ? line.Substring(0, 400) : line); }
+        Task action = Task.CompletedTask;
+        if (args.Contains("--start"))
+        {
+            if (args.Contains("--full-import") && Directory.Exists(Path.Combine(project, "Library"))) Directory.Delete(Path.Combine(project, "Library"), true);
+            action = EditorLauncher.Start(target, cancel);
+        }
+        else if (!EditorLauncher.TryLoadOwn(target)) return Envelope(verb, false, null, "No own Editor runs on this project.");
+        var probe = WindowProbe.Run(() => target.Pid, seconds, Write, cancel);
+        if (args.Contains("--recompile") || args.Contains("--slowimport"))
+        {
+            await Task.Delay(1500, cancel);
+            new DescriptorSource().Read(new Snapshot(), target, cancel).Wait();
+            if (args.Contains("--slowimport"))
+            {
+                var folder = Path.Combine(project, "Assets", "StatusLab", "ImportLoad");
+                Directory.CreateDirectory(folder);
+                for (var i = 0; i < 3; i++) File.WriteAllText(Path.Combine(folder, "probe" + i + ".slowimport"), "probe " + Environment.TickCount + " " + i);
+                await PipelineHttp.Exec(target, new[] { "statuslab", "refresh" }, 5000, cancel);
+            }
+            else
+            {
+                var touch = Path.Combine(project, "Assets", "StatusLab", "Editor", "Touch.cs");
+                File.WriteAllText(touch, System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(touch), @"Value = \d+;", "Value = " + (Environment.TickCount & 0x7fffffff) + ";"));
+                await PipelineHttp.Exec(target, new[] { "statuslab", "refresh" }, 5000, cancel);
+            }
+        }
+        await action;
+        await probe;
+        return Envelope(verb, true, new { output = outPath, pid = target.Pid });
+    }
     case "replay":
     {
         var input = args.Length > 1 ? args[1] : resultsRoot;

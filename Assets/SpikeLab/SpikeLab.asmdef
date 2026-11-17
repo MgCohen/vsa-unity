@@ -3,7 +3,8 @@
   "rootNamespace": "SpikeLab",
   "references": [
     "Unity.Pipeline.Attributes",
-    "UnityEngine.UI"
+    "UnityEngine.UI",
+    "VSA.TestSuite.Spike"
   ],
   "autoReferenced": false
 }

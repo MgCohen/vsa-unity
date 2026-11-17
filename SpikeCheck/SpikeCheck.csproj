@@ -20,7 +20,6 @@
   <ItemGroup Condition="'$(NoRefs)' != 'true'">
     <!-- Unity engine modules -->
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(UnityManaged)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="UnityEngine.ScriptingModule"><HintPath>$(UnityManaged)\UnityEngine.ScriptingModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.UIModule"><HintPath>$(UnityManaged)\UnityEngine.UIModule.dll</HintPath><Private>false</Private></Reference>
     <!-- uGUI package (com.unity.ugui) -->
     <Reference Include="UnityEngine.UI"><HintPath>$(ScriptAssemblies)\UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>

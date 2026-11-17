@@ -1,0 +1,3731 @@
+{
+  "ready-idle": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null",
+      "True"
+    ],
+    "ProgressActive": [
+      "False",
+      "True"
+    ],
+    "ProgressText": [
+      "null",
+      ""
+    ],
+    "UnityStatus": [
+      "null",
+      "ready",
+      "starting",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "STATUS_NO_INSTANCES",
+      "no row"
+    ],
+    "EditorsPhase": [
+      "null",
+      "reachable",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "True"
+    ],
+    "ProbeFrame": [
+      "13",
+      "15",
+      "38",
+      "39",
+      "42",
+      "45"
+    ],
+    "ProbeCompiling": [
+      "False"
+    ],
+    "ProbeUpdating": [
+      "False"
+    ],
+    "ProbePlaying": [
+      "False"
+    ],
+    "ProbePaused": [
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "0",
+      "1"
+    ],
+    "TruthCompiling": [
+      "False"
+    ],
+    "TruthFailed": [
+      "False"
+    ],
+    "TruthErrors": [
+      "0",
+      "2"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "224668",
+      "223100",
+      "158004"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "3-20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      "",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1)* \u003CDX12\u003E",
+      "Hold on (busy for 01:27)...",
+      "Hold on (busy for 01:30)...",
+      "Hold on (busy for 01:28)..."
+    ],
+    "Hung": [
+      "False",
+      "True"
+    ],
+    "BusyWindow": [
+      "null",
+      "Hold on (busy for 01:27)...",
+      "Hold on (busy for 01:30)...",
+      "Hold on (busy for 01:28)...",
+      "Hold on (busy for 01:29)..."
+    ],
+    "BusySeconds": [
+      "null",
+      "88",
+      "89"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "null",
+      "\u003E20s"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "null",
+      "True"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null",
+      "1"
+    ],
+    "BeaconLastEvent": [
+      "reload-end",
+      "import",
+      "null",
+      "play-ExitingPlayMode",
+      "play-EnteredEditMode"
+    ],
+    "BeaconLastEventAgeS": [
+      "3-20s",
+      "\u003E20s",
+      "\u003C3s",
+      "null"
+    ]
+  },
+  "importing": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False",
+      "True"
+    ],
+    "ProgressText": [
+      "null",
+      ""
+    ],
+    "UnityStatus": [
+      "ready",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "starting"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "200",
+      "-1",
+      "0",
+      "503",
+      "504"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003E2.1s",
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null",
+      "settling"
+    ],
+    "ProbeOk": [
+      "True",
+      "False"
+    ],
+    "ProbeFrame": [
+      "14",
+      "56",
+      "57",
+      "58",
+      "145",
+      "146"
+    ],
+    "ProbeCompiling": [
+      "False",
+      "null"
+    ],
+    "ProbeUpdating": [
+      "False",
+      "null"
+    ],
+    "ProbePlaying": [
+      "False",
+      "null",
+      "True"
+    ],
+    "ProbePaused": [
+      "False",
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "0",
+      "null",
+      "1"
+    ],
+    "TruthCompiling": [
+      "False",
+      "null"
+    ],
+    "TruthFailed": [
+      "False",
+      "null"
+    ],
+    "TruthErrors": [
+      "0",
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "224668",
+      "158592",
+      "236508"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "3-20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "",
+      "Running managed callbacks",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      "Hold on...",
+      "Importing "
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "Importing - Compress 55%",
+      "Running managed callbacks",
+      "null",
+      "Reloading Domain",
+      "Importing - Compress 95%",
+      "Hold on..."
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "True"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "1"
+    ],
+    "BeaconLastEvent": [
+      "import",
+      "reload-start",
+      "reload-end",
+      "load"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "\u003E20s"
+    ]
+  },
+  "compiling": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "True",
+      "False"
+    ],
+    "ProgressText": [
+      "",
+      "null",
+      "Compiling Scripts"
+    ],
+    "UnityStatus": [
+      "ready"
+    ],
+    "EditorsPhase": [
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "True"
+    ],
+    "ProbeFrame": [
+      "54",
+      "56",
+      "140",
+      "141",
+      "145",
+      "6"
+    ],
+    "ProbeCompiling": [
+      "True",
+      "False"
+    ],
+    "ProbeUpdating": [
+      "False"
+    ],
+    "ProbePlaying": [
+      "False"
+    ],
+    "ProbePaused": [
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "0"
+    ],
+    "TruthCompiling": [
+      "True",
+      "False"
+    ],
+    "TruthFailed": [
+      "False",
+      "True"
+    ],
+    "TruthErrors": [
+      "0",
+      "1"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "3-20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      ""
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "True",
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "import",
+      "compile-start",
+      "compile-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ]
+  },
+  "compile-failed": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready"
+    ],
+    "EditorsPhase": [
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "True"
+    ],
+    "ProbeFrame": [
+      "141",
+      "142",
+      "143",
+      "137"
+    ],
+    "ProbeCompiling": [
+      "False"
+    ],
+    "ProbeUpdating": [
+      "False"
+    ],
+    "ProbePlaying": [
+      "False"
+    ],
+    "ProbePaused": [
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "0"
+    ],
+    "TruthCompiling": [
+      "False"
+    ],
+    "TruthFailed": [
+      "True"
+    ],
+    "TruthErrors": [
+      "1"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "3-20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "compile-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ]
+  },
+  "play-running": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "True",
+      "null",
+      "False"
+    ],
+    "ProgressActive": [
+      "False",
+      "True"
+    ],
+    "ProgressText": [
+      "null",
+      ""
+    ],
+    "UnityStatus": [
+      "ready",
+      "starting",
+      "STATUS_PIPELINE_LOAD_PENDING"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "True"
+    ],
+    "ProbeFrame": [
+      "129",
+      "455",
+      "809",
+      "1170",
+      "1531",
+      "1885"
+    ],
+    "ProbeCompiling": [
+      "False"
+    ],
+    "ProbeUpdating": [
+      "False"
+    ],
+    "ProbePlaying": [
+      "True"
+    ],
+    "ProbePaused": [
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "0",
+      "1"
+    ],
+    "TruthCompiling": [
+      "False"
+    ],
+    "TruthFailed": [
+      "False"
+    ],
+    "TruthErrors": [
+      "0"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "158592",
+      "236508",
+      "213364"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      "",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1)* \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False",
+      "True"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "\u003E20s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "True",
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "1"
+    ],
+    "BeaconLastEvent": [
+      "play-EnteredPlayMode",
+      "pause-Unpaused",
+      "import"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ]
+  },
+  "play-paused": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "False"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready"
+    ],
+    "EditorsPhase": [
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "True"
+    ],
+    "ProbeFrame": [
+      "12065",
+      "12435",
+      "11805"
+    ],
+    "ProbeCompiling": [
+      "False"
+    ],
+    "ProbeUpdating": [
+      "False"
+    ],
+    "ProbePlaying": [
+      "True"
+    ],
+    "ProbePaused": [
+      "True"
+    ],
+    "ProbeDirtyScenes": [
+      "0"
+    ],
+    "TruthCompiling": [
+      "False"
+    ],
+    "TruthFailed": [
+      "False"
+    ],
+    "TruthErrors": [
+      "0"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "3-20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "True"
+    ],
+    "BeaconPaused": [
+      "True"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "pause-Paused"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ]
+  },
+  "long-command": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null",
+      "True"
+    ],
+    "ProgressActive": [
+      "True",
+      "False"
+    ],
+    "ProgressText": [
+      "",
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "null",
+      "starting",
+      "STATUS_PIPELINE_LOAD_PENDING"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "504",
+      "200",
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "224668",
+      "223100",
+      "158004"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      "",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1)* \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "True"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "1"
+    ],
+    "BeaconLastEvent": [
+      "play-EnteredEditMode",
+      "import",
+      "reload-end",
+      "play-EnteredPlayMode"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ]
+  },
+  "frozen": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null",
+      "False"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "unreachable",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "null"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "unreachable",
+      "null"
+    ],
+    "ProbeHttp": [
+      "504",
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "224668",
+      "209648",
+      "149752"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "",
+      "Hold on",
+      "Hold on (busy for 11s)...",
+      "Hold on (busy for 13s)...",
+      "Hold on (busy for 15s)...",
+      "Hold on (busy for 17s)..."
+    ],
+    "Hung": [
+      "False",
+      "True"
+    ],
+    "BusyWindow": [
+      "null",
+      "Hold on",
+      "Hold on (busy for 11s)...",
+      "Hold on (busy for 13s)...",
+      "Hold on (busy for 15s)...",
+      "Hold on (busy for 17s)..."
+    ],
+    "BusySeconds": [
+      "null",
+      "11",
+      "13",
+      "15",
+      "17",
+      "19"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "3-20s",
+      "\u003E20s",
+      "null"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "True",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "play-EnteredEditMode",
+      "import",
+      "play-EnteredPlayMode",
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s",
+      "3-20s",
+      "null"
+    ]
+  },
+  "native-dialog": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready"
+    ],
+    "EditorsPhase": [
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "504"
+    ],
+    "ProbeMs": [
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "231296",
+      "235028",
+      "232944",
+      "224668"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "STATUSLAB_NATIVE_DIALOG"
+    ],
+    "DialogButtons": [
+      "OK"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "play-EnteredEditMode",
+      "import"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s"
+    ]
+  },
+  "domain-reload": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "null",
+      "starting"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "unreachable",
+      "null"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "Running managed callbacks",
+      "Running managed callbacks (busy for 10s)...",
+      "Running managed callbacks (busy for 11s)...",
+      "Running managed callbacks (busy for 12s)...",
+      "Running managed callbacks (busy for 13s)...",
+      "Running managed callbacks (busy for 14s)..."
+    ],
+    "Hung": [
+      "False",
+      "null"
+    ],
+    "BusyWindow": [
+      "Running managed callbacks",
+      "Running managed callbacks (busy for 10s)...",
+      "Running managed callbacks (busy for 11s)...",
+      "Running managed callbacks (busy for 12s)...",
+      "Running managed callbacks (busy for 13s)...",
+      "Running managed callbacks (busy for 14s)..."
+    ],
+    "BusySeconds": [
+      "null",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False",
+      "True"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "True",
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "load",
+      "reload-start",
+      "quit",
+      "reload-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ]
+  },
+  "crash": {
+    "StatusHttp": [
+      "0",
+      "-1",
+      "200"
+    ],
+    "Status": [
+      "null",
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null",
+      "True",
+      "False"
+    ],
+    "ProgressActive": [
+      "null",
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "ready",
+      "starting",
+      "unreachable"
+    ],
+    "EditorsPhase": [
+      "unreachable",
+      "null",
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "0",
+      "-1",
+      "504"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003E2.1s"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False",
+      "True"
+    ],
+    "DescPid": [
+      "0",
+      "154056",
+      "179652",
+      "158592",
+      "228960",
+      "186080"
+    ],
+    "DescPidAlive": [
+      "False",
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "null",
+      "3-20s",
+      "\u003E20s",
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False",
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "-1",
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null",
+      ""
+    ],
+    "Hung": [
+      "null",
+      "False",
+      "True"
+    ],
+    "BusyWindow": [
+      "null",
+      ""
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False",
+      "True"
+    ],
+    "CrashNew": [
+      "False",
+      "True"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "\u003E20s",
+      "3-20s",
+      "\u003C3s",
+      "null"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "True",
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "True",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "1",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "load",
+      "reload-start",
+      "reload-end",
+      "play-EnteredPlayMode",
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s",
+      "3-20s",
+      "\u003C3s",
+      "null"
+    ]
+  },
+  "cold-start": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_NO_INSTANCES",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "no row",
+      "STATUS_ALL_UNREACHABLE"
+    ],
+    "EditorsPhase": [
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null",
+      "Opening project...",
+      "",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "null",
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0",
+      "null"
+    ],
+    "LogStartBugReporter": [
+      "0",
+      "null"
+    ],
+    "LogExitSeen": [
+      "False",
+      "True"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "False",
+      "True"
+    ],
+    "BeaconAgeS": [
+      "null",
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ],
+    "BeaconCompiling": [
+      "null",
+      "False"
+    ],
+    "BeaconUpdating": [
+      "null",
+      "True",
+      "False"
+    ],
+    "BeaconPlaying": [
+      "null",
+      "False"
+    ],
+    "BeaconPaused": [
+      "null",
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "null",
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "null",
+      "load",
+      "reload-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "null",
+      "\u003C3s",
+      "3-20s",
+      "\u003E20s"
+    ]
+  },
+  "settling": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "settling"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_NO_INSTANCES",
+      "starting",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "STATUS_ALL_UNREACHABLE",
+      "no row"
+    ],
+    "EditorsPhase": [
+      "null",
+      "reachable",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "503",
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C2.1s",
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "settling",
+      "null"
+    ],
+    "ProbeOk": [
+      "False",
+      "True"
+    ],
+    "ProbeFrame": [
+      "null",
+      "2"
+    ],
+    "ProbeCompiling": [
+      "null",
+      "False"
+    ],
+    "ProbeUpdating": [
+      "null",
+      "False"
+    ],
+    "ProbePlaying": [
+      "null",
+      "False"
+    ],
+    "ProbePaused": [
+      "null",
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "null",
+      "0"
+    ],
+    "TruthCompiling": [
+      "null",
+      "False"
+    ],
+    "TruthFailed": [
+      "null",
+      "False"
+    ],
+    "TruthErrors": [
+      "null",
+      "0"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "235028",
+      "232944",
+      "224668",
+      "158004",
+      "154056",
+      "179652"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "Opening project...",
+      "",
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      "statuslab-peer - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "True",
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "load",
+      "reload-end",
+      "import"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ]
+  },
+  "exited": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "starting",
+      "STATUS_NO_INSTANCES",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "unreachable"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "0"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null"
+    ],
+    "Hung": [
+      "null"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "True"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "null"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "quit",
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s",
+      "3-20s",
+      "null"
+    ]
+  },
+  "no-editor": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "STATUS_NO_INSTANCES",
+      "no row",
+      "starting",
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "null"
+    ],
+    "EditorsPhase": [
+      "reachable",
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "0",
+      "null",
+      "-1",
+      "-1073741819",
+      "1"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null"
+    ],
+    "Hung": [
+      "null"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0",
+      "null"
+    ],
+    "LogStartBugReporter": [
+      "0",
+      "null"
+    ],
+    "LogExitSeen": [
+      "True",
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False",
+      "True"
+    ],
+    "CrashNew": [
+      "False",
+      "True"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "3-20s",
+      "null",
+      "\u003E20s",
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "quit",
+      "null",
+      "reload-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "3-20s",
+      "null",
+      "\u003E20s"
+    ]
+  },
+  "stale-descriptor": {
+    "StatusHttp": [
+      "-1"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "unreachable",
+      "STATUS_ALL_UNREACHABLE",
+      "STATUS_NO_INSTANCES"
+    ],
+    "EditorsPhase": [
+      "unreachable",
+      "null"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "154056",
+      "158592",
+      "228960",
+      "236508",
+      "240420",
+      "213364"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003E20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "-1073741819",
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null"
+    ],
+    "Hung": [
+      "null"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0",
+      "null"
+    ],
+    "LogStartBugReporter": [
+      "0",
+      "null"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "True",
+      "False"
+    ],
+    "CrashNew": [
+      "True",
+      "False"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "\u003E20s",
+      "null"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "reload-end",
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s",
+      "null"
+    ]
+  },
+  "safe-mode": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_NO_INSTANCES",
+      "STATUS_PIPELINE_LOAD_PENDING"
+    ],
+    "EditorsPhase": [
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - SAFE MODE - 6000.6.6f1 \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "False"
+    ],
+    "BeaconAgeS": [
+      "null"
+    ],
+    "BeaconCompiling": [
+      "null"
+    ],
+    "BeaconUpdating": [
+      "null"
+    ],
+    "BeaconPlaying": [
+      "null"
+    ],
+    "BeaconPaused": [
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "null"
+    ]
+  },
+  "foreign-editor": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "settling"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_PIPELINE_LOAD_PENDING"
+    ],
+    "EditorsPhase": [
+      "unreachable",
+      "null"
+    ],
+    "ProbeHttp": [
+      "503"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "settling"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "194980"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "0"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null"
+    ],
+    "Hung": [
+      "null"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "True"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "3-20s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "quit"
+    ],
+    "BeaconLastEventAgeS": [
+      "3-20s"
+    ]
+  },
+  "play-transition": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "ready"
+    ],
+    "EditorsPhase": [
+      "unreachable",
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "Reloading Domain",
+      "Hold on...",
+      "null",
+      "Running managed callbacks"
+    ],
+    "Hung": [
+      "False",
+      "null"
+    ],
+    "BusyWindow": [
+      "Reloading Domain",
+      "Hold on...",
+      "Running managed callbacks",
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False",
+      "True"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "True",
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "1",
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "reload-start",
+      "load",
+      "quit"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003C3s"
+    ]
+  },
+  "server-down": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "null",
+      "STATUS_PIPELINE_LOAD_PENDING"
+    ],
+    "EditorsPhase": [
+      "null",
+      "unreachable"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "\u003C5",
+      "5-50"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E",
+      ""
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "import",
+      "reload-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s",
+      "3-20s"
+    ]
+  },
+  "start-failed": {
+    "StatusHttp": [
+      "0"
+    ],
+    "Status": [
+      "null"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "null"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "STATUS_PIPELINE_LOAD_PENDING",
+      "STATUS_NO_INSTANCES"
+    ],
+    "EditorsPhase": [
+      "unreachable",
+      "null"
+    ],
+    "ProbeHttp": [
+      "0"
+    ],
+    "ProbeMs": [
+      "\u003C100ms"
+    ],
+    "ProbeBusyReason": [
+      "null"
+    ],
+    "ProbeOk": [
+      "False"
+    ],
+    "ProbeFrame": [
+      "null"
+    ],
+    "ProbeCompiling": [
+      "null"
+    ],
+    "ProbeUpdating": [
+      "null"
+    ],
+    "ProbePlaying": [
+      "null"
+    ],
+    "ProbePaused": [
+      "null"
+    ],
+    "ProbeDirtyScenes": [
+      "null"
+    ],
+    "TruthCompiling": [
+      "null"
+    ],
+    "TruthFailed": [
+      "null"
+    ],
+    "TruthErrors": [
+      "null"
+    ],
+    "DescPresent": [
+      "False"
+    ],
+    "DescPid": [
+      "0"
+    ],
+    "DescPidAlive": [
+      "False"
+    ],
+    "DescHeartbeatAgeS": [
+      "null"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "False"
+    ],
+    "ProcCpuPct": [
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "-1",
+      "1"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "null"
+    ],
+    "Hung": [
+      "null"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True",
+      "False"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s",
+      "null"
+    ],
+    "BeaconCompiling": [
+      "False",
+      "null"
+    ],
+    "BeaconUpdating": [
+      "False",
+      "null"
+    ],
+    "BeaconPlaying": [
+      "False",
+      "null"
+    ],
+    "BeaconPaused": [
+      "False",
+      "null"
+    ],
+    "BeaconDirtyScenes": [
+      "0",
+      "null"
+    ],
+    "BeaconLastEvent": [
+      "reload-end",
+      "null"
+    ],
+    "BeaconLastEventAgeS": [
+      "\u003E20s",
+      "null"
+    ]
+  },
+  "descriptor-mismatch": {
+    "StatusHttp": [
+      "200"
+    ],
+    "Status": [
+      "settling",
+      "ready"
+    ],
+    "PlayerLoopTicking": [
+      "null"
+    ],
+    "ProgressActive": [
+      "False"
+    ],
+    "ProgressText": [
+      "null"
+    ],
+    "UnityStatus": [
+      "ready",
+      "no row"
+    ],
+    "EditorsPhase": [
+      "reachable"
+    ],
+    "ProbeHttp": [
+      "503",
+      "200"
+    ],
+    "ProbeMs": [
+      "\u003C100ms",
+      "\u003C2.1s"
+    ],
+    "ProbeBusyReason": [
+      "settling",
+      "null"
+    ],
+    "ProbeOk": [
+      "False",
+      "True"
+    ],
+    "ProbeFrame": [
+      "null",
+      "3",
+      "7",
+      "11",
+      "12",
+      "2"
+    ],
+    "ProbeCompiling": [
+      "null",
+      "False"
+    ],
+    "ProbeUpdating": [
+      "null",
+      "False"
+    ],
+    "ProbePlaying": [
+      "null",
+      "False"
+    ],
+    "ProbePaused": [
+      "null",
+      "False"
+    ],
+    "ProbeDirtyScenes": [
+      "null",
+      "0"
+    ],
+    "TruthCompiling": [
+      "null",
+      "False"
+    ],
+    "TruthFailed": [
+      "null",
+      "False"
+    ],
+    "TruthErrors": [
+      "null",
+      "0"
+    ],
+    "DescPresent": [
+      "True"
+    ],
+    "DescPid": [
+      "241020",
+      "191868",
+      "147712"
+    ],
+    "DescPidAlive": [
+      "True"
+    ],
+    "DescHeartbeatAgeS": [
+      "\u003C3s",
+      "3-20s"
+    ],
+    "DescInfoSet": [
+      "False"
+    ],
+    "ProcAlive": [
+      "True"
+    ],
+    "ProcCpuPct": [
+      "5-50",
+      "\u003C5"
+    ],
+    "ProcExitCode": [
+      "null"
+    ],
+    "DialogTitle": [
+      "null"
+    ],
+    "DialogButtons": [
+      "null"
+    ],
+    "MainTitle": [
+      "vcontainer-integration-samples-3fbf19 - Untitled - Windows, Mac, Linux - Unity 6.6 (6000.6.6f1) \u003CDX12\u003E"
+    ],
+    "Hung": [
+      "False"
+    ],
+    "BusyWindow": [
+      "null"
+    ],
+    "BusySeconds": [
+      "null"
+    ],
+    "LogIsHuman": [
+      "0"
+    ],
+    "LogStartBugReporter": [
+      "0"
+    ],
+    "LogExitSeen": [
+      "False"
+    ],
+    "LogCrashSeen": [
+      "False"
+    ],
+    "CrashNew": [
+      "False"
+    ],
+    "BeaconOwn": [
+      "True"
+    ],
+    "BeaconAgeS": [
+      "\u003C3s"
+    ],
+    "BeaconCompiling": [
+      "False"
+    ],
+    "BeaconUpdating": [
+      "False"
+    ],
+    "BeaconPlaying": [
+      "False"
+    ],
+    "BeaconPaused": [
+      "False"
+    ],
+    "BeaconDirtyScenes": [
+      "0"
+    ],
+    "BeaconLastEvent": [
+      "reload-end"
+    ],
+    "BeaconLastEventAgeS": [
+      "3-20s",
+      "\u003E20s"
+    ]
+  }
+}

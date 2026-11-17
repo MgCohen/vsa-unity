@@ -18,6 +18,9 @@ namespace StatusLab
         public string ProgressText;
         public long BeaconSeq;
         public double CpuMs;
+        public int? BusyBar;
+        public string BusyStep;
+        public int? SplashBar;
 
         // From the action log.
         public long? LastPlayCommandMs;

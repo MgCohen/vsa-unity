@@ -68,6 +68,10 @@ namespace StatusLab
             if (now.LogSize > m.LogSize) return true;
             if (now.ProgressText != null && now.ProgressText != m.ProgressText) return true;
             if (now.BeaconOwn && now.BeaconSeq != m.BeaconSeq) return true;
+            // Unity's progress bars and step text: the startup window and the in-Editor busy window.
+            if (now.SplashBar != null && now.SplashBar != m.SplashBar) return true;
+            if (now.BusyBar != null && now.BusyBar != m.BusyBar) return true;
+            if (now.BusyStep != null && now.BusyStep != m.BusyStep) return true;
             // CPU time is no progress signal: Unity background threads use CPU also during a hang (measured).
             return false;
         }
@@ -79,6 +83,9 @@ namespace StatusLab
             m.ProgressText = now.ProgressText ?? m.ProgressText;
             if (now.BeaconOwn) m.BeaconSeq = now.BeaconSeq;
             m.CpuMs = now.ProcCpuMs;
+            m.SplashBar = now.SplashBar ?? m.SplashBar;
+            m.BusyBar = now.BusyBar ?? m.BusyBar;
+            m.BusyStep = now.BusyStep ?? m.BusyStep;
         }
 
         /// <summary>Applies the actions that happened before the sample time. A later action belongs to a later sample.</summary>

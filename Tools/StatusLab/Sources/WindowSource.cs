@@ -17,12 +17,26 @@ namespace StatusLab
             }
             foreach (var hwnd in Win32.TopWindows(target.Pid))
             {
-                if (Win32.ClassName(hwnd) != "#32770") continue;
+                var windowClass = Win32.ClassName(hwnd);
+                if (windowClass == "UnitySplashWindow")
+                {
+                    // The startup window: its bar is the progress of a project open.
+                    foreach (var child in Win32.Children(hwnd))
+                        if (Win32.ClassName(child).Contains("progress", StringComparison.OrdinalIgnoreCase) && Win32.Progress(child) is { } bar) into.SplashBar = bar.Pos;
+                    continue;
+                }
+                if (windowClass != "#32770") continue;
                 var title = Win32.Text(hwnd);
                 var buttons = string.Join(",", Win32.Buttons(hwnd).Select(b => b.Label));
                 if (IsBusyWindow(title, buttons))
                 {
                     into.BusyWindow = title;
+                    foreach (var child in Win32.Children(hwnd))
+                    {
+                        var cls = Win32.ClassName(child);
+                        if (cls.Contains("progress", StringComparison.OrdinalIgnoreCase) && Win32.Progress(child) is { } bar) into.BusyBar = bar.Pos;
+                        else if (cls == "Static" && Win32.Text(child) is { Length: > 0 } step) into.BusyStep = step;
+                    }
                     var m = System.Text.RegularExpressions.Regex.Match(title, @"busy for (?:(\d+):)?(\d+)s?\)");
                     if (m.Success) into.BusySeconds = (m.Groups[1].Success ? int.Parse(m.Groups[1].Value) * 60 : 0) + int.Parse(m.Groups[2].Value);
                     continue;

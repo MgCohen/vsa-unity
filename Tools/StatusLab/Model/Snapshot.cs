@@ -56,6 +56,9 @@ namespace StatusLab
         public bool? Hung;
         public string BusyWindow;         // Unity busy window: "Reloading Domain", "Importing", ...
         public int? BusySeconds;          // from "(busy for Ns)" in its title
+        public int? BusyBar;              // busy window progress control, 0-1000
+        public string BusyStep;           // busy window step text, for example the asset being imported
+        public int? SplashBar;            // startup window (UnitySplashWindow) progress control, 0-100
 
         // log: unity.log of the own Editor
         public long LogSize;

@@ -5,13 +5,13 @@ using VSA.Handlers;
 
 namespace VSA.TestSuite.Spike
 {
-    /// <summary>The hook sample, first half: one console line when an action starts.</summary>
-    internal sealed class LogStartStep : BeforeStep<IAction>
+    /// <summary>One console line when a message starts. The indent shows the depth of the call.</summary>
+    internal sealed class LogStartHook : Before<IMessage>
     {
         public const string Tag = "[Spike]";
         public const string StartFrame = "spike.start_frame";
 
-        public override async Task<IAction> BeforeAsync(IEnvelope<IAction> envelope)
+        public override async Task<IMessage> BeforeAsync(IEnvelope<IMessage> envelope)
         {
             await Awaitable.MainThreadAsync();
             var e = (Envelope)envelope;

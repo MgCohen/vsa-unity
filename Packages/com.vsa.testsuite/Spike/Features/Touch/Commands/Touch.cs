@@ -13,11 +13,11 @@ namespace VSA.TestSuite.Spike
         public static Task<TouchResult> Screen(
             [CliArg("x", "Pixels from the left")] float x,
             [CliArg("y", "Pixels from the bottom")] float y)
-            => Actions.Run(new TouchScreen(new Point(x, y)));
+            => AppBus.Send(new TouchScreen(new Point(x, y)));
 
         [CliCommand("touch.object", "Find an active object by hierarchy path and touch its screen point")]
         public static Task<TouchObjectResult> Object(
             [CliArg("path", "Hierarchy path, for example LabCanvas/LabButton")] string path)
-            => Actions.Run(new TouchObject(path));
+            => AppBus.Send(new TouchObject(path));
     }
 }

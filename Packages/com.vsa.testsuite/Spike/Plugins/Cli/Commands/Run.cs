@@ -9,7 +9,7 @@ namespace VSA.TestSuite.Spike
     /// </summary>
     public static class Run
     {
-        [CliCommand("run.end", "End the run: stop the VSA app of the spike")]
-        public static Task<RunEnded> End() => Task.FromResult(new RunEnded(Actions.End()));
+        [CliCommand("run.end", "End the run: stop the VSA app")]
+        public static Task<RunEnded> End() => Task.FromResult(new RunEnded(AppBus.End()));
     }
 }

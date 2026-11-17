@@ -12,6 +12,6 @@ namespace VSA.TestSuite.Spike
         [CliCommand("objects.find", "Find an active object by hierarchy path and return its screen point")]
         public static Task<FindResult> Find(
             [CliArg("path", "Hierarchy path, for example LabCanvas/LabButton")] string path)
-            => Actions.Run(new FindObject(path));
+            => AppBus.Send(new FindObject(path));
     }
 }

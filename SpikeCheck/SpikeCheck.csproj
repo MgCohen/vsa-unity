@@ -29,6 +29,7 @@
          The DI abstractions come with Unity 6000.6 (BCLExtensions). -->
     <Reference Include="VSA.Contracts"><HintPath>$(VsaPlugins)\VSA.Contracts.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="VSA.Contracts.Requests"><HintPath>$(VsaPlugins)\VSA.Contracts.Requests.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="VSA.Handlers"><HintPath>$(VsaPlugins)\VSA.Handlers.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="VSA.Handlers.Requests"><HintPath>$(VsaPlugins)\VSA.Handlers.Requests.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="VSA.Module"><HintPath>$(VsaPlugins)\VSA.Module.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="VSA.Composition"><HintPath>$(VsaPlugins)\VSA.Composition.dll</HintPath><Private>false</Private></Reference>

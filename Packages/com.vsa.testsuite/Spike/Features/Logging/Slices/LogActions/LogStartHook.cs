@@ -11,12 +11,16 @@ namespace VSA.TestSuite.Spike
         public const string Tag = "[Spike]";
         public const string StartFrame = "spike.start_frame";
 
+        readonly StepLog steps;
+
+        public LogStartHook(StepLog steps) => this.steps = steps;
+
         public override async Task<IMessage> BeforeAsync(IEnvelope<IMessage> envelope)
         {
             await Awaitable.MainThreadAsync();
             var e = (Envelope)envelope;
             e.Items[StartFrame] = Time.frameCount;
-            Debug.Log($"{Tag} {Indent(e)}start {e.Message} depth={e.Depth} frame={Time.frameCount}");
+            Debug.Log($"{Tag} {Indent(e)}start step={steps.Next()} {e.Message} depth={e.Depth} frame={Time.frameCount}");
             return envelope.Message;
         }
 

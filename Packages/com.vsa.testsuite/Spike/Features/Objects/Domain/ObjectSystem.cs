@@ -16,6 +16,9 @@ namespace VSA.TestSuite.Spike
             return target;
         }
 
+        /// <summary>The active object at the path, or null.</summary>
+        public GameObject TryFind(string path) => GameObject.Find(path);
+
         /// <summary>The center of a UI object, or the screen projection of a world object.</summary>
         public Point ScreenPoint(GameObject target)
         {

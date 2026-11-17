@@ -1,0 +1,9 @@
+{
+  "name": "SpikeLab",
+  "rootNamespace": "SpikeLab",
+  "references": [
+    "Unity.Pipeline.Attributes",
+    "UnityEngine.UI"
+  ],
+  "autoReferenced": false
+}

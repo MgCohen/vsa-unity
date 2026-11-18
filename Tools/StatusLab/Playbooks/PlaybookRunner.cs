@@ -1,3 +1,4 @@
+using VSA.TestSuite.Client.Status;
 using System.Diagnostics;
 
 namespace StatusLab
@@ -143,11 +144,14 @@ namespace StatusLab
 
         protected string AssetPath(params string[] parts) => Path.Combine(new[] { Project, "Assets", "StatusLab" }.Concat(parts).ToArray());
 
-        protected string HangFlag => Path.Combine(T.LabFolder, "hang.flag");
+        /// <summary>Library/StatusLab of the project: the folder of hang.flag, read by HangOnLoad in Assets/StatusLab.</summary>
+        protected string LabFolder => Path.Combine(Project, "Library", "StatusLab");
+
+        protected string HangFlag => Path.Combine(LabFolder, "hang.flag");
 
         protected void WriteHangFlag()
         {
-            Directory.CreateDirectory(T.LabFolder);
+            Directory.CreateDirectory(LabFolder);
             File.WriteAllText(HangFlag, "hang");
         }
 

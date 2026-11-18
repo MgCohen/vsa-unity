@@ -202,7 +202,7 @@ In a player, the run folder is `Application.persistentDataPath/Runs/`.
 |---|---|
 | `Instance` | Reads the Pipeline descriptor of an Editor (`ForEditor`) or a player (`ForPlayer`) |
 | `HttpTransport` | Sends commands over HTTP, about 20 ms each. Reconnects after a domain reload. Retries on 503. |
-| `Health` | Classifies the instance: `Ready`, `Busy`, `Dialog`, `Frozen`, `Unreachable`, `Dead` |
+| `InstanceStatus` | The state of the instance, from the status checker in `Status/`. `Game.Status` |
 | `Game` | One method for each action, plus `EnterPlayMode`, `ExitPlayMode` and `Command`. `LaunchPlayer` starts a player and `StopPlayer` stops only that player. |
 
 ```csharp
@@ -213,20 +213,48 @@ await game.WaitForObject("Canvas/Hud");
 await game.AssertText("Canvas/Hud/Score", "0");
 ```
 
-A failed action throws `ActionFailedException` with `Code`, `Reason` and the step `Folder`. If a command gets no answer, the client probes the health and puts the state in the message.
+A failed action throws `ActionFailedException` with `Code`, `Reason` and the step `Folder`. If a command gets no answer, the client reads the state and puts it in the message.
 
-### How the health probe works
+### Status checker and supervisor
 
-`/api/status` is cached off the main thread. It reports `ready` also when the main thread is frozen. So the probe uses these steps:
+`Client~/Status/` classifies 26 Editor states from 12 signal sources. It never waits without a limit. The status checker reads only; the supervisor acts through `IEditorControl`.
 
-1. If the process of the descriptor does not run: `Dead`.
-2. If `/api/status` gives no connection: `Unreachable`. If it reports `settling`: `Busy`. If it reports `blocked_by_dialog`: `Dialog`.
-3. If it reports `ready`, call `/api/editor_status`. That endpoint needs the main thread.
-4. If `/api/editor_status` gives no answer in 2 s, check `/api/dialog` and `/api/progress`. The result is `Dialog` or `Frozen`.
+```mermaid
+flowchart LR
+  SA[Sampler] -->|Snapshot| TR[StatusTracker]
+  TR -->|StateResult| WA[StatusWaiter]
+  TR -->|StateResult| SU[Supervisor]
+  SU -->|IEditorControl| ED[Editor]
+```
 
-A long synchronous command also gives `Frozen`. A long async action, for example a wait, keeps the main thread free and gives `Ready`.
+| Folder | Contains |
+|---|---|
+| `Status/Sources/` | One file for each signal: probe, beacon, windows, log, descriptor, process |
+| `Status/States/` | One file for each state. `States.All` is the check order: the first match wins |
+| `Status/Core/` | Tracker, supervisor, sampler, waiter, `limits.json` (cap and stall window of each waiting state) |
+| `Status/Control/` | `EditorControl` and `EditorLauncher`: own PID only, batch-mode compile check before each start |
+| `Status/Runs/` | `StatusReader`, `WatchRun`, `RunLog`: the entries of the CLI |
+| `Status/Replay/` | Replays recorded runs with the recorded time |
 
-A player has no `/api/editor_status`. There, step 3 sends `game.info` with a time limit of 2 s. That command waits in the command queue, so in a player a long command also gives `Frozen`.
+Rules of the checker:
+
+- `/api/status` and the descriptor heartbeat say `ready` during a freeze. The checker uses a main-thread probe (`suite ping`, 2 s) and the beacon file.
+- Unity's busy window is a `#32770` window with a `msctls_progress32` child. The checker finds it by this structure, so the rule works in all Editor languages.
+- Progress is log growth, `/api/progress` text, beacon moves, and the bars and step text of Unity's progress windows. CPU time is never progress.
+- A cap of 0 in `limits.json` means no cap. The stall window still applies.
+
+The beacon is in the Editor assembly `VSA.TestSuite.Editor`. It writes `Library/VSA.TestSuite/Status/beacon.json` only in an Editor started with `-vsaStatusBeacon`. `EditorLauncher` adds the flag and `-automated`.
+
+### CLI and skill
+
+`Client~/Cli/` is the thin CLI `vsa-unity` over the library: `status`, `wait`, `watch`, `log sessions|show|mark` and `config show`. `Skills~/vsa-unity/SKILL.md` tells an agent when to call it and what each exit code means.
+
+```bash
+dotnet build Packages/com.vsa.testsuite/Client~/Cli
+dotnet Packages/com.vsa.testsuite/Client~/Cli/bin/Debug/net8.0/vsa-unity.dll wait --until ready --timeout 600
+```
+
+Tests: `dotnet test Packages/com.vsa.testsuite/Client~/Tests`. They include the supervisor with a fake control, one test for each CLI command, and the replay of `Tools/StatusLab/results/final` (115 of 117 or better).
 
 The samples test the lab fixtures in `Assets/TestSuiteLab` of vsa-unity. Run them from `Client~/Samples`. With no arguments, they use the Unity project above the current folder.
 

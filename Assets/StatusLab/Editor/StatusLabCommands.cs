@@ -23,24 +23,6 @@ namespace StatusLab
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         static extern int MessageBox(IntPtr owner, string text, string caption, uint type);
 
-        [CliGroupCommand(Group, "Main-thread probe: frame, flags and dirty scenes")]
-        internal static ExitCode Ping(CommandContext cmd)
-        {
-            var dirty = 0;
-            for (var i = 0; i < SceneManager.sceneCount; i++)
-                if (SceneManager.GetSceneAt(i).isDirty) dirty++;
-            cmd.Result.WriteRecord(new
-            {
-                frame = Time.frameCount,
-                compiling = EditorApplication.isCompiling,
-                updating = EditorApplication.isUpdating,
-                playing = EditorApplication.isPlaying,
-                paused = EditorApplication.isPaused,
-                dirtyScenes = dirty,
-            });
-            return ExitCode.Success;
-        }
-
         [CliGroupCommand(Group, "Hold the command queue with an async command that checks the token")]
         internal static async Task<ExitCode> Hold(CommandContext cmd,
             [CliArg("seconds", "Seconds to hold")] int seconds = 30)

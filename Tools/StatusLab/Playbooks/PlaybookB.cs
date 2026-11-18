@@ -1,3 +1,4 @@
+using VSA.TestSuite.Client.Status;
 using System.Diagnostics;
 
 namespace StatusLab

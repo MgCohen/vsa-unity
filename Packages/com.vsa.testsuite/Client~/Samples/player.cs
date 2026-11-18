@@ -40,7 +40,7 @@ Console.WriteLine($"Launched: {game.Transport.Instance} in {launch.ElapsedMillis
 
 try
 {
-    await Check("health ready", async () => (await game.Health.Probe()).ToString());
+    await Check("status ready", async () => (await game.Status.Check()).ToString());
     await Check("game info", async () =>
     {
         var i = await game.Info();

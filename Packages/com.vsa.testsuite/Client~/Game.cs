@@ -76,7 +76,8 @@ namespace VSA.TestSuite.Client
     public sealed class Game : IDisposable
     {
         public ITransport Transport { get; }
-        public Health Health { get; }
+        /// <summary>The state of the instance, from the status checker. It reads only.</summary>
+        public InstanceStatus Status { get; }
 
         /// <summary>The time limit of one command in the Editor, in milliseconds.</summary>
         public int CommandTimeoutMs { get; set; } = 30000;
@@ -84,14 +85,14 @@ namespace VSA.TestSuite.Client
         public Game(ITransport transport)
         {
             Transport = transport;
-            Health = new Health(transport);
+            Status = new InstanceStatus(transport.Instance);
         }
 
         /// <summary>Attaches to the Editor of a project with direct HTTP, and waits until it is ready.</summary>
         public static async Task<Game> AttachEditor(string projectPath, int readyTimeoutMs = 120000)
         {
             var game = new Game(new HttpTransport(Instance.ForEditor(projectPath)));
-            await game.Health.WaitReady(readyTimeoutMs);
+            await game.Status.WaitReady(readyTimeoutMs);
             return game;
         }
 
@@ -102,7 +103,7 @@ namespace VSA.TestSuite.Client
         public static async Task<Game> AttachPlayer(string playerFolder, int readyTimeoutMs = 60000)
         {
             var game = new Game(new HttpTransport(Instance.ForPlayer(playerFolder)));
-            await game.Health.WaitReady(readyTimeoutMs);
+            await game.Status.WaitReady(readyTimeoutMs);
             return game;
         }
 
@@ -134,7 +135,7 @@ namespace VSA.TestSuite.Client
             var game = new Game(new HttpTransport(instance)) { OwnedProcess = process };
             try
             {
-                await game.Health.WaitReady(readyTimeoutMs);
+                await game.Status.WaitReady(readyTimeoutMs);
             }
             catch
             {
@@ -209,15 +210,7 @@ namespace VSA.TestSuite.Client
         public async Task EnterPlayMode(int timeoutMs = 60000)
         {
             await Command("editor.playmode", "start");
-            var until = DateTime.UtcNow.AddMilliseconds(timeoutMs);
-            while (true)
-            {
-                var r = await Health.Probe();
-                if (r.State == HealthState.Ready && r.PlayerLoopTicking == true) return;
-                if (r.State == HealthState.Dialog || r.State == HealthState.Dead || DateTime.UtcNow > until)
-                    throw new InstanceException(Transport.Instance, "Play Mode did not start: " + r);
-                await Task.Delay(300);
-            }
+            await Status.WaitFor(new[] { "play-running" }, timeoutMs, "Play Mode did not start");
         }
 
         public Task ExitPlayMode() => Command("editor.playmode", "stop");
@@ -255,8 +248,8 @@ namespace VSA.TestSuite.Client
             catch (TimeoutException e)
             {
                 // The command did not answer. Find out why before the test reports it.
-                var health = await Health.Probe();
-                throw new InstanceException(Transport.Instance, e.Message + ". Health: " + health);
+                var state = await Status.Check();
+                throw new InstanceException(Transport.Instance, e.Message + ". State: " + state);
             }
         }
 

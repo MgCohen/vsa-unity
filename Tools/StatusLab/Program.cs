@@ -1,5 +1,6 @@
 using System.Text.Json;
 using StatusLab;
+using VSA.TestSuite.Client.Status;
 
 // Spike CLI of the status lab. Output: one JSON envelope on stdout; progress on stderr.
 //   statuslab start | stop
@@ -171,9 +172,7 @@ switch (verb)
         var files = Directory.Exists(input) ? Directory.GetFiles(input, "*.ndjson*", SearchOption.AllDirectories).OrderBy(f => f).ToArray() : new[] { input };
         var replayer = new Replayer();
         var overridePath = FindUp("truth-overrides.json");
-        if (File.Exists(overridePath))
-            foreach (var p in JsonDocument.Parse(File.ReadAllText(overridePath)).RootElement.EnumerateObject())
-                if (p.Name != "_reason") replayer.Overrides[p.Name] = p.Value.Deserialize<TruthWindow>(Recorder.Options);
+        if (File.Exists(overridePath)) replayer.LoadOverrides(overridePath);
         var reports = files.SelectMany(replayer.Replay).ToList();
         foreach (var r in reports)
             Console.Error.WriteLine($"{(r.Scored ? (r.Pass ? "PASS" : "FAIL") : "----"),-5}{r.Case,-14}{r.Step,-5}{string.Join(" > ", r.Observed),-70} {r.Why}");

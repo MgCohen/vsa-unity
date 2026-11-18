@@ -1,3 +1,4 @@
+using VSA.TestSuite.Client.Status;
 namespace StatusLab
 {
     /// <summary>Playbook A: one Editor stays open. Steps A1-A12, test cases T01-T16.</summary>

@@ -1,3 +1,4 @@
+using VSA.TestSuite.Client.Status;
 using System.Diagnostics;
 
 namespace StatusLab
@@ -23,7 +24,7 @@ namespace StatusLab
             {
                 // (a) The port of the last start is taken before the start: the Editor must take another one.
                 await EnsureEditor();
-                var port = T.Port;
+                var port = T.ServerPort;
                 await QuitEditor();
                 Forget();
                 using (var blocker = PortBlocker.Take(port, port))
@@ -31,7 +32,7 @@ namespace StatusLab
                     S.Recorder.Meta("blocked ports " + string.Join(",", blocker.Ports), S.Clock.NowMs);
                     await Case("T31", "C2", new[] { "no-editor", "cold-start", "settling|importing|compiling|domain-reload|long-command", "ready-idle" },
                         600_000, 15_000, StartEditor, After("ready-idle"));
-                    S.Recorder.Meta("descriptor port " + T.Port + " (blocked " + port + ")", S.Clock.NowMs);
+                    S.Recorder.Meta("descriptor port " + T.ServerPort + " (blocked " + port + ")", S.Clock.NowMs);
                 }
                 // (b) All free ports of the Editor range are taken: the HTTP server cannot start.
                 await QuitEditor();
@@ -117,7 +118,7 @@ namespace StatusLab
                     _ = Task.Run(async () =>
                     {
                         await Task.Delay(1000, Cancel);
-                        var pings = Enumerable.Range(0, 110).Select(async _ => codes.Add((await PipelineHttp.Exec(T, new[] { "statuslab", "ping" }, 60_000, Cancel)).Http));
+                        var pings = Enumerable.Range(0, 110).Select(async _ => codes.Add((await PipelineHttp.Exec(T, Target.EditorProbe, 60_000, Cancel)).Http));
                         await Task.WhenAll(pings);
                         S.Recorder.Meta("ping codes " + string.Join(", ", codes.GroupBy(c => c).Select(g => g.Key + " x" + g.Count())), S.Clock.NowMs);
                     });

@@ -9,16 +9,19 @@ using UnityEngine;
 public static class Il2cppCheck {
     const string Scene = "Assets/Check.unity";
 
+    // -checkBackend Mono2x and -checkStripping Minimal give a Mono player. The default is IL2CPP at stripping High.
     public static void Build() {
         var output = Argument("-checkOutput") ?? Path.GetFullPath("Il2cppCheck/Player");
-        MakeSceneWithHostAndCheck();
+        var useBackend = Enum.Parse<ScriptingImplementation>(Argument("-checkBackend") ?? "IL2CPP");
+        var useStripping = Enum.Parse<ManagedStrippingLevel>(Argument("-checkStripping") ?? "High");
+        MakeSceneWithShellAndCheck();
         var target = NamedBuildTarget.Standalone;
         var backend = PlayerSettings.GetScriptingBackend(target);
         var stripping = PlayerSettings.GetManagedStrippingLevel(target);
         BuildReport report;
         try {
-            PlayerSettings.SetScriptingBackend(target, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetManagedStrippingLevel(target, ManagedStrippingLevel.High);
+            PlayerSettings.SetScriptingBackend(target, useBackend);
+            PlayerSettings.SetManagedStrippingLevel(target, useStripping);
             report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                 scenes = new[] { Scene },
                 locationPathName = Path.Combine(output, "VsaCheck.exe"),
@@ -31,13 +34,13 @@ public static class Il2cppCheck {
             AssetDatabase.SaveAssets();
         }
         var summary = report.summary;
-        Debug.Log($"CHECK build {summary.result} backend=IL2CPP stripping=High errors={summary.totalErrors}");
+        Debug.Log($"CHECK build {summary.result} backend={useBackend} stripping={useStripping} errors={summary.totalErrors}");
         EditorApplication.Exit(summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 
-    static void MakeSceneWithHostAndCheck() {
+    static void MakeSceneWithShellAndCheck() {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        new GameObject("VsaHost").AddComponent<SampleApp.SampleHost>();
+        new GameObject("Shell").AddComponent<SampleApp.SampleShell>();
         new GameObject("Check").AddComponent<SampleApp.Check>();
         EditorSceneManager.SaveScene(scene, Scene);
     }

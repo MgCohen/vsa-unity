@@ -1,6 +1,6 @@
 # VContainer sample
 
-One scene uses VContainer and the VSA app together, in the two directions of `VSA.Unity.VContainer`. Open `VContainerSample.unity` and enter play mode, then click **Greet**.
+One scene uses VContainer and the VSA app together, in the two directions of `Umpire.Unity.VContainer`. Open `VContainerSample.unity` and enter Play Mode, then click **Greet**.
 
 ## One greeting through the two containers
 
@@ -24,12 +24,12 @@ flowchart LR
 | Path | Contains |
 |---|---|
 | `Greeter/` | The VSA module: request, handler, presenter, `IGreetingSource` |
-| `VContainerSampleApp.cs` | The app: `Modules(new GreeterModule())`, `UseVContainer()` |
-| `SampleRootScope.cs` | `VsaLifetimeScope<VContainerSampleApp>`: starts the app, imports `IGreetingSource` |
+| `GreeterHost.cs` | The Unity host with the module list: `base(new GreeterModule())` |
+| `SampleRootScope.cs` | `VsaLifetimeScope<Vsa<GreeterHost>>`: starts the app, imports `IGreetingSource` |
 | `GreeterSceneScope.cs` | The child scope: `RegisterVsaPresenters` |
 | `GreetButton.cs`, `GreetingLabel.cs` | The views |
-| `Editor/VContainerSampleScene.cs` | Writes the scene: **Tools > VSA > Write VContainer Sample Scene** |
+| `Editor/VContainerSampleScene.cs` | Writes the scene: **Tools > Umpire > Write VContainer Sample Scene** |
 | `Tests/` | A PlayMode test that loads the scene and clicks **Greet** |
 
-- The `Greeter` module has no `VsaModule` metadata, so the module scan of `SampleApp` does not find it.
+- `GreeterHost` gives the module list, so the app of this sample does not get the `Sample` module of `SampleApp`.
 - The two labels show the same text: one scene scope shares one presenter.

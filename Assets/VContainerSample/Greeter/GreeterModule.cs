@@ -1,18 +1,15 @@
 using System.Threading;
 using System.Threading.Tasks;
-using VSA.Contracts;
-using VSA.Contracts.Events;
-using VSA.Contracts.Requests;
-using VSA.Handlers.Requests;
-using VSA.Module;
-using VSA.Presenters;
+using Umpire.Kernels;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Contracts.Events;
+using Umpire.Vsa.Contracts.Requests;
+using Umpire.Vsa.Handlers.Requests;
+using Umpire.Vsa.Presenters;
 
-// No VsaModule metadata: VContainerSampleApp gives this module with Modules(...), so the module scan of
-// other apps (SampleApp) does not find it.
+// GreeterHost gives this module to the app of the sample, so that app does not read the Sample module.
 namespace Greeter {
-    public sealed class GreeterModule : VSA.Module.Module {
-        public override void Configure(ModuleBuilder module) {
-        }
+    public sealed class GreeterModule : Module {
     }
 
     // The Unity side gives the greeting. The module has no Unity reference: the VContainer root scope
@@ -46,13 +43,13 @@ namespace Greeter {
     }
 
     public sealed class GreeterPresenter : Presenter, IPresenterEvent<Greeted> {
-        public GreeterPresenter(IBus bus) : base(bus) {
+        public GreeterPresenter(IRequestSender requests) : base(requests) {
         }
 
         public string Last { get; private set; } = "No greeting yet";
         public int Count { get; private set; }
 
-        public Task<Result<GreetResponse>> GreetAsync(string name) => Bus.Send(new GreetRequest(name));
+        public Task<Result<GreetResponse>> GreetAsync(string name) => Requests.SendAsync(new GreetRequest(name));
 
         public Task OnEventAsync(Greeted integrationEvent, CancellationToken ct) {
             Last = integrationEvent.Text;

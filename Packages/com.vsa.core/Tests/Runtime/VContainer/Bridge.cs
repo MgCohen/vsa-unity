@@ -1,26 +1,24 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Umpire.Kernels;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa;
+using Umpire.Vsa.Contracts.Events;
+using Umpire.Vsa.Contracts.Requests;
+using Umpire.Vsa.Handlers.Requests;
+using Umpire.Vsa.Presenters;
 using UnityEngine;
 using VContainer;
-using VSA.Composition;
-using VSA.Contracts;
-using VSA.Contracts.Events;
-using VSA.Contracts.Requests;
-using VSA.Handlers.Requests;
-using VSA.Module;
-using VSA.Presenters;
 
 namespace System.Runtime.CompilerServices {
     static class IsExternalInit {
     }
 }
 
-namespace VSA.Unity.VContainer.Tests {
+namespace Umpire.Unity.VContainer.Tests {
     // A small module for the tests. The handler needs IGreeting, a service of the VContainer root scope.
-    public sealed class BridgeModule : VSA.Module.Module {
-        public override void Configure(ModuleBuilder module) {
-        }
+    public sealed class BridgeModule : Module {
     }
 
     public interface IGreeting {
@@ -56,13 +54,13 @@ namespace VSA.Unity.VContainer.Tests {
     }
 
     public sealed class GreetPresenter : Presenter, IPresenterEvent<Greeted> {
-        public GreetPresenter(IBus bus) : base(bus) {
+        public GreetPresenter(IRequestSender requests) : base(requests) {
         }
 
         public string Last { get; private set; } = "";
         public bool Disposed { get; private set; }
 
-        public Task<Result<GreetResponse>> GreetAsync(string name) => Bus.Send(new GreetRequest(name));
+        public Task<Result<GreetResponse>> GreetAsync(string name) => Requests.SendAsync(new GreetRequest(name));
 
         public Task OnEventAsync(Greeted integrationEvent, CancellationToken ct) {
             Last = integrationEvent.Text;
@@ -75,19 +73,25 @@ namespace VSA.Unity.VContainer.Tests {
         }
     }
 
-    public sealed class BridgeApp : VsaApp<BridgeApp> {
-        protected override VsaBuilder Builder(string[] args) =>
-            VsaBuilder.Create(args).Modules(new BridgeModule()).UseUnityHost().UseVContainer();
+    // The Unity host with the bridge module. The module scan does not read a test assembly.
+    public sealed class BridgeHost : UnityHost {
+        public BridgeHost() : base(new BridgeModule()) {
+        }
     }
 
-    // The app has no UseVContainer, so the imports cannot reach it.
-    public sealed class NoBridgeApp : VsaApp<NoBridgeApp> {
-        protected override VsaBuilder Builder(string[] args) =>
-            VsaBuilder.Create(args).Modules(new BridgeModule()).UseUnityHost();
+    // A host that does not derive from UnityHost, so the imports cannot reach the app.
+    public sealed class PlainHost : AppHost {
+        public PlainHost() {
+            Modules = new Module[] { new BridgeModule() };
+        }
+    }
+
+    // A shell with the bridge module, for the case of two apps.
+    public sealed class BridgeShell : Shell<Vsa<BridgeHost>> {
     }
 
     // The root scope of the tests: it registers and imports IGreeting.
-    public sealed class BridgeScope : VsaLifetimeScope<BridgeApp> {
+    public sealed class BridgeScope : VsaLifetimeScope<Vsa<BridgeHost>> {
         public static List<GameObject> NextTargets;
 
         protected override void Awake() {
@@ -104,7 +108,7 @@ namespace VSA.Unity.VContainer.Tests {
         protected override void Import(VsaImports imports) => imports.Add<IGreeting>();
     }
 
-    public sealed class NoBridgeScope : VsaLifetimeScope<NoBridgeApp> {
+    public sealed class PlainScope : VsaLifetimeScope<Vsa<PlainHost>> {
         protected override void ConfigureScope(IContainerBuilder builder) =>
             builder.RegisterInstance<IGreeting>(new Greeting("hello"));
 
@@ -118,7 +122,7 @@ namespace VSA.Unity.VContainer.Tests {
 
         [Inject]
         public void Construct(GreetPresenter presenter) {
-            AppRanAtInject = VsaHost.IsRunning;
+            AppRanAtInject = Shell.AppIsRunning;
             Presenter = presenter;
         }
     }

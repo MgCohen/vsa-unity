@@ -1,6 +1,6 @@
-// Copies the VSA packages and their dependencies into Packages/com.vsa.core/Runtime/Plugins. Unity cannot restore
-// NuGet packages, so git keeps the DLLs. Run this script again after you change VsaVersion in Vendor/VsaVendor.csproj.
-// The script also writes VsaVersion to the package version, and copies the VSA rule values for the editor script.
+// Copies the Umpire packages and their dependencies into Packages/com.vsa.core/Runtime/Plugins. Unity cannot restore
+// NuGet packages, so git keeps the DLLs. Run this script again after you change UmpireVersion in Vendor/UmpireVendor.csproj.
+// The script also writes UmpireVersion to the package version, and copies the analyzers and their rule values.
 //
 //   dotnet run --file vendor.cs
 //
@@ -15,9 +15,9 @@ using System.Text.RegularExpressions;
 var root = Path.GetDirectoryName(Here())!;
 var package = Path.Combine(root, "Packages", "com.vsa.core");
 var plugins = Path.Combine(package, "Runtime", "Plugins");
-var output = Path.Combine(Path.GetTempPath(), $"vsa-vendor-{Guid.NewGuid():N}");
-var project = Path.Combine(root, "Vendor", "VsaVendor.csproj");
-var version = Regex.Match(File.ReadAllText(project), "<VsaVersion>(.+)</VsaVersion>").Groups[1].Value;
+var output = Path.Combine(Path.GetTempPath(), $"umpire-vendor-{Guid.NewGuid():N}");
+var project = Path.Combine(root, "Vendor", "UmpireVendor.csproj");
+var version = Regex.Match(File.ReadAllText(project), "<UmpireVersion>(.+)</UmpireVersion>").Groups[1].Value;
 
 var publish = new ProcessStartInfo("dotnet") { WorkingDirectory = root };
 foreach (var arg in (string[])["publish", project, "-c", "Release", "-o", output, .. args]) {
@@ -41,7 +41,7 @@ string[] unity = [
 
 // The project itself does not ship. Each other DLL goes to the plugins folder.
 var dlls = Directory.GetFiles(output, "*.dll")
-    .Where(path => Path.GetFileName(path) != "VsaVendor.dll" && !unity.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
+    .Where(path => Path.GetFileName(path) != "UmpireVendor.dll" && !unity.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
     .ToDictionary(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);
 
 Directory.CreateDirectory(plugins);
@@ -56,27 +56,38 @@ foreach (var (name, path) in dlls) {
 }
 Directory.Delete(output, recursive: true);
 
-// The rule values of VSA.Sdk (PackageDownload), as the file that a consumer copies to Assets/Default.globalconfig.
-// Unity does not import a folder that ends with "~". The editor script CompilerFiles reads the block of this file,
-// and an EditMode test checks that the file is the same as the text that CompilerFiles writes.
-var packages = GlobalPackages();
-var rules = File.ReadAllText(Path.Combine(packages, "vsa.sdk", version.ToLowerInvariant(), "Sdk", "VSA.Rules.globalconfig"))
-    .Replace("\r\n", "\n").TrimEnd('\n').Split('\n')
-    .Where(line => !Regex.IsMatch(line, @"^\s*(is_global|global_level)\s*="))
-    .SkipWhile(line => line.Trim().Length == 0);
+// The analyzers and their rule values (PackageDownload). In the folder of the VSA.Unity asmdef, the analyzers run on
+// VSA.Unity and on each assembly that references it. The label RoslynAnalyzer in the .meta file makes Unity use
+// the DLL as an analyzer, not as a library.
+var analyzerPackage = Path.Combine(GlobalPackages(), "umpire.vsa.analyzers", version.ToLowerInvariant());
+string[] analyzerNames = ["Umpire.Kernels.Analyzers", "Umpire.Vsa.Analyzers"];
+foreach (var old in Directory.GetFiles(Path.Combine(package, "Runtime"), "*.Analyzers.dll")
+    .Where(path => !analyzerNames.Contains(Path.GetFileNameWithoutExtension(path)))) {
+    File.Delete(old);
+    File.Delete(old + ".meta");
+}
+foreach (var name in analyzerNames) {
+    var analyzer = Path.Combine(package, "Runtime", name + ".dll");
+    File.WriteAllBytes(analyzer, File.ReadAllBytes(Path.Combine(analyzerPackage, "analyzers", "dotnet", "cs", name + ".dll")));
+    if (!File.Exists(analyzer + ".meta")) {
+        File.WriteAllText(analyzer + ".meta", AnalyzerMeta.Replace("{guid}", Guid.NewGuid().ToString("N")).Replace("\r\n", "\n"));
+    }
+}
+
+// The rule values of the analyzers, as the file that a consumer copies to Assets/Default.globalconfig. Unity reads
+// no globalconfig from a package. Unity does not import a folder that ends with "~". The editor script CompilerFiles
+// reads the block of this file, and an EditMode test checks that the file is the same as the text that CompilerFiles writes.
+var rules = analyzerNames
+    .SelectMany(name => File.ReadAllText(Path.Combine(analyzerPackage, "build", name + ".globalconfig"))
+        .Replace("\r\n", "\n").TrimEnd('\n').Split('\n')
+        .Where(line => !Regex.IsMatch(line, @"^\s*(is_global|global_level)\s*="))
+        .SkipWhile(line => line.Trim().Length == 0)
+        .Append(""))
+    .SkipLast(1);
 string[] config = ["is_global = true", "# BEGIN com.vsa.core: the editor script of the package writes these lines.", .. rules,
     "# END com.vsa.core"];
 Directory.CreateDirectory(Path.Combine(package, "Documentation~"));
 File.WriteAllText(Path.Combine(package, "Documentation~", "Default.globalconfig"), string.Join("\n", config) + "\n");
-
-// The analyzers (PackageDownload). In the folder of the VSA.Unity asmdef, they run on VSA.Unity and on each assembly
-// that references it. The label RoslynAnalyzer in the .meta file makes Unity use the DLL as an analyzer, not as a library.
-var analyzers = Path.Combine(packages, "vsa.analyzers", version.ToLowerInvariant(), "analyzers", "dotnet", "cs", "VSA.Analyzers.dll");
-var analyzer = Path.Combine(package, "Runtime", "VSA.Analyzers.dll");
-File.WriteAllBytes(analyzer, File.ReadAllBytes(analyzers));
-if (!File.Exists(analyzer + ".meta")) {
-    File.WriteAllText(analyzer + ".meta", AnalyzerMeta.Replace("\r\n", "\n"));
-}
 
 var manifest = Path.Combine(package, "package.json");
 File.WriteAllText(manifest, Regex.Replace(File.ReadAllText(manifest), "\"version\": \"[^\"]*\"", $"\"version\": \"{version}\""));
@@ -98,7 +109,7 @@ static partial class Program {
     // No platform: Unity does not reference the DLL and does not put it in a player.
     const string AnalyzerMeta = """
         fileFormatVersion: 2
-        guid: 7c0a5e1d3b9f4e2a8d6c1b0f9e8a7d61
+        guid: {guid}
         labels:
         - RoslynAnalyzer
         PluginImporter:

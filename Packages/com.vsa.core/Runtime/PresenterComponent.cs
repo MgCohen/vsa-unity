@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using UnityEngine;
-using VSA.Presenters;
+using Umpire.Vsa.Presenters;
 
-namespace VSA.Unity {
+namespace Umpire.Unity {
     // A uGUI view of one presenter. It only renders: it calls Render on Bind and on each Changed, on the main thread.
     // A factory gives the presenter with Bind. A view in a scene with no Bind before Start gets the presenter
     // from a new scope of the running app, and the view disposes that scope.
@@ -28,10 +28,10 @@ namespace VSA.Unity {
         protected abstract void Render();
 
         protected virtual void Start() {
-            if (Presenter != null || VsaHost.Services == null) {
+            if (Presenter != null || Shell.Services == null) {
                 return;
             }
-            scope = VsaHost.Services.CreateScope();
+            scope = Shell.Services.CreateScope();
             Bind(scope.ServiceProvider.GetRequiredService<T>());
         }
 

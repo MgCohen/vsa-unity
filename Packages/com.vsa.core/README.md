@@ -24,9 +24,8 @@ The rules have default values, so a project compiles without step 1. Step 1 give
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10) |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
-| `Runtime/link.xml` | The IL2CPP keep rule of `Umpire.Markers` |
 | `Documentation~/Default.globalconfig` | The rule values for the install step |
-| `Editor/` | `CompilerFiles` and `PackageLinker` |
+| `Editor/` | `CompilerFiles` |
 | `Tests/` | EditMode and PlayMode tests |
 
 Unity 6 ships `System.Text.Json`, `System.Collections.Immutable` and the `Microsoft.Extensions.*.Abstractions` DLLs of DI and logging. The package does not ship a second copy, because a second copy is a compile error.
@@ -238,7 +237,6 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 | Script | Does |
 |---|---|
 | `CompilerFiles` | Updates `Assets/Default.globalconfig` |
-| `PackageLinker` | Gives `Runtime/link.xml` to the UnityLinker |
 
 - `Assets/Default.globalconfig` gets the block of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. The block holds the text of `build/Umpire.Kernels.Analyzers.globalconfig` and `build/Umpire.Vsa.Analyzers.globalconfig` of the NuGet package. Unity reads only this name for all assemblies.
 - The script changes only its own lines. The menu item **Tools > Umpire > Write Compiler Files** runs `CompilerFiles` again.
@@ -246,21 +244,19 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 
 ## IL2CPP
 
-Umpire marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them. `Runtime/link.xml` keeps one more assembly:
+The package supports managed stripping Minimal. It has no `link.xml`. Umpire marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them.
 
-```xml
-<assembly fullname="Umpire.Markers" preserve="all" />
-```
+| Stripping | Result (probe, IL2CPP, no `link.xml`) |
+|---|---|
+| Minimal | Pass |
+| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails. |
 
-The scan reads `[AutoRegister]` and `[TypeArgument]` on the Umpire bases. The UnityLinker reads the `link.xml` files of `Assets/` only, so `PackageLinker` gives the package file.
-
-| Player of the sample check | Stripping | `link.xml` | Result |
-|---|---|---|---|
-| Mono | Minimal | Yes | Pass |
-| IL2CPP | High | Yes | Pass |
+| Player of the sample check | Stripping | Result |
+|---|---|---|
+| Mono | Minimal | Pass |
+| IL2CPP | Minimal | Pass |
 
 ## Open questions
 
-- Stripping: the Umpire probe passed at stripping Minimal with no `link.xml`. Does stripping High pass with no `link.xml`?
 - Package name: the package id is `com.vsa.core`, and the assemblies are `Umpire.Unity.*`. Does the package get an Umpire id?
 - Arguments: does `UnityHost` give the shell arguments to the app configuration?

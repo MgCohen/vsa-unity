@@ -58,7 +58,7 @@ The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each c
 
 ## The IL2CPP check
 
-`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping High, and runs it. The player starts the app through `SampleShell` (a `Shell<Vsa<SampleHost>>`) and writes `CHECK` lines to its log.
+`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping Minimal, and runs it. The player starts the app through `SampleShell` (a `Shell<Vsa<SampleHost>>`) and writes `CHECK` lines to its log.
 
 | Line | Shows |
 |---|---|

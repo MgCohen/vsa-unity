@@ -1,5 +1,5 @@
 # The IL2CPP player check of the package (dev machine). It builds the Windows IL2CPP player of the sample
-# (managed stripping High), runs it, and reads the CHECK lines of the player log.
+# (managed stripping Minimal), runs it, and reads the CHECK lines of the player log.
 #
 #   ./il2cpp-check.ps1 [-Unity <path of Unity.exe>]
 #

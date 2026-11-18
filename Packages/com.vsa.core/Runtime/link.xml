@@ -1,6 +1,0 @@
-<!-- The IL2CPP keep rule of the package. The editor script PackageLinker gives this file to the UnityLinker.
-     The scan reads [AutoRegister] and [TypeArgument] on the Umpire bases. Without this rule, a high stripping level can
-     remove the markers assembly. -->
-<linker>
-  <assembly fullname="Umpire.Markers" preserve="all" />
-</linker>

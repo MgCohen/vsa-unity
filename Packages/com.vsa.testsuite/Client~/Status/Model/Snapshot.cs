@@ -24,12 +24,16 @@ namespace VSA.TestSuite.Client.Status
         public double ProbeMs;
         public string ProbeBusyReason;
         public bool ProbeOk;
+        /// <summary>The probe used GET /api/editor_status, because the Editor has no "suite ping".</summary>
+        public bool ProbeFallback;
         public int? ProbeFrame;
         public bool? ProbeCompiling;
         public bool? ProbeUpdating;
         public bool? ProbePlaying;
         public bool? ProbePaused;
         public int? ProbeDirtyScenes;
+        /// <summary>The paths of the dirty scenes, separated by "|". An unsaved new scene has the name "(untitled)".</summary>
+        public string ProbeDirtyScenePaths;
 
         // truth: console status groundTruth
         public bool? TruthCompiling;

@@ -12,15 +12,17 @@ namespace VSA.TestSuite.Editor
     /// <summary>
     /// Writes Library/VSA.TestSuite/Status/beacon.json from the main thread: once each second from
     /// EditorApplication.update, and at once for each event. A reader in another process sees a still file
-    /// when the main thread is blocked. It runs only in an Editor started with the -vsaStatusBeacon flag.
+    /// when the main thread is blocked. It is on by default. The command "suite beacon --on false" or the
+    /// command-line flag -vsaStatusBeaconOff turns it off; "suite beacon --on true" turns it on again with no recompile.
     /// </summary>
     [InitializeOnLoad]
     public static class StatusBeacon
     {
-        /// <summary>The command-line flag that starts the beacon.</summary>
-        public const string Flag = "-vsaStatusBeacon";
+        /// <summary>The command-line flag that turns the beacon off at the start.</summary>
+        public const string OffFlag = "-vsaStatusBeaconOff";
 
         const string EventsKey = "VSA.TestSuite.BeaconEvents";
+        const string EnabledKey = "VSA.TestSuite.BeaconEnabled";
         const int MaxEvents = 12;
 
         static readonly int Pid = Process.GetCurrentProcess().Id;
@@ -29,7 +31,6 @@ namespace VSA.TestSuite.Editor
 
         static StatusBeacon()
         {
-            if (!Enabled) return;
             EditorApplication.update += OnUpdate;
             CompilationPipeline.compilationStarted += _ => Event("compile-start");
             CompilationPipeline.compilationFinished += _ => Event("compile-end");
@@ -41,8 +42,16 @@ namespace VSA.TestSuite.Editor
             Event("load");
         }
 
-        /// <summary>True if the command line has the -vsaStatusBeacon flag.</summary>
-        public static bool Enabled { get; } = Array.IndexOf(Environment.GetCommandLineArgs(), Flag) >= 0;
+        /// <summary>True if the beacon writes its file. SessionState keeps the value across domain reloads.</summary>
+        public static bool Enabled
+        {
+            get => SessionState.GetBool(EnabledKey, Array.IndexOf(Environment.GetCommandLineArgs(), OffFlag) < 0);
+            set
+            {
+                SessionState.SetBool(EnabledKey, value);
+                if (value) Event("beacon-on");
+            }
+        }
 
         /// <summary>Library/VSA.TestSuite/Status of this project. Not Temp/: Unity can clear Temp/ at a start.</summary>
         public static string Folder
@@ -70,7 +79,7 @@ namespace VSA.TestSuite.Editor
 
         static void OnUpdate()
         {
-            if (EditorApplication.timeSinceStartup - lastWrite < 1.0) return;
+            if (!Enabled || EditorApplication.timeSinceStartup - lastWrite < 1.0) return;
             Write();
         }
 

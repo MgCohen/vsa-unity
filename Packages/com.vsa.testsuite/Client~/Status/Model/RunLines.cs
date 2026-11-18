@@ -5,6 +5,6 @@ namespace VSA.TestSuite.Client.Status
     {
         public RunInfo Run;
         public List<string> UnityLog = new();
-        public List<string> WatchLog = new();
+        public List<string> StatusLog = new();
     }
 }

@@ -4,11 +4,11 @@ using System.Text.Json;
 namespace VSA.TestSuite.Client.Status
 {
     /// <summary>The run folders in the log root: list, read, mark and prune. Each Editor start has its own folder
-    /// &lt;root&gt;/&lt;editorId&gt;/ with unity.log, run.json and, if a watch ran, watch.ndjson.</summary>
+    /// &lt;root&gt;/&lt;editorId&gt;/ with unity.log, run.json and, if a daemon ran, status.ndjson.</summary>
     public static class RunLog
     {
         public const string RunFile = "run.json";
-        public const string WatchFile = "watch.ndjson";
+        public const string StatusFile = "status.ndjson";
         public const string UnityLogFile = "unity.log";
         const string PrecheckPrefix = "precheck-";
 
@@ -22,7 +22,7 @@ namespace VSA.TestSuite.Client.Status
                 .ToList();
         }
 
-        /// <summary>The last <paramref name="tail"/> lines of unity.log and watch.ndjson of one run.
+        /// <summary>The last <paramref name="tail"/> lines of unity.log and status.ndjson of one run.
         /// A null id means the newest Editor run.</summary>
         public static RunLines Show(string root, string runId, int tail)
         {
@@ -31,16 +31,16 @@ namespace VSA.TestSuite.Client.Status
             {
                 Run = run,
                 UnityLog = Tail(run.UnityLog, tail),
-                WatchLog = Tail(run.WatchLog, tail),
+                StatusLog = Tail(run.StatusLog, tail),
             };
         }
 
-        /// <summary>Appends a mark line to watch.ndjson of a run. A null id means the newest Editor run.
+        /// <summary>Appends a mark line to status.ndjson of a run. A null id means the newest Editor run.
         /// Returns the file path.</summary>
         public static string Mark(string root, string runId, string text)
         {
             var run = Find(root, runId);
-            var path = Path.Combine(run.Folder, WatchFile);
+            var path = Path.Combine(run.Folder, StatusFile);
             var line = JsonSerializer.Serialize(new
             {
                 kind = "mark",
@@ -90,8 +90,8 @@ namespace VSA.TestSuite.Client.Status
                     DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var at))
                 run.StartedUtc = at;
             run.UnityLogBytes = File.Exists(run.UnityLog) ? new FileInfo(run.UnityLog).Length : 0;
-            var watch = Path.Combine(folder, WatchFile);
-            run.WatchLog = File.Exists(watch) ? watch : null;
+            var statusLog = Path.Combine(folder, StatusFile);
+            run.StatusLog = File.Exists(statusLog) ? statusLog : null;
             var file = Path.Combine(folder, RunFile);
             if (!File.Exists(file)) return run;
             try

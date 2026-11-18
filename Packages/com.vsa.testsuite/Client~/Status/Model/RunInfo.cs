@@ -13,7 +13,7 @@ namespace VSA.TestSuite.Client.Status
         public string Folder;
         public string UnityLog;
         public long UnityLogBytes;
-        /// <summary>The watch recording. Null if no watch ran.</summary>
-        public string WatchLog;
+        /// <summary>The status recording of the daemon. Null if no daemon ran.</summary>
+        public string StatusLog;
     }
 }

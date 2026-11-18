@@ -20,24 +20,37 @@ namespace VSA.TestSuite.Cli
             ["NotFound"] = BadArguments,
             ["Timeout"] = Timeout,
             ["Dialog"] = AwaitingInput,
+            ["Busy"] = Busy,
+        };
+
+        /// <summary>Warning code to text.</summary>
+        static readonly Dictionary<string, string> Warnings = new()
+        {
+            ["not-automated"] = "The Editor runs without -automated: start dialogs can block it. Start it with 'vsa-unity open'.",
+            ["no-beacon"] = "The Editor has no status beacon (the package is missing): a freeze shows only through the probe.",
         };
 
         /// <summary>Error code to hint: what the caller does next.</summary>
         static readonly Dictionary<string, string> Hints = new()
         {
-            ["NoEditor"] = "No own Editor runs. Run 'vsa-unity watch' to start one, or pass --pid.",
-            ["ForeignEditor"] = "An Editor that this tool did not start has the project. Pass --pid to read it. Never stop it.",
-            ["Timeout"] = "Read data.state. Wait again with a longer --timeout, or run 'vsa-unity watch'.",
-            ["Dialog"] = "A native dialog blocks the Editor. Run 'vsa-unity watch' to answer it by policy.",
-            ["Stalled"] = "Nothing moved for the stall window. Run 'vsa-unity watch' to escalate.",
-            ["Stuck"] = "The state passed its cap. Run 'vsa-unity watch' to escalate.",
+            ["NoEditor"] = "No Editor runs. Run 'vsa-unity open'.",
+            ["ForeignEditor"] = "An Editor that no daemon tracks has the project. Run 'vsa-unity open' to attach to it.",
+            ["Timeout"] = "Read data.state. Wait again with a longer --timeout.",
+            ["Dialog"] = "A native dialog blocks the Editor. Run 'vsa-unity open': its daemon answers dialogs by policy.",
+            ["Stalled"] = "Nothing moved for the stall window. In adopt mode the daemon escalates; else run 'vsa-unity close --discard'.",
+            ["Stuck"] = "The state passed its cap. In adopt mode the daemon escalates; else run 'vsa-unity close --discard'.",
             ["Loop"] = "The same step or dialog repeats. Stop the run and read the log.",
-            ["Crash"] = "The Editor crashed. Read 'vsa-unity log show'. 'vsa-unity watch' starts it again one time.",
+            ["Crash"] = "The Editor crashed. Read 'vsa-unity log show'. In adopt mode the daemon starts it again one time.",
             ["CompileFailed"] = "Fix the compile errors, then wait again.",
             ["SafeMode"] = "Fix the compile errors, close the Editor by PID, and start again.",
             ["StartFailed"] = "Read the errors in 'vsa-unity log show'. Do not start again before a fix.",
             ["StartRefused"] = "The batch-mode compile check failed. Fix the errors in its log first.",
-            ["NotAutomated"] = "The Editor runs without -automated. Start it with 'vsa-unity watch'.",
+            ["NotAutomated"] = "The Editor runs without -automated. Close it and run 'vsa-unity open'.",
+            ["UnsavedChanges"] = "Read data.dirtyScenes. Run 'vsa-unity close --save' or 'vsa-unity close --discard'.",
+            ["UnknownChanges"] = "The main thread does not answer. Run 'vsa-unity close --save' or 'vsa-unity close --discard'.",
+            ["CloseFailed"] = "The Editor still runs after quit, window close and stop. Read 'vsa-unity log show'.",
+            ["AttachFailed"] = "Another user or a protected process owns the Editor. Close it yourself.",
+            ["Busy"] = "A close runs. Wait, then call again.",
             ["SupervisorFailed"] = "The supervisor gave up. Read the actions and 'vsa-unity log show'.",
             ["Cancelled"] = "The caller stopped the command.",
             ["BadArguments"] = "Run 'vsa-unity help'.",
@@ -46,6 +59,8 @@ namespace VSA.TestSuite.Cli
         };
 
         public static int For(string code) => code == null ? Success : Map.TryGetValue(code, out var exit) ? exit : Failed;
+
+        public static string Warning(string code) => Warnings.TryGetValue(code, out var text) ? text : code;
 
         public static string Hint(string code) => code != null && Hints.TryGetValue(code, out var hint) ? hint : null;
 

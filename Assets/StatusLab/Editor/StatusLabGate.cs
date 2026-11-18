@@ -2,10 +2,10 @@ using System.IO;
 
 namespace StatusLab
 {
-    // The lab scripts run only in an Editor started with the beacon flag of the package (-vsaStatusBeacon).
+    // The lab scripts run only in an Editor started with -automated, as the status tools start it.
     static class StatusLabGate
     {
-        public static readonly bool Active = VSA.TestSuite.Editor.StatusBeacon.Enabled;
+        public static readonly bool Active = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-automated") >= 0;
 
         // Library/StatusLab/ of this project: hang.flag.
         // Not Temp/, because Unity can clear Temp/ at a start.

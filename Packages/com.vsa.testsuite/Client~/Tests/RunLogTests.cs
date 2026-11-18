@@ -34,10 +34,10 @@ namespace VSA.TestSuite.Client.Tests
         public void Mark_and_show_use_the_newest_editor_run()
         {
             var path = RunLog.Mark(root, null, "step A7");
-            Assert.Equal(Path.Combine(root, "20261118-120000-cccccc", RunLog.WatchFile), path);
+            Assert.Equal(Path.Combine(root, "20261118-120000-cccccc", RunLog.StatusFile), path);
             var lines = RunLog.Show(root, null, 1);
             Assert.Equal(new[] { "line 2 of 20261118-120000-cccccc" }, lines.UnityLog);
-            Assert.Contains("step A7", Assert.Single(lines.WatchLog));
+            Assert.Contains("step A7", Assert.Single(lines.StatusLog));
         }
 
         [Fact]

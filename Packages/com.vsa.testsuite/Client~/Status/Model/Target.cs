@@ -5,11 +5,11 @@ namespace VSA.TestSuite.Client.Status
     /// <summary>The own Editor: project, PID, log file and server address.</summary>
     public sealed class Target
     {
-        /// <summary>The Editor command-line flag that starts the status beacon of the package.</summary>
-        public const string BeaconFlag = "-vsaStatusBeacon";
-
         /// <summary>The Pipeline command of the main-thread probe in an Editor (Editor assembly of the package).</summary>
         public static readonly string[] EditorProbe = { "suite", "ping" };
+
+        /// <summary>The Pipeline command that turns the status beacon on.</summary>
+        public static readonly string[] BeaconOn = { "suite", "beacon", "--on", "true" };
 
         /// <summary>The Pipeline command of the main-thread probe in a player.</summary>
         public static readonly string[] PlayerProbe = { "game.info" };
@@ -29,6 +29,9 @@ namespace VSA.TestSuite.Client.Status
         public string DescriptorFile;
         /// <summary>The probe command. Null: EditorProbe.</summary>
         public string[] Probe;
+
+        /// <summary>True after the Editor answered that it has no probe command: the package is missing.</summary>
+        public bool ProbeMissing;
 
         /// <summary>Read from the descriptor by DescriptorSource. The token never leaves memory.</summary>
         internal int Port;

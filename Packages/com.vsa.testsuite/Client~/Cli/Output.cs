@@ -18,11 +18,14 @@ namespace VSA.TestSuite.Cli
         public static bool Human { get; set; }
 
         /// <summary>Writes the envelope and returns the exit code of the error code. A null code is a success.</summary>
-        public static int Envelope(string command, object data, string code = null, string message = null)
+        public static int Envelope(string command, object data, string code = null, string message = null, IEnumerable<string> warnings = null)
         {
+            var warningList = (warnings ?? Enumerable.Empty<string>())
+                .Select(w => new { code = w, message = ExitCodes.Warning(w) }).ToArray();
             if (Human)
             {
                 Console.WriteLine(code == null ? command + ": ok" : command + ": " + code + " - " + message);
+                foreach (var w in warningList) Console.WriteLine("warning: " + w.code + " - " + w.message);
                 if (ExitCodes.Hint(code) is string h) Console.WriteLine("hint: " + h);
                 if (data != null) Console.WriteLine(JsonSerializer.Serialize(data, new JsonSerializerOptions(Json) { WriteIndented = true }));
                 return ExitCodes.For(code);
@@ -36,15 +39,9 @@ namespace VSA.TestSuite.Cli
                 command,
                 data,
                 errors,
-                warnings = Array.Empty<object>(),
+                warnings = warningList,
             }, Json));
             return ExitCodes.For(code);
-        }
-
-        /// <summary>Writes one stream line (NDJSON).</summary>
-        public static void Line(object line)
-        {
-            lock (Json) Console.WriteLine(JsonSerializer.Serialize(line, Json));
         }
 
         public static void Progress(string text) => Console.Error.WriteLine(text);

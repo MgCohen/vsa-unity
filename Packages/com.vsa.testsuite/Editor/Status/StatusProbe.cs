@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Pipeline.Commands;
 using UnityEditor;
 using UnityEngine;
@@ -12,9 +13,12 @@ namespace VSA.TestSuite.Editor
         [CliGroupCommand("suite", "Main-thread probe of the status checker: frame, flags and dirty scenes")]
         internal static ExitCode Ping(CommandContext cmd)
         {
-            var dirty = 0;
+            var dirty = new List<string>();
             for (var i = 0; i < SceneManager.sceneCount; i++)
-                if (SceneManager.GetSceneAt(i).isDirty) dirty++;
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.isDirty) dirty.Add(scene.path.Length > 0 ? scene.path : "(untitled)");
+            }
             cmd.Result.WriteRecord(new
             {
                 frame = Time.frameCount,
@@ -22,8 +26,19 @@ namespace VSA.TestSuite.Editor
                 updating = EditorApplication.isUpdating,
                 playing = EditorApplication.isPlaying,
                 paused = EditorApplication.isPaused,
-                dirtyScenes = dirty,
+                dirtyScenes = dirty.Count,
+                dirtyScenePaths = dirty,
+                beacon = StatusBeacon.Enabled,
             });
+            return ExitCode.Success;
+        }
+
+        [CliGroupCommand("suite", "Turn the status beacon on or off. It stays so until the Editor exits")]
+        internal static ExitCode Beacon(CommandContext cmd,
+            [CliArg("on", "true: the beacon writes its file each second")] bool on = true)
+        {
+            StatusBeacon.Enabled = on;
+            cmd.Result.WriteRecord(new { beacon = StatusBeacon.Enabled });
             return ExitCode.Success;
         }
     }

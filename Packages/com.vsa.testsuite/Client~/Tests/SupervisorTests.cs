@@ -143,6 +143,22 @@ namespace VSA.TestSuite.Client.Tests
         }
 
         [Fact]
+        public async Task Observe_answers_dialogs_and_never_stops_or_starts()
+        {
+            supervisor.Mode = SupervisorMode.Observe;
+            supervisor.RestartOnCrash = true;
+            var now = Alive(true);
+            now.DialogTitle = "Hello";
+            await Step(0, Result("native-dialog", StateAction.Answer), now);
+            await Step(1_000, Result("safe-mode", StateAction.Fail), Alive(false));
+            await Step(2_000, Result("frozen", StateAction.Wait, "stalled"), Alive(true));
+            await Step(40_000, Result("frozen", StateAction.Wait, "stalled"), Alive(true));
+            await Step(60_000, Result("crash", StateAction.Start), new Snapshot { ProcAlive = false });
+            Assert.Equal(new[] { "answer Hello -> OK" }, control.Calls);
+            Assert.False(supervisor.Failed);
+        }
+
+        [Fact]
         public async Task Restarts_after_a_crash_only_when_asked()
         {
             var crash = Result("crash", StateAction.Start);

@@ -42,6 +42,28 @@ namespace VSA.TestSuite.Client.Tests
         public void A_wait_stops_with_the_code_of_the_state(string state, StateAction action, string result, string code)
             => Assert.Equal(code, WaitRules.StopCode(new StateResult { State = state, Action = action, Result = result }));
 
+        [Theory]
+        [InlineData("native-dialog", StateAction.Answer, null, true, null)]
+        [InlineData("crash", StateAction.Start, null, true, null)]
+        [InlineData("crash", StateAction.Start, null, false, "Crash")]
+        [InlineData("frozen", StateAction.Escalate, "stalled", true, "Stalled")]
+        [InlineData("compile-failed", StateAction.Fail, null, true, "CompileFailed")]
+        [InlineData("exited", StateAction.None, null, true, "NoEditor")]
+        [InlineData("cold-start", StateAction.Wait, null, true, null)]
+        public void A_wait_on_the_daemon_stops_with_the_code_of_the_state(string state, StateAction action, string result, bool adopt, string code)
+            => Assert.Equal(code, WaitRules.DaemonStopCode(new StateResult { State = state, Action = action, Result = result }, adopt, supervisorFailed: false));
+
+        [Fact]
+        public void A_failed_supervisor_stops_a_wait_on_the_daemon()
+            => Assert.Equal("SupervisorFailed", WaitRules.DaemonStopCode(new StateResult { State = "ready-idle" }, adopt: true, supervisorFailed: true));
+
+        [Fact]
+        public void The_pipe_name_is_the_same_for_the_same_project()
+        {
+            Assert.Equal(DaemonPaths.PipeName(@"C:\Projects\Game"), DaemonPaths.PipeName(@"c:\projects\game"));
+            Assert.NotEqual(DaemonPaths.PipeName(@"C:\Projects\Game"), DaemonPaths.PipeName(@"C:\Projects\Other"));
+        }
+
         [Fact]
         public void An_attached_wait_does_not_stop_for_no_editor()
             => Assert.Null(WaitRules.StopCode(new StateResult { State = "no-editor", Action = StateAction.Start }, editorRequired: false));

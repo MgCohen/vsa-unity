@@ -43,6 +43,11 @@ namespace VSA.TestSuite.Client.Status
         public async Task Step(StateResult result, Snapshot now, Memory memory, Target target, CancellationToken cancel)
         {
             if (Mode == SupervisorMode.Off || Failed) return;
+            if (Mode == SupervisorMode.Observe)
+            {
+                if (result.Action == StateAction.Answer && result.Result == null) Answer(result.State, now, target);
+                return;
+            }
             if (stage >= 0 && Mode == SupervisorMode.Live && !now.ProcAlive)
             {
                 // An escalation step ended the process: go to the recovery start.

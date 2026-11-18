@@ -24,10 +24,10 @@ A test of the library is a test of the tool. The CLI needs only one test for eac
 | Item | Rule | Example |
 |---|---|---|
 | Form | `<tool> <verb>` or `<tool> <group> <verb>` | `vsa-unity status`, `vsa-unity log show` |
-| Verb | One word, present tense, lower case | `status`, `wait`, `watch`, `start`, `stop` |
+| Verb | One word, present tense, lower case | `status`, `wait`, `open`, `close` |
 | Option | Kebab case, long form | `--project-path`, `--timeout` |
 | Target | Same options as the `unity` CLI | `--project-path`, `--pid`, `--port` |
-| Read only | A verb that only reads never changes state | `status` reads; `watch` acts |
+| Read only | A verb that only reads never changes state | `status` reads; `open` acts |
 
 - Give each command one job. If a command reads and acts, split it.
 - Mark each command that changes state in its help text and in the skill.
@@ -42,7 +42,7 @@ The default format is JSON on stdout. `--format human` gives text for people. Lo
   "command": "wait",
   "data": { "state": "frozen", "since": "2026-11-17T15:30:12Z" },
   "errors": [ { "code": "Frozen", "message": "The main thread gave no answer for 60 s.",
-                "hint": "Escalate, or run 'vsa-unity watch'.", "retryable": false } ],
+                "hint": "Wait again, or run 'vsa-unity close --discard'.", "retryable": false } ],
   "warnings": []
 }
 ```
@@ -123,16 +123,17 @@ Keep the skill short. The help text of the CLI is the full reference.
 
 ## Example: the Unity status checker
 
-The status checker and the supervisor are one tool, `vsa-unity`, over the library in `Client~`.
+The status checker and the supervisor are one tool, `vsa-unity`, over the library in `Client~`. A daemon for each project keeps the history; the commands are its clients.
 
 | Command | Part | Changes the Editor | Result |
 |---|---|---|---|
+| `open` | Daemon | Yes | Exit 0 when ready; exit 6 or 14 with the reason |
+| `close [--save\|--discard]` | Daemon | Yes | Exit 0 when the process is gone |
 | `status` | Status checker | No | The state now, with its signals |
 | `wait --until ready --timeout 600` | Status checker | No | Exit 0 when ready; exit 14, 18 or 6 with the state |
-| `watch` | Supervisor | Yes | NDJSON stream of states and actions |
 | `log sessions` | Library | No | Editor starts and runs, with paths |
-| `log show --run <id>` | Library | No | Unity log lines and watch lines of one run |
-| `log mark "<text>"` | Library | No | A mark in the watch log |
+| `log show --run <id>` | Library | No | Unity log lines and status lines of one run |
+| `log mark "<text>"` | Library | No | A mark in the status log |
 
 ## Check list
 

@@ -74,7 +74,8 @@ namespace VSA.TestSuite.Client.Tests
         [Theory]
         [InlineData("wait", "--until", "sleeping")]
         [InlineData("wait", "--timeout", "0")]
-        [InlineData("watch", "--pid", "1")]
+        [InlineData("close", "--save", "--discard")]
+        [InlineData("open", "--timeout", "0")]
         [InlineData("log", "show", "--run", "nope")]
         [InlineData("fly")]
         public void Bad_arguments_exit_13(params string[] args)
@@ -97,7 +98,7 @@ namespace VSA.TestSuite.Client.Tests
             (exit, e) = Run("log", "show", "--tail", "1");
             Assert.Equal(0, exit);
             Assert.Equal("second", e.GetProperty("data").GetProperty("unityLog")[0].GetString());
-            Assert.Contains("step A7", e.GetProperty("data").GetProperty("watchLog")[0].GetString());
+            Assert.Contains("step A7", e.GetProperty("data").GetProperty("statusLog")[0].GetString());
         }
 
         [Fact]

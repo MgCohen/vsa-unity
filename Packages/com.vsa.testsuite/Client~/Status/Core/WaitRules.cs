@@ -39,6 +39,24 @@ namespace VSA.TestSuite.Client.Status
             return null;
         }
 
+        /// <summary>The error code that stops a wait on the daemon, or null to wait more. The daemon answers dialogs,
+        /// so a dialog does not stop the wait. In adopt mode the daemon also restarts after a crash.</summary>
+        public static string DaemonStopCode(StateResult result, bool adopt, bool supervisorFailed)
+        {
+            if (supervisorFailed) return "SupervisorFailed";
+            switch (result.Result)
+            {
+                case "loop": return "Loop";
+                case "stalled": return "Stalled";
+                case "stuck": return "Stuck";
+            }
+            if (result.Action == StateAction.Answer) return null;
+            if (result.Action == StateAction.Fail) return Pascal(result.State);
+            if (result.State == "crash") return adopt ? null : "Crash";
+            if (NoEditorStates.Contains(result.State)) return "NoEditor";
+            return null;
+        }
+
         /// <summary>"compile-failed" to "CompileFailed".</summary>
         public static string Pascal(string name)
             => string.Concat(name.Split('-').Select(p => p.Length == 0 ? p : char.ToUpperInvariant(p[0]) + p.Substring(1)));

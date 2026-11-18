@@ -32,7 +32,7 @@ namespace VSA.TestSuite.Client.Status
                 RedirectStandardError = true,
                 CreateNoWindow = true,
             };
-            foreach (var a in new[] { "open", ".", "--args", "-automated " + Target.BeaconFlag + " " + (target.ExtraArgs == null ? "" : target.ExtraArgs + " ") + "-logFile " + target.LogPath, "--until-ready", "--timeout", "600", "--no-banner" })
+            foreach (var a in new[] { "open", ".", "--args", "-automated " + (target.ExtraArgs == null ? "" : target.ExtraArgs + " ") + "-logFile " + target.LogPath, "--until-ready", "--timeout", "600", "--no-banner" })
                 info.ArgumentList.Add(a);
             info.Environment["UNITY_DONOTSTARTBUGREPORTER"] = "1";
             var cli = Process.Start(info);

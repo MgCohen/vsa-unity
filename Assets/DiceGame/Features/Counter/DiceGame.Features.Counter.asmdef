@@ -1,0 +1,10 @@
+{
+    "name": "DiceGame.Features.Counter",
+    "rootNamespace": "DiceGame.Features.Counter",
+    "references": [
+        "Umpire.Unity",
+        "DiceGame.Plugins.Dice"
+    ],
+    "autoReferenced": false,
+    "noEngineReferences": true
+}

@@ -1,0 +1,9 @@
+{
+    "name": "DiceGame.Plugins.Dice",
+    "rootNamespace": "DiceGame.Plugins.Dice",
+    "references": [
+        "Umpire.Unity"
+    ],
+    "autoReferenced": false,
+    "noEngineReferences": true
+}

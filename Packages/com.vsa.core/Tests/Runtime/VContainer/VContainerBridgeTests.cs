@@ -8,10 +8,10 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using VContainer;
 using VContainer.Unity;
-using VSA.Presenters;
+using Umpire.Vsa.Contracts.Requests;
 using Object = UnityEngine.Object;
 
-namespace VSA.Unity.VContainer.Tests {
+namespace Umpire.Unity.VContainer.Tests {
     public sealed class VContainerBridgeTests {
         readonly List<GameObject> made = new List<GameObject>();
 
@@ -24,17 +24,15 @@ namespace VSA.Unity.VContainer.Tests {
                 }
             }
             made.Clear();
-            BridgeApp.Stop();
-            NoBridgeApp.Stop();
         }
 
         [Test]
         public void The_root_scope_starts_the_app() {
             var root = Root();
 
-            Assert.That(BridgeApp.IsRunning, Is.True);
+            Assert.That(root.AppIsRunning, Is.True);
             Assert.That(root.StartedTheApp, Is.True);
-            Assert.That(VsaHost.Services, Is.Not.Null);
+            Assert.That(Shell.Services, Is.Not.Null);
         }
 
         [Test]
@@ -43,15 +41,15 @@ namespace VSA.Unity.VContainer.Tests {
 
             Object.DestroyImmediate(root.gameObject);
 
-            Assert.That(BridgeApp.IsRunning, Is.False);
-            Assert.That(VsaHost.IsRunning, Is.False);
+            Assert.That(Shell.AppIsRunning, Is.False);
+            Assert.That(Shell.Services, Is.Null);
         }
 
         [Test]
         public void The_app_gets_the_imports_as_the_same_instance() {
             var root = Root();
 
-            var inApp = VsaHost.Services.GetRequiredService<IGreeting>();
+            var inApp = Shell.Services.GetRequiredService<IGreeting>();
 
             Assert.That(inApp, Is.SameAs(root.Container.Resolve<IGreeting>()));
         }
@@ -91,9 +89,9 @@ namespace VSA.Unity.VContainer.Tests {
         [Test]
         public void A_child_scope_can_register_more_VSA_services() {
             var root = Root();
-            var child = Child(root, builder => builder.RegisterVsa<IBus>());
+            var child = Child(root, builder => builder.RegisterVsa<IRequestSender>());
 
-            Assert.That(child.Container.Resolve<IBus>(), Is.Not.Null);
+            Assert.That(child.Container.Resolve<IRequestSender>(), Is.Not.Null);
         }
 
         [Test]
@@ -104,7 +102,7 @@ namespace VSA.Unity.VContainer.Tests {
             Object.DestroyImmediate(child.gameObject);
 
             Assert.That(presenter.Disposed, Is.True);
-            Assert.That(BridgeApp.IsRunning, Is.True);
+            Assert.That(Shell.AppIsRunning, Is.True);
         }
 
         [Test]
@@ -126,12 +124,24 @@ namespace VSA.Unity.VContainer.Tests {
         }
 
         [Test]
-        public void An_app_without_UseVContainer_fails_and_stops() {
-            LogAssert.Expect(LogType.Exception, new Regex("does not call UseVContainer"));
+        public void Imports_with_a_host_that_is_not_UnityHost_fail_and_stop_the_app() {
+            LogAssert.Expect(LogType.Exception, new Regex("does not derive from UnityHost"));
 
-            Made(new GameObject("Root")).AddComponent<NoBridgeScope>();
+            var scope = Made(new GameObject("Root")).AddComponent<PlainScope>();
 
-            Assert.That(NoBridgeApp.IsRunning, Is.False);
+            Assert.That(scope.AppIsRunning, Is.False);
+            Assert.That(Shell.AppIsRunning, Is.False);
+        }
+
+        [Test]
+        public void A_root_scope_fails_if_a_shell_runs_an_app() {
+            var shell = Made(new GameObject("Shell")).AddComponent<BridgeShell>();
+            LogAssert.Expect(LogType.Exception, new Regex("an Umpire app runs already"));
+
+            var scope = Made(new GameObject("Root")).AddComponent<BridgeScope>();
+
+            Assert.That(scope.StartedTheApp, Is.False);
+            Assert.That(shell.IsRunning, Is.True);
         }
 
         [Test]

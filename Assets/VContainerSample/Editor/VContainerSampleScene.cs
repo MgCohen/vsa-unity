@@ -10,7 +10,7 @@ namespace VContainerSample.Editor {
     public static class VContainerSampleScene {
         const string Path = "Assets/VContainerSample/VContainerSample.unity";
 
-        [MenuItem("Tools/VSA/Write VContainer Sample Scene")]
+        [MenuItem("Tools/Umpire/Write VContainer Sample Scene")]
         public static void Write() {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 

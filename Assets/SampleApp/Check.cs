@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Sample;
+using Umpire.Kernels;
+using Umpire.Messages.Contracts;
+using Umpire.Unity;
+using Umpire.Vsa.Contracts.Commands;
+using Umpire.Vsa.Presenters;
 using UnityEngine;
-using VSA.Contracts;
-using VSA.Contracts.Commands;
-using VSA.Module;
-using VSA.Unity;
 
 namespace SampleApp {
     public sealed class Check : PresenterComponent<PingPresenter> {
@@ -41,16 +41,18 @@ namespace SampleApp {
 
         IEnumerator Run() {
             Line("backend", Application.isEditor ? "editor" : "player");
-            Line("app", VsaHost.Owner.AppType.FullName, "SampleApp.SampleApp");
-            Line("host", VsaHost.Services.GetRequiredService<IHostLifetime>().GetType().Name, "UnityLifetime");
-            var types = VsaHost.Services.GetRequiredService<ModuleTypes>();
+            Line("shell", Shell.Owner.GetType().FullName, "SampleApp.SampleShell");
+            var dispatch = Shell.Services.GetService<LivePresenters.Dispatch>() != null ? "main thread" : "none";
+            Line("presenter-dispatch", dispatch, "main thread");
+            var types = Shell.Services.GetRequiredService<AppTypes>();
             Line("modules", string.Join(",", types.Modules.Select(m => m.Name)), "Sample");
-            var typeArguments = types.TypeArguments().Select(t => t.Name).OrderBy(n => n);
-            Line("typeArguments", string.Join(",", typeArguments), "Deck,Hand");
+            var moves = types.Registered()
+                .Where(t => t.IsGenericType && t.GetGenericTypeDefinition().Name.StartsWith("MoveHandler"))
+                .Select(t => t.GetGenericArguments()[0].Name)
+                .OrderBy(n => n);
+            Line("typeArguments", string.Join(",", moves), "Deck,Hand");
             yield return SendFromAnotherThread();
             yield return SendStructArguments();
-            var lifetime = VsaHost.Services.GetRequiredService<IHostApplicationLifetime>();
-            lifetime.ApplicationStopped.Register(() => Debug.Log("CHECK stopped on quit"));
             Debug.Log(failures == 0 ? "CHECK done ok" : $"CHECK done failures={failures}");
             if (!Application.isEditor) {
                 Application.Quit(failures == 0 ? 0 : 1);
@@ -68,7 +70,7 @@ namespace SampleApp {
         }
 
         IEnumerator SendStructArguments() {
-            using var scope = VsaHost.Services.CreateScope();
+            using var scope = Shell.Services.CreateScope();
             var sender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
             var hand = sender.SendAsync(new Move<Hand>(7), CancellationToken.None);
             var deck = sender.SendAsync(new Move<Deck>(3), CancellationToken.None);

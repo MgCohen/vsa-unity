@@ -1,9 +1,9 @@
 {
   "name": "VContainerSample.Tests",
   "rootNamespace": "VContainerSample.Tests",
-  "references": ["VContainerSample", "Greeter", "VSA.Unity", "VSA.Unity.VContainer", "VContainer", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "references": ["VContainerSample", "Greeter", "Umpire.Unity", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "overrideReferences": true,
-  "precompiledReferences": ["nunit.framework.dll", "VSA.Presenters.dll", "VSA.Contracts.dll", "VSA.Module.dll", "VSA.Composition.dll"],
+  "precompiledReferences": ["nunit.framework.dll", "Umpire.Kernels.dll", "Umpire.Messages.Contracts.dll", "Umpire.Vsa.Contracts.Requests.dll", "Umpire.Vsa.Presenters.dll"],
   "autoReferenced": false,
   "defineConstraints": ["UNITY_INCLUDE_TESTS"]
 }

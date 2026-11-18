@@ -1,4 +1,4 @@
 using System.Runtime.CompilerServices;
 
-// The editor tests call UnityVsaHost.OnPlayMode: a test cannot exit the play mode.
-[assembly: InternalsVisibleTo("VSA.Unity.Editor.Tests")]
+// The VContainer root scope gives its imports to UnityHost, and claims the app for Shell.Services.
+[assembly: InternalsVisibleTo("Umpire.Unity.VContainer")]

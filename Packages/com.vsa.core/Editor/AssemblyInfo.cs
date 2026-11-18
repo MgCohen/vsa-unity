@@ -1,3 +1,3 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("VSA.Unity.Editor.Tests")]
+[assembly: InternalsVisibleTo("Umpire.Unity.Editor.Tests")]

@@ -1,6 +1,6 @@
 # vsa-unity
 
-This repository is the Unity project of the UPM package `com.vsa.core`: the VSA core for Unity 6000.6.
+This repository is the Unity project of the UPM package `com.vsa.core`: the Umpire framework (VSA pack) for Unity 6000.6.
 The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity tests of the package and an IL2CPP player check of a sample module.
 
 ## Install the package
@@ -21,17 +21,17 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 |---|---|
 | `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
 | `Assets/Sample/` | A small module in one asmdef |
-| `Assets/SampleApp/` | `SampleApp`, `SampleHost` and the `Check` view of the IL2CPP check |
-| `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `VSA.Unity.VContainer` |
+| `Assets/SampleApp/` | `SampleShell`, `SampleHost` and the `Check` view of the IL2CPP check |
+| `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
-| `Vendor/VsaVendor.csproj` | The VSA version of the package |
-| `vendor.cs` | Copies the VSA DLLs and analyzers into the package |
+| `Vendor/UmpireVendor.csproj` | The Umpire version of the package |
+| `vendor.cs` | Copies the Umpire DLLs and analyzers into the package |
 
 ## Commands
 
 | Command | Does |
 |---|---|
-| `dotnet run --file vendor.cs` | Copies the DLLs of `VsaVersion` to the package |
+| `dotnet run --file vendor.cs` | Copies the DLLs of `UmpireVersion` to the package |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
 
@@ -41,7 +41,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 
 ```mermaid
 flowchart LR
-    T[vsa-template tag] --> V[Change VsaVersion]
+    T[vsa-template tag] --> V[Change UmpireVersion]
     V --> D[vendor.cs]
     D --> C[Tests and IL2CPP check]
     C --> M[Merge to main]
@@ -49,7 +49,7 @@ flowchart LR
     L --> U[vsa-consumer-unity]
 ```
 
-1. Write the VSA version in `Vendor/VsaVendor.csproj` (`VsaVersion`).
+1. Write the Umpire version in `Vendor/UmpireVendor.csproj` (`UmpireVersion`).
 2. Run `dotnet run --file vendor.cs`. It also writes the version to `package.json`.
 3. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
 4. Merge the change to `main`.
@@ -58,15 +58,15 @@ The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each c
 
 ## The IL2CPP check
 
-`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping High, and runs it. The player starts `SampleApp` through `SampleHost` (a `VsaHost<SampleApp>`) and writes `CHECK` lines to its log.
+`il2cpp-check.ps1` builds a Windows IL2CPP player with managed stripping High, and runs it. The player starts the app through `SampleShell` (a `Shell<Vsa<SampleHost>>`) and writes `CHECK` lines to its log.
 
 | Line | Shows |
 |---|---|
-| `app`, `host` | `SampleHost` runs `SampleApp`, `UseUnityHost` selects the Unity host |
-| `modules`, `typeArguments` | The module scan finds the one-asmdef module |
+| `shell`, `presenter-dispatch` | `SampleShell` owns the app, and `UnityHost` adds the dispatch |
+| `modules`, `typeArguments` | `SampleHost` gives the one-asmdef module |
 | `request`, `presenter-event` | A request from a thread pool thread; the event runs on the main thread |
 | `struct-argument` | Handlers closed over struct type arguments |
-| `stopped on quit` | `Application.quitting` stops the app |
+| `stopped` | The quit destroys the shell, and `OnStop` runs |
 
 The check runs on a dev machine only. It needs the Windows IL2CPP module of Unity 6000.6.6f1.
 

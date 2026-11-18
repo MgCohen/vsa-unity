@@ -1,26 +1,27 @@
 using System;
 using System.Collections.Generic;
+using Umpire.Kernels;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
-using VSA.Composition;
 
-namespace VSA.Unity.VContainer {
-    // The VContainer root scope of a VSA app. It replaces VsaHost<TApp>: the scope starts the app, so the start order
-    // does not depend on the execution order of two Awake methods. The consumer closes it over its app class:
-    //   public sealed class GameScope : VsaLifetimeScope<MyApp> { }
+namespace Umpire.Unity.VContainer {
+    // The VContainer root scope of a VSA app. It replaces the shell: the scope starts the app, so the start order
+    // does not depend on the execution order of two Awake methods. The consumer closes it over its pack:
+    //   public sealed class GameScope : VsaLifetimeScope<Vsa<GameHost>> { }
+    // The host of the pack must be UnityHost or a class derived from it, because UnityHost adds the imports.
     //
     // Build order:
     //   1. Configure: registers VsaScope, then ConfigureScope.
     //   2. VContainer builds the root scope.
-    //   3. Build callback: resolves the imports, runs TApp, then injects autoInjectGameObjects.
+    //   3. Build callback: resolves the imports, starts the app, then injects autoInjectGameObjects.
     //   4. VContainer starts the entry points (IInitializable, IStartable). The app runs at this step.
     // OnDestroy disposes the VContainer scope first, then stops the app.
-    public abstract class VsaLifetimeScope<TApp> : LifetimeScope where TApp : VsaApp<TApp>, new() {
-        [SerializeField, Tooltip("The arguments of Run, for example --Modules:Counter:Max=5.")]
+    public abstract class VsaLifetimeScope<TPack> : LifetimeScope where TPack : Pack, new() {
+        [SerializeField, Tooltip("The arguments of App.Start.")]
         string[] arguments = Array.Empty<string>();
 
-        bool started;
+        ScopeApp app;
 
         public string[] Arguments {
             get => arguments;
@@ -28,7 +29,10 @@ namespace VSA.Unity.VContainer {
         }
 
         // True from the build of this scope until OnDestroy, if this scope started the app.
-        public bool StartedTheApp => started;
+        public bool StartedTheApp => app != null;
+
+        // True while the app of this scope runs.
+        public bool AppIsRunning => app != null && app.IsRunning;
 
         protected sealed override void Configure(IContainerBuilder builder) {
             // VContainer injects autoInjectGameObjects before the build callbacks, so before the app runs.
@@ -48,44 +52,53 @@ namespace VSA.Unity.VContainer {
         protected virtual void ConfigureScope(IContainerBuilder builder) {
         }
 
-        // Names the services of this scope that the VSA app gets. The app must call UseVContainer() in Builder.
+        // Names the services of this scope that the VSA app gets.
         protected virtual void Import(VsaImports imports) {
         }
 
         protected override void OnDestroy() {
             base.OnDestroy();
-            if (started) {
-                started = false;
-                VsaApp<TApp>.Stop();
-            }
+            StopApp();
         }
 
         void StartApp(IObjectResolver resolver) {
-            if (VsaHost.IsRunning) {
-                throw new InvalidOperationException(
-                    $"{name}: a VSA app runs already, so {typeof(TApp).Name} cannot start. " +
-                    "Remove the VsaHost, or use RegisterVsa in a LifetimeScope.");
-            }
+            var started = new ScopeApp();
+            Shell.Claim(started, name);
             var imports = new VsaImports();
             Import(imports);
             var instances = new List<(Type, object)>();
             foreach (var type in imports.Types) {
                 instances.Add((type, resolver.Resolve(type)));
             }
-            PendingImports.Give(instances);
+            HostImports.Give(instances);
             bool taken;
             try {
-                VsaApp<TApp>.Run(arguments);
+                started.Start(arguments);
+            } catch {
+                Shell.Release(started);
+                throw;
             } finally {
-                taken = PendingImports.IsTaken;
-                PendingImports.Take();
+                taken = HostImports.IsTaken;
+                HostImports.Take();
             }
-            started = true;
+            app = started;
             if (!taken && instances.Count > 0) {
-                started = false;
-                VsaApp<TApp>.Stop();
+                StopApp();
                 throw new InvalidOperationException(
-                    $"{typeof(TApp).Name} has imports, but its Builder does not call UseVContainer().");
+                    $"{typeof(TPack).Name} has imports, but its host does not derive from UnityHost.");
+            }
+        }
+
+        void StopApp() {
+            var stopped = app;
+            if (stopped == null) {
+                return;
+            }
+            app = null;
+            try {
+                stopped.Stop();
+            } finally {
+                Shell.Release(stopped);
             }
         }
 
@@ -98,6 +111,9 @@ namespace VSA.Unity.VContainer {
                     resolver.InjectGameObject(target);
                 }
             }
+        }
+
+        sealed class ScopeApp : App<TPack> {
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Umpire.Vsa.Contracts.Requests;
@@ -23,10 +24,12 @@ namespace Umpire.Unity.Tests {
         }
 
         [Test]
-        public void The_Unity_host_adds_the_main_thread_dispatch() {
-            Shells.Start();
+        public void The_shell_arguments_reach_the_configuration() {
+            Shells.Start("-batchmode", "--Probe:Value=42");
 
-            Assert.That(Shell.Services.GetService<LivePresenters.Dispatch>(), Is.Not.Null);
+            var configuration = Shell.Services.GetRequiredService<IConfiguration>();
+            Assert.That(configuration["Probe:Value"], Is.EqualTo("42"));
+            Assert.That(configuration["batchmode"], Is.Null);
         }
 
         [Test]
@@ -55,7 +58,7 @@ namespace Umpire.Unity.Tests {
             go.AddComponent<HookShell>();
 
             Assert.That(HookShell.Starts, Is.EqualTo(starts + 1));
-            Assert.That(Shell.Services.GetService<LivePresenters.Dispatch>(), Is.Not.Null);
+            Assert.That(Shell.Services, Is.Not.Null);
         }
 
         [UnityTest]
@@ -124,16 +127,42 @@ namespace Umpire.Unity.Tests {
         }
 
         [UnityTest]
-        public IEnumerator A_presenter_event_from_another_thread_runs_on_the_main_thread() {
+        public IEnumerator A_presenter_event_from_the_main_thread_runs_on_the_main_thread() {
             Shells.Start();
             using var scope = Shell.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<PresenterScope>();
             var presenter = scope.ServiceProvider.GetRequiredService<PingPresenter>();
             var main = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            var send = presenter.PingAsync("near");
+            yield return new WaitUntil(() => send.IsCompleted && presenter.Last == "near");
+
+            Assert.That(presenter.EventThread, Is.EqualTo(main));
+        }
+
+        [UnityTest]
+        public IEnumerator A_presenter_event_from_another_thread_reaches_the_presenter() {
+            Shells.Start();
+            using var scope = Shell.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<PresenterScope>();
+            var presenter = scope.ServiceProvider.GetRequiredService<PingPresenter>();
 
             var send = Task.Run(() => presenter.PingAsync("far"));
             yield return new WaitUntil(() => send.IsCompleted && presenter.Last == "far");
 
-            Assert.That(presenter.EventThread, Is.EqualTo(main));
+            Assert.That(presenter.Last, Is.EqualTo("far"));
+        }
+
+        [UnityTest]
+        public IEnumerator A_scope_that_is_not_a_presenter_scope_gets_no_event() {
+            Shells.Start();
+            using var scope = Shell.Services.CreateScope();
+            var presenter = scope.ServiceProvider.GetRequiredService<PingPresenter>();
+
+            var send = presenter.PingAsync("none");
+            yield return new WaitUntil(() => send.IsCompleted);
+
+            Assert.That(presenter.Last, Is.EqualTo(""));
         }
     }
 

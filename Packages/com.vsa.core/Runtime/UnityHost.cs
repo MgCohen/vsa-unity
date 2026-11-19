@@ -9,7 +9,8 @@ using Umpire.Vsa.Presenters;
 using UnityEngine;
 
 namespace Umpire.Unity {
-    // The Unity host: the Unity log, the main thread for presenter events, and the settings sources.
+    // The Unity host: the Unity log and the settings sources. A presenter gets its events on the thread of the
+    // publish, and PresenterComponent moves each Render to the main thread.
     // Without a module list, Umpire finds the modules in the loaded assemblies that reference Umpire.Kernels.
     // To give the modules, derive a host with a public constructor:
     //   public sealed class GameHost : UnityHost { public GameHost() : base(new ScoreModule()) { } }
@@ -31,10 +32,6 @@ namespace Umpire.Unity {
 
         protected sealed override void Configure(IServiceCollection services, AppTypes types) {
             services.AddLogging(logging => logging.AddProvider(new UnityLogProvider()));
-            services.AddSingleton<LivePresenters.Dispatch>(async work => {
-                await Awaitable.MainThreadAsync();
-                await work();
-            });
             foreach (var (type, instance) in HostImports.Take()) {
                 services.AddSingleton(type, instance);
             }

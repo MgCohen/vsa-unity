@@ -9,11 +9,11 @@ using UnityEngine;
 public static class Il2cppCheck {
     const string Scene = "Assets/Check.unity";
 
-    // -checkBackend Mono2x and -checkStripping Minimal give a Mono player. The default is IL2CPP at stripping High.
+    // -checkBackend Mono2x gives a Mono player. The default is IL2CPP at stripping Minimal.
     public static void Build() {
         var output = Argument("-checkOutput") ?? Path.GetFullPath("Il2cppCheck/Player");
         var useBackend = Enum.Parse<ScriptingImplementation>(Argument("-checkBackend") ?? "IL2CPP");
-        var useStripping = Enum.Parse<ManagedStrippingLevel>(Argument("-checkStripping") ?? "High");
+        var useStripping = Enum.Parse<ManagedStrippingLevel>(Argument("-checkStripping") ?? "Minimal");
         MakeSceneWithShellAndCheck();
         var target = NamedBuildTarget.Standalone;
         var backend = PlayerSettings.GetScriptingBackend(target);

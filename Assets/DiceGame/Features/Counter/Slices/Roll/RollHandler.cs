@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
-using DiceGame.Features.Counter.Infrastructure;
+using DiceGame.Features.Counter.Domain;
 using DiceGame.Plugins.Dice.Contracts.Commands;
 using Umpire.Messages.Contracts;
 using Umpire.Vsa.Contracts.Commands;
 using Umpire.Vsa.Handlers.Requests;
+using Umpire.Vsa.Infrastructure;
 
 namespace DiceGame.Features.Counter.Slices.Roll {
     // Sends RollDice to the dice plugin, then adds the value to the roll log.
@@ -11,11 +12,11 @@ namespace DiceGame.Features.Counter.Slices.Roll {
         const int Sides = 6;
 
         readonly ICommandSender commands;
-        readonly RollLog log;
+        readonly IRepository<RollLog, int> logs;
 
-        public RollHandler(ICommandSender commands, RollLog log) {
+        public RollHandler(ICommandSender commands, IRepository<RollLog, int> logs) {
             this.commands = commands;
-            this.log = log;
+            this.logs = logs;
         }
 
         public override async Task<Result<RollResponse>> HandleAsync(Envelope<RollRequest> envelope) {
@@ -23,8 +24,11 @@ namespace DiceGame.Features.Counter.Slices.Roll {
             if (!roll.IsSuccess) {
                 return roll.Error;
             }
-            var (count, last) = log.Add(roll.Value);
-            return new RollResponse(last, count);
+            var log = await logs.GetAsync(RollLog.OnlyId, envelope.Cancellation) ?? RollLog.Start();
+            log.Add(roll.Value);
+            logs.Add(log);
+            await logs.SaveChangesAsync(envelope.Cancellation);
+            return new RollResponse(log.Last, log.Count);
         }
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace DiceGame.App {
+namespace DiceGame.App.Views {
     // The main menu: the start button loads the game scene.
     public sealed class MainMenu : MonoBehaviour {
         public const string GameScene = "DiceGame";

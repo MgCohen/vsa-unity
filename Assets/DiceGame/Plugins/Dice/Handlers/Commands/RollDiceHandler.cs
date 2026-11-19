@@ -5,7 +5,6 @@ using Umpire.Messages.Contracts;
 using Umpire.Vsa.Handlers.Commands;
 
 namespace DiceGame.Plugins.Dice.Handlers.Commands {
-    // Rolls the die with System.Random.
     sealed class RollDiceHandler : CommandHandler<RollDice, int> {
         static readonly Random Random = new Random();
 

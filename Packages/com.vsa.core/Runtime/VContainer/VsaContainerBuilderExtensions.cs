@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Kernels;
+using Umpire.Vsa.Presenters;
 using VContainer;
-using VSA.Module;
-using VSA.Presenters;
 
-namespace VSA.Unity.VContainer {
+namespace Umpire.Unity.VContainer {
     // The Out direction: a VContainer scope resolves VSA services.
     //   builder.RegisterVsa<CounterPresenter>();
     // VContainer resolves the type from the VsaScope of the LifetimeScope that resolves it. Thus one LifetimeScope
@@ -25,12 +25,9 @@ namespace VSA.Unity.VContainer {
             return builder.Register(new VsaRegistrationBuilder(type));
         }
 
-        // Registers each presenter of the modules. Give the modules of the app, for example the modules of Modules(...).
-        public static void RegisterVsaPresenters(this IContainerBuilder builder, params VSA.Module.Module[] modules) {
-            var presenters = new ModuleTypes(modules).Implementations(typeof(Presenter))
-                .Select(found => found.Implementation)
-                .Where(type => !type.IsAbstract && !type.ContainsGenericParameters)
-                .Distinct();
+        // Registers each presenter of the modules. Give the modules of the app, for example the modules of its host.
+        public static void RegisterVsaPresenters(this IContainerBuilder builder, params Module[] modules) {
+            var presenters = new AppTypes(modules).ConcreteTypesOf(typeof(Presenter)).Distinct();
             foreach (var type in presenters) {
                 builder.RegisterVsa(type);
             }

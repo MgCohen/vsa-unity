@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using VSA.Unity;
+using Umpire.Unity;
 
 namespace VContainerSample.Tests {
     public sealed class VContainerSampleTests {
@@ -24,7 +24,6 @@ namespace VContainerSample.Tests {
             if (sample.isLoaded) {
                 yield return SceneManager.UnloadSceneAsync(sample);
             }
-            VContainerSampleApp.Stop();
         }
 
         [UnityTest]
@@ -33,7 +32,7 @@ namespace VContainerSample.Tests {
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(ScenePath, single);
             yield return null;
 
-            Assert.That(VsaHost.IsRunning, Is.True);
+            Assert.That(Shell.AppIsRunning, Is.True);
             var labels = Object.FindObjectsByType<GreetingLabel>();
             Assert.That(labels.Length, Is.EqualTo(2));
             Assert.That(labels[1].Presenter, Is.SameAs(labels[0].Presenter));

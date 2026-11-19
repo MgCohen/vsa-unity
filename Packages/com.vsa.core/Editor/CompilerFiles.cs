@@ -3,9 +3,11 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
-namespace VSA.Unity.Editor {
-    // Writes the VSA rule values to Assets/Default.globalconfig of the consumer project when the editor loads,
-    // for the VSA analyzers. Unity reads only this name (all assemblies) or <AsmdefName>.globalconfig next to an asmdef.
+namespace Umpire.Unity.Editor {
+    // Writes the rule values of the Umpire analyzers to Assets/Default.globalconfig of the consumer project when the
+    // editor loads. Unity reads only this name (all assemblies) or <AsmdefName>.globalconfig next to an asmdef, and no
+    // file of a package. The NuGet package gives the values in build/Umpire.Kernels.Analyzers.globalconfig and
+    // build/Umpire.Vsa.Analyzers.globalconfig, and vendor.cs copies both into Documentation~/Default.globalconfig.
     // The script changes only its own lines, and writes the file only if its text changes.
     [InitializeOnLoad]
     static class CompilerFiles {
@@ -14,7 +16,7 @@ namespace VSA.Unity.Editor {
 
         static CompilerFiles() => EditorApplication.delayCall += Write;
 
-        [MenuItem("Tools/VSA/Write Compiler Files")]
+        [MenuItem("Tools/Umpire/Write Compiler Files")]
         static void Write() {
             var rules = RulesText();
             if (rules != null && Change("Assets/Default.globalconfig", existing => GlobalConfig(existing, rules))) {
@@ -22,7 +24,7 @@ namespace VSA.Unity.Editor {
             }
         }
 
-        // The VSA block between Begin and End. The lines of the consumer stay. One is_global line, first.
+        // The package block between Begin and End. The lines of the consumer stay. One is_global line, first.
         internal static string GlobalConfig(string existing, string rules) {
             var block = Lines(rules).Where(line => !IsKey(line, "is_global") && !IsKey(line, "global_level"));
             var lines = Lines(existing).ToList();
@@ -54,8 +56,8 @@ namespace VSA.Unity.Editor {
             return true;
         }
 
-        // The rule values of the VSA version of the package: the block of Documentation~/Default.globalconfig,
-        // the file that the install step copies to Assets/Default.globalconfig (vendor.cs writes it).
+        // The rule values of the Umpire version of the package: the block of Documentation~/Default.globalconfig,
+        // the file that the install step copies to Assets/Default.globalconfig.
         internal static string RulesText() {
             var path = ShippedConfigPath();
             if (path == null || !File.Exists(path)) {

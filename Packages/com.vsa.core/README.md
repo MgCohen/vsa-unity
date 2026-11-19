@@ -1,11 +1,11 @@
 # com.vsa.core
 
-The VSA core for Unity 6000.6: the portable VSA DLLs (netstandard2.1), the VSA analyzers, the Unity host and the uGUI view bases.
-A Unity app starts with one `VsaHost<TApp>` component. Views inherit `PresenterComponent<T>`.
+The Umpire framework (0.2.0-preview.3) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
 
-1. Copy [`Documentation~/Default.globalconfig`](Documentation~/Default.globalconfig) to `Assets/Default.globalconfig` before you add the package.
+1. Copy [`Documentation~/Default.globalconfig`](Documentation~/Default.globalconfig) to `Assets/Default.globalconfig`.
 2. Add the package to `Packages/manifest.json`:
 
 ```json
@@ -14,66 +14,110 @@ A Unity app starts with one `VsaHost<TApp>` component. Views inherit `PresenterC
 
 The tag `latest` is the last commit of `main`. To get a later commit, click **Update** in the Package Manager.
 
-Step 1 is necessary. Without the file, error VSA1000 stops the compile of each consumer assembly in the analyzer scope, so the editor script cannot write the file.
+The rules have default values, so a project compiles without step 1. Step 1 gives the rule values and the disabled rules of the Umpire version of the package.
 
 ## Contents
 
 | Path | Contains |
 |---|---|
-| `Runtime/Plugins/` | The VSA DLLs and their dependencies |
-| `Runtime/VSA.Analyzers.dll` | The VSA analyzers (Roslyn 4.10 build) |
-| `Runtime/` | `VsaHost<TApp>`, the Unity host, `PresenterComponent<T>`, `UnityLogProvider` |
-| `Runtime/VContainer/` | `VsaLifetimeScope<TApp>`, `RegisterVsa`, `UseVContainer`, if VContainer is installed |
-| `Runtime/link.xml` | The IL2CPP keep rule of VSA |
-| `Documentation~/Default.globalconfig` | The VSA rule values for the install step |
-| `Editor/` | `CompilerFiles` and `VsaLinker` |
+| `Runtime/Plugins/` | The Umpire DLLs and their dependencies (26 DLLs) |
+| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10) |
+| `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
+| `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
+| `Documentation~/Default.globalconfig` | The rule values for the install step |
+| `Editor/` | `CompilerFiles` |
 | `Tests/` | EditMode and PlayMode tests |
+
+Unity 6 ships `System.Text.Json`, `System.Collections.Immutable` and the `Microsoft.Extensions.*.Abstractions` DLLs of DI and logging. The package does not ship a second copy, because a second copy is a compile error.
 
 ## Start the app
 
-Write the app class and one host component, each in its own file. The file name of the host is its class name.
+Put one shell on one GameObject of the first scene.
+
+| App | Shell |
+|---|---|
+| VSA, Unity host, no hooks | `VsaShell` on the GameObject |
+| VSA, Unity host, hooks or own architecture | `class GameShell : VsaShell<VsaArchitecture>` |
+| Other pack or other host | `class GameShell : Shell<Vsa<GameHost>>` |
 
 ```csharp
-public sealed class MyApp : VsaApp<MyApp> {
-    protected override VsaBuilder Builder(string[] args) => base.Builder(args).UseUnityHost();
+public sealed class GameShell : VsaShell<VsaArchitecture> {
+    protected override void OnStart() => Debug.Log("The app runs.");
+
+    protected override void OnStop() => Debug.Log("The app stopped.");
 }
-
-public sealed class GameHost : VsaHost<MyApp> { }
 ```
 
-Put `GameHost` on one GameObject of the first scene.
-
 ```
-GameHost.Awake
+Shell.Awake
 ├─ DontDestroyOnLoad          the app has the lifetime of the Unity app
-└─ MyApp.Run(args)            VsaApp<TApp>, a direct call
-   ├─ UseUnityHost            selects UnityVsaHost, the IVsaHost of this package
-   └─ Run                     starts the IHost and returns at once
+├─ CreateApp                  an App<TPack> whose hooks go to the shell
+└─ App.Start(Arguments)       returns at once: Unity owns the frame loop
+   └─ TPack.CreateHost()      UnityHost: Unity log, main-thread dispatch, settings
+Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 ```
 
-| `VsaHost` member | Use |
+| `Shell` member | Use |
 |---|---|
-| `Arguments` (field) | The `args` of `Run`, for example `--Modules:Counter:Max=5` |
-| `AppType` | The app class, `TApp` |
+| `Arguments` | The `args` of `App.Start` |
+| `Settings` (Inspector) | The `ModuleSettingsAsset` assets of the app |
 | `Services` (static) | The services of the running app, else null |
-| `IsRunning` (static) | True from `Run` until the app stops |
-| `Owner` (static) | The host component that owns the app, else null |
+| `AppIsRunning` (static) | True while the app runs |
+| `Owner` (static) | The shell that owns the app, else null |
 | `Stop()`, `Run()` | Stop the app, and start it again |
 
-- If the app does not call `UseUnityHost`, the host scan of VSA finds `UnityVsaHost`.
-- A second `VsaHost` disables itself and does nothing. A scene change does not stop the app.
+- A second shell disables itself and does nothing. A scene change does not stop the app.
+- `AppHost.Build` does not read the arguments, so the app gets no configuration from them.
 
 ## The Unity host
 
 | Item | Behavior |
 |---|---|
-| Builder | `Host.CreateEmptyApplicationBuilder`, plus command line, Unity log |
-| Content root | `Application.dataPath` |
-| Lifetime | `IHostLifetime` that does not wait for a signal |
+| Log | `UnityLogProvider` writes to the Unity console |
 | Presenter events | `LivePresenters.Dispatch` runs them after `Awaitable.MainThreadAsync()` |
-| Stop | `Application.quitting`, play mode exit, domain reload, `VsaApp.Stop()` |
+| Settings | Assets on the shell, then `UnitySettings` classes |
+| Modules | The module scan, or the list of a derived host |
 
-The empty builder is necessary: the default .NET host fails in Unity (EventLog logger on Mono, content root `Unity.exe\`).
+Without a module list, Umpire finds the modules in each loaded assembly that references `Umpire.Kernels`, apart from test assemblies. The Editor loads each assembly of the project, so two apps in one project see the modules of both. To give the modules of one app, derive a host:
+
+```csharp
+public sealed class GameHost : UnityHost {
+    public GameHost() : base(new ScoreModule(), new DeckModule()) { }
+}
+
+public sealed class GameShell : Shell<Vsa<GameHost>> { }
+```
+
+The module name is the last part of the namespace of the module class.
+
+## Module settings
+
+`UnityHost` gives the settings of a `Module<TSettings>` from these sources. The first source that gives settings wins.
+
+```mermaid
+flowchart LR
+    M[Module of TSettings] --> A[ModuleSettingsAsset on the shell]
+    A -->|null| C[UnitySettings classes, name order]
+    C -->|null| D[new TSettings]
+```
+
+```csharp
+[CreateAssetMenu(menuName = "Game/Score Settings")]
+public sealed class ScoreSettingsAsset : ModuleSettingsAsset<ScoreModule, ScoreSettings> {
+    public int Limit = 10;
+
+    protected override ScoreSettings Create() => new ScoreSettings { Limit = Limit };
+}
+
+public sealed class GameSettings : UnitySettings {
+    public override TSettings Get<TSettings>(Module module) =>
+        module is ScoreModule ? new ScoreSettings { Limit = 5 } as TSettings : null;
+}
+```
+
+- Unity serializes fields, not properties, and it cannot serialize a `Dictionary`. Keep a list of pairs in the asset, and make the dictionary in `Create`.
+- `UnityHost` finds the `UnitySettings` classes in the module assemblies and in the assembly of the shell.
+- The host does not read `.umpireconfig`.
 
 ## Views
 
@@ -102,30 +146,26 @@ Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallba
 | Limit | Result |
 |---|---|
 | Each scene view makes its own scope | Two views of one presenter type get two presenters. They do not share state. |
-| The view reads the static `VsaHost.Services` | A service locator: an exception to the composition rule of VSA |
+| The view reads the static `Shell.Services` | A service locator: an exception to the composition rule |
 | No app runs at `Start` | The view gets no presenter and shows no error |
 
 If a consumer needs shared presenters or injection into scene objects, use [VContainer](#vcontainer). A view that has a presenter before `Start` does not use the fallback.
 
 ## VContainer
 
-The assembly `VSA.Unity.VContainer` connects VContainer and the VSA app in two directions. Unity compiles it only if the project has VContainer 1.16.0 or later (`jp.hadashikick.vcontainer`).
+The assembly `Umpire.Unity.VContainer` connects VContainer and the VSA app in two directions. Unity compiles it only if the project has VContainer 1.16.0 or later (`jp.hadashikick.vcontainer`).
 
 | Direction | API | Use |
 |---|---|---|
-| Out: VContainer gets VSA services | `builder.RegisterVsa<T>()`, `RegisterVsaPresenters(modules)` | Scene objects get presenters, `IBus` |
-| In: VSA gets VContainer services | `Import(VsaImports)`, `UseVContainer()` | Handlers get Unity services |
+| Out: VContainer gets VSA services | `builder.RegisterVsa<T>()`, `RegisterVsaPresenters(modules)` | Scene objects get presenters |
+| In: VSA gets VContainer services | `Import(VsaImports)` | Handlers get Unity services |
 
 ### Start the app from the root scope
 
-`VsaLifetimeScope<TApp>` is the VContainer root scope. It starts the app, so it replaces `VsaHost<TApp>`.
+`VsaLifetimeScope<TPack>` is the VContainer root scope. It starts the app, so it replaces the shell. The host of the pack must be `UnityHost` or a class derived from it.
 
 ```csharp
-public sealed class MyApp : VsaApp<MyApp> {
-    protected override VsaBuilder Builder(string[] args) => base.Builder(args).UseUnityHost().UseVContainer();
-}
-
-public sealed class GameScope : VsaLifetimeScope<MyApp> {
+public sealed class GameScope : VsaLifetimeScope<Vsa<GameHost>> {
     protected override void ConfigureScope(IContainerBuilder builder) => builder.Register<IAudio, UnityAudio>(Lifetime.Singleton);
 
     protected override void Import(VsaImports imports) => imports.Add<IAudio>();
@@ -138,7 +178,7 @@ GameScope.Awake
 ├─ VContainer build     the root scope
 ├─ build callback
 │  ├─ Resolve imports   one time, from the root scope
-│  ├─ MyApp.Run         UseVContainer adds the imports as singletons
+│  ├─ App.Start         UnityHost adds the imports as singletons
 │  └─ Inject            autoInjectGameObjects of the root scope
 └─ Entry points         IInitializable, IStartable: the app runs
 ```
@@ -146,13 +186,13 @@ GameScope.Awake
 | Item | Behavior |
 |---|---|
 | Imports | Singletons in the app. VContainer owns them, so the app does not dispose them. |
-| No `UseVContainer` | If the scope has imports, the build fails and the app stops. |
-| A running app | If a `VsaHost` started an app, the build fails. |
+| Host not `UnityHost` | If the scope has imports, the build fails and the app stops. |
+| A running app | If a shell started an app, the build fails. |
 | `OnDestroy` | Disposes the VContainer scope, then stops the app. |
 
 ### Give presenters to a scene
 
-Each VContainer scope has one `VsaScope`, a VSA `IServiceScope`. A VSA service resolves from the `VsaScope` of the scope that resolves it.
+Each VContainer scope has one `VsaScope`, an `IServiceScope` of the app. A VSA service resolves from the `VsaScope` of the scope that resolves it.
 
 ```csharp
 public sealed class LevelScope : LifetimeScope {
@@ -172,48 +212,51 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 | Scope destroyed | The `VsaScope` disposes its presenters |
 | No app runs | The resolve fails with "No VSA app runs" |
 
-- `RegisterVsa` works in each scope, also with an app that a `VsaHost` started. Only the In direction needs `VsaLifetimeScope`.
+- `RegisterVsa` works in each scope, also with an app that a shell started. Only the In direction needs `VsaLifetimeScope`.
 - VContainer does not keep or dispose a VSA service. The `VsaScope` does both.
 - `Assets/VContainerSample/` of the repository is a sample scene of the two directions.
 
 ## Analyzers
 
-`Runtime/VSA.Analyzers.dll` has the label `RoslynAnalyzer` and no platform. Unity uses it as an analyzer, not as a library.
+`Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries.
 
-| Assembly | VSA rules | Rule values from |
+| Assembly | Umpire rules | Rule values from |
 |---|---|---|
-| A consumer asmdef that references `VSA.Unity` | Yes | `Assets/Default.globalconfig` |
+| A consumer asmdef that references `Umpire.Unity` | Yes | `Assets/Default.globalconfig` |
 | `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | `Assets/Default.globalconfig` |
-| A consumer asmdef with no `VSA.Unity` reference | No | None |
+| A consumer asmdef with no `Umpire.Unity` reference | No | None |
 | The package asmdefs | Off | `<AsmdefName>.globalconfig` |
 
-- The analyzer folder sets the scope: Unity runs the analyzer on `VSA.Unity` and on each assembly that references it.
-- Module asmdefs often do not reference `VSA.Unity`. The .NET test build checks the module code.
+- The analyzer folder sets the scope: Unity runs the analyzers on `Umpire.Unity` and on each assembly that references it.
+- Module asmdefs often do not reference `Umpire.Unity`. The .NET test build checks the module code.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
-- The package code is framework code, so each package asmdef sets `VSA1000` to `VSA1014` to `none`.
+- The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
 
 ## Editor scripts
 
 | Script | Does |
 |---|---|
 | `CompilerFiles` | Updates `Assets/Default.globalconfig` |
-| `VsaLinker` | Gives `Runtime/link.xml` to the UnityLinker |
 
-- `Assets/Default.globalconfig` gets the VSA rule values of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. Unity reads only this name for all assemblies. After a package update, the script writes the rule values of the new VSA version.
-- The script changes only its own lines. The menu item **Tools > VSA > Write Compiler Files** runs `CompilerFiles` again.
+- `Assets/Default.globalconfig` gets the block of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. The block holds the text of `build/Umpire.Kernels.Analyzers.globalconfig` and `build/Umpire.Vsa.Analyzers.globalconfig` of the NuGet package. Unity reads only this name for all assemblies.
+- The script changes only its own lines. The menu item **Tools > Umpire > Write Compiler Files** runs `CompilerFiles` again.
 - The package code is C# 9, the default language version of Unity 6000.6.
 
 ## IL2CPP
 
-VSA marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them. `Runtime/link.xml` keeps one more assembly:
+The package supports managed stripping Minimal. It has no `link.xml`. Umpire marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them.
 
-```xml
-<assembly fullname="VSA.Analyzers.Markers" preserve="all" />
-```
+| Stripping | Result (probe, IL2CPP, no `link.xml`) |
+|---|---|
+| Minimal | Pass |
+| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails. |
 
-The scan reads `[AutoRegister]` on the VSA bases. Without the rule, stripping High removes the markers assembly. The UnityLinker reads the `link.xml` files of `Assets/` only, so `VsaLinker` gives the package file.
+| Player of the sample check | Stripping | Result |
+|---|---|---|
+| Mono | Minimal | Pass |
+| IL2CPP | Minimal | Pass |
 
 ## Open questions
 
-- Automatic first install: the install step 1 is manual. A GitHub issue tracks a fix in VSA.Analyzers or an opt-in analyzer asmdef.
-- Stripping: does the package need `link.xml` and `VsaLinker`, or does a consumer use stripping Minimal only?
+- Package name: the package id is `com.vsa.core`, and the assemblies are `Umpire.Unity.*`. Does the package get an Umpire id?
+- Arguments: does `UnityHost` give the shell arguments to the app configuration?

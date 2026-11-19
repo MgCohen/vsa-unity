@@ -1,5 +1,0 @@
-<!-- The IL2CPP keep rule of VSA. The editor script VsaLinker gives this file to the UnityLinker.
-     The scan reads [AutoRegister] on the VSA bases. Without this rule, stripping High removes the markers assembly. -->
-<linker>
-  <assembly fullname="VSA.Analyzers.Markers" preserve="all" />
-</linker>

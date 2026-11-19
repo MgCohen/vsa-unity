@@ -1,7 +1,7 @@
 using Greeter;
 using VContainer;
 using VContainer.Unity;
-using VSA.Unity.VContainer;
+using Umpire.Unity.VContainer;
 
 namespace VContainerSample {
     public sealed class GreeterSceneScope : LifetimeScope {

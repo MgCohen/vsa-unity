@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Only for vendor.cs: dotnet publish of this project gives the Umpire packages and their dependencies for Unity. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <UmpireVersion>0.2.0-preview.3</UmpireVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Umpire.Vsa" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Composition" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Domain" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Infrastructure" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Presenters" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Requests" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Commands" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Events" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Requests" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Commands" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Events" Version="$(UmpireVersion)" />
+  </ItemGroup>
+</Project>

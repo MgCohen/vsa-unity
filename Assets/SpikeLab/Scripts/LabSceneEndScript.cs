@@ -11,10 +11,11 @@ namespace SpikeLab
 
         public override async Task Run(ScriptContext script)
         {
-            var load = script.Send(new LoadScene("SpikeLabScene2", false));
+            _ = script.Send(new LoadScene("SpikeLabScene2", false));
             await Awaitable.NextFrameAsync();
-            Debug.Log($"[Lab] session.end during the load: stopped={SessionBus.End()}");
-            await load;
+            Debug.Log("[Lab] the script ends the session during the load");
+            script.EndSession();
+            Debug.LogError("[Lab] this line must not run");
         }
     }
 }

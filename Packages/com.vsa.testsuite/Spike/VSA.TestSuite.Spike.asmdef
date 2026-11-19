@@ -3,6 +3,7 @@
   "rootNamespace": "VSA.TestSuite.Spike",
   "references": [
     "Unity.Pipeline.Attributes",
+    "Unity.Pipeline",
     "UnityEngine.UI",
     "Umpire.Unity"
   ],

@@ -5,17 +5,18 @@ using Umpire.Vsa.Handlers.Requests;
 
 namespace VSA.TestSuite.Spike.Plugins.Session
 {
-    public sealed class SessionPlugin : Plugin
+    public sealed class SessionPlugin : Plugin<SessionSettings>
     {
-        public override void Configure(IServiceCollection services)
+        public override void Configure(IServiceCollection services, SessionSettings settings)
         {
+            services.AddSingleton(settings);
             services.AddSingleton<TestSession>();
-            services.AddSingleton<StepLog>();
+            services.AddSingleton<TraceRecorder>();
             services.AddPipeline(new PipelineBuilder<TestRequest>()
                 .HandlersOf(typeof(RequestHandler<,>))
                 .Runner<MainThreadRunner>()
-                .BeforeStep<LogStartStep>()
-                .AfterStep<LogDoneStep>());
+                .BeforeStep<TraceStartStep>()
+                .AfterStep<TraceDoneStep>());
         }
     }
 }

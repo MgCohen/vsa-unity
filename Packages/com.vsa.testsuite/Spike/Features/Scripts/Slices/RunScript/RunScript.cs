@@ -3,5 +3,5 @@ using VSA.TestSuite.Spike.Plugins.Session;
 
 namespace VSA.TestSuite.Spike.Features.Scripts
 {
-    public sealed record RunScript(string Name) : TestRequest, IRequest<ScriptResult>;
+    public sealed record RunScript(string Name) : TestRequest, IRequest<ScriptResult>, IScriptRun;
 }

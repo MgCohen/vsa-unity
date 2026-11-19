@@ -25,8 +25,22 @@ namespace VSA.TestSuite.Spike.Features.Scripts
             var script = catalog.Create(envelope.Message.Name);
             var context = new ScriptContext(requests, script.Name, envelope.Cancellation);
             var start = Time.realtimeSinceStartup;
-            await script.Run(context);
-            return new ScriptResult(script.Name, context.Steps, Time.realtimeSinceStartup - start, session.Id);
+            var ended = await Run(script, context);
+            if (ended) session.EndRequest = "script " + script.Name;
+            return new ScriptResult(script.Name, context.Steps, Time.realtimeSinceStartup - start, session.Id, ended);
+        }
+
+        static async Task<bool> Run(TestScript script, ScriptContext context)
+        {
+            try
+            {
+                await script.Run(context);
+                return false;
+            }
+            catch (ScriptEnded)
+            {
+                return true;
+            }
         }
     }
 }

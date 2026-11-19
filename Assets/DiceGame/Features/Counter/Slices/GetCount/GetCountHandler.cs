@@ -5,7 +5,6 @@ using Umpire.Vsa.Handlers.Requests;
 using Umpire.Vsa.Infrastructure;
 
 namespace DiceGame.Features.Counter.Slices.GetCount {
-    // Reads the roll log.
     sealed class GetCountHandler : RequestHandler<GetCountRequest, GetCountResponse> {
         readonly IRepository<RollLog, int> logs;
 

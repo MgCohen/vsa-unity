@@ -7,7 +7,6 @@ using Umpire.Vsa.Handlers.Requests;
 using Umpire.Vsa.Infrastructure;
 
 namespace DiceGame.Features.Counter.Slices.Roll {
-    // Sends RollDice to the dice plugin, then adds the value to the roll log.
     sealed class RollHandler : RequestHandler<RollRequest, RollResponse> {
         const int Sides = 6;
 

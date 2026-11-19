@@ -1,7 +1,6 @@
-using VSA.Contracts.Requests;
+using Umpire.Vsa.Contracts.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Scripts
 {
-    /// <summary>The script that ran, its step count, its time in seconds, and the session id.</summary>
     public sealed record ScriptResult(string Script, int Steps, float Seconds, string Session) : IResponse;
 }

@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Kernels;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Scripts
 {
-    /// <summary>The scripts feature: finds the test scripts and runs them.</summary>
-    public sealed class ScriptsModule : VSA.Module.Module
+    public sealed class ScriptsModule : Module
     {
-        public override void Configure(VSA.Module.ModuleBuilder module)
-            => module.Services.AddSingleton<ScriptCatalog>();
+        public override void Configure(IServiceCollection services) => services.AddSingleton<ScriptCatalog>();
     }
 }

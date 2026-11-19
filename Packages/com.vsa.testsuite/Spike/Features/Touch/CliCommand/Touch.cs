@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
 using Unity.Pipeline.Commands;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Touch
 {
-    /// <summary>
-    /// Commands of the touch feature. The CLI calls them by name, and scripts call them
-    /// as methods, for example Touch.Screen(489, 249).
-    /// </summary>
     public static class Touch
     {
         [CliCommand("touch.screen", "Touch a screen point, in pixels from the lower left")]

@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace SpikeLab
 {
-    /// <summary>Counts the clicks of its Button. The count starts at 0 in each Play Mode session.</summary>
     [RequireComponent(typeof(Button))]
     public sealed class SpikeLabCounter : MonoBehaviour
     {

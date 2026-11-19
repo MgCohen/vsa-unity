@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
-using VSA.TestSuite.Spike;
+using VSA.TestSuite.Spike.Features.Objects;
+using VSA.TestSuite.Spike.Features.Touch;
+using VSA.TestSuite.Spike.Plugins.Session;
 
 namespace SpikeLab
 {
-    /// <summary>A sample test script: wait for the lab button, touch it two times, check the clicks.</summary>
     public sealed class LabButtonScript : TestScript
     {
         public override string Name => "lab_button";
@@ -15,7 +16,8 @@ namespace SpikeLab
             var first = await script.Send(new TouchObject("LabCanvas/LabButton"));
             script.Check(first.Hit == "LabButton", $"the first touch hit {first.Hit}");
             await script.Send(new TouchScreen(first.Point));
-            script.Check(SpikeLabCounter.Clicks == before + 2, $"clicks went from {before} to {SpikeLabCounter.Clicks}, not +2");
+            var clicks = SpikeLabCounter.Clicks;
+            script.Check(clicks == before + 2, $"clicks went from {before} to {clicks}, not +2");
         }
     }
 }

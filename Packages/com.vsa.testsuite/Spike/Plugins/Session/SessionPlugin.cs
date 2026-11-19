@@ -1,14 +1,21 @@
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Messages.Handlers;
+using Umpire.Vsa.Composition;
+using Umpire.Vsa.Handlers.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Plugins.Session
 {
-    /// <summary>
-    /// The session plugin: the base of a test session. It gives the static entry into the app
-    /// (SessionBus), the session end, the session service, and the base type of a test script.
-    /// </summary>
-    public sealed class SessionPlugin : VSA.Module.Plugin
+    public sealed class SessionPlugin : Plugin
     {
-        public override void Configure(VSA.Module.ModuleBuilder module)
-            => module.Services.AddSingleton<TestSession>();
+        public override void Configure(IServiceCollection services)
+        {
+            services.AddSingleton<TestSession>();
+            services.AddSingleton<StepLog>();
+            services.AddPipeline(new PipelineBuilder<TestRequest>()
+                .HandlersOf(typeof(RequestHandler<,>))
+                .Runner<MainThreadRunner>()
+                .BeforeStep<LogStartStep>()
+                .AfterStep<LogDoneStep>());
+        }
     }
 }

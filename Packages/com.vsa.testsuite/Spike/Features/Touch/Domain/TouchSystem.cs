@@ -5,13 +5,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Touch
 {
-    /// <summary>
-    /// Touches a screen point with uGUI pointer events: press, then release and click,
-    /// with one frame between each step. It reaches UI objects only.
-    /// Returns the object that received the touch, or null if the touch hit nothing.
-    /// </summary>
     public sealed class TouchSystem
     {
         public async Task<GameObject> Touch(Point point, CancellationToken cancel)

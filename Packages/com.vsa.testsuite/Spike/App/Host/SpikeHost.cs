@@ -1,12 +1,16 @@
-using VSA.Unity;
+using Umpire.Unity;
+using VSA.TestSuite.Spike.Features.Objects;
+using VSA.TestSuite.Spike.Features.Scripts;
+using VSA.TestSuite.Spike.Features.Touch;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.App.Host
 {
-    /// <summary>
-    /// The host component of the spike. Put it on one GameObject of the first scene: Awake runs SpikeApp.
-    /// The CLI commands work only after that.
-    /// </summary>
-    public sealed class SpikeHost : VsaHost<SpikeApp>
+    public sealed class SpikeHost : UnityHost
     {
+        public SpikeHost()
+            : base(new SessionPlugin(), new TouchModule(), new ObjectsModule(), new ScriptsModule())
+        {
+        }
     }
 }

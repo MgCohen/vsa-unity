@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using UnityEngine;
-using VSA.Contracts;
-using VSA.Handlers.Requests;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Handlers.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
     internal sealed class FindObjectHandler : RequestHandler<FindObject, FindResult>
     {
@@ -11,11 +10,11 @@ namespace VSA.TestSuite.Spike
 
         public FindObjectHandler(ObjectSystem objects) => this.objects = objects;
 
-        public override async Task<Result<FindResult>> HandleAsync(Envelope<FindObject> envelope)
+        public override Task<Result<FindResult>> HandleAsync(Envelope<FindObject> envelope)
         {
-            await Awaitable.MainThreadAsync();
             var target = objects.Find(envelope.Message.Path);
-            return new FindResult(envelope.Message.Path, target.name, objects.ScreenPoint(target));
+            var result = new FindResult(envelope.Message.Path, target.name, objects.ScreenPoint(target));
+            return Task.FromResult<Result<FindResult>>(result);
         }
     }
 }

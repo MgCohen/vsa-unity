@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using VSA.TestSuite.Spike;
+using VSA.TestSuite.Spike.Features.Objects;
+using VSA.TestSuite.Spike.Plugins.Session;
 
 namespace SpikeLab
 {
-    /// <summary>A sample script that fails: it waits 1 s for an object that does not exist.</summary>
     public sealed class LabMissingScript : TestScript
     {
         public override string Name => "lab_missing";

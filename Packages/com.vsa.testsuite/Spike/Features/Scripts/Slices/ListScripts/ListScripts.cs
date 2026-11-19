@@ -1,6 +1,7 @@
-using VSA.Contracts.Requests;
+using Umpire.Vsa.Contracts.Requests;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Scripts
 {
-    public sealed record ListScripts : IRequest<ScriptList>;
+    public sealed record ListScripts : TestRequest, IRequest<ScriptList>;
 }

@@ -1,16 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Handlers.Requests;
 using UnityEngine;
-using VSA.Contracts;
-using VSA.Handlers.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
-    /// <summary>
-    /// Looks for the object one time in each frame. It stops when the object is found, when the time
-    /// is over, or when the envelope token cancels.
-    /// It does not throw TimeoutException: the Pipeline reads that type as its own command timeout.
-    /// </summary>
     internal sealed class WaitForObjectHandler : RequestHandler<WaitForObject, WaitResult>
     {
         readonly ObjectSystem objects;
@@ -19,7 +14,6 @@ namespace VSA.TestSuite.Spike
 
         public override async Task<Result<WaitResult>> HandleAsync(Envelope<WaitForObject> envelope)
         {
-            await Awaitable.MainThreadAsync();
             var wait = envelope.Message;
             var startFrame = Time.frameCount;
             var startTime = Time.realtimeSinceStartup;

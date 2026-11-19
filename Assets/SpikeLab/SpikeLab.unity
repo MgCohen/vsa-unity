@@ -360,7 +360,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ce016b7a34bdc6489bac538130c54dc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: VSA.TestSuite.Spike::VSA.TestSuite.Spike.SpikeHost
+  m_EditorClassIdentifier: VSA.TestSuite.Spike::VSA.TestSuite.Spike.App.Host.SpikeShell
   arguments: []
 --- !u!4 &1086912881
 Transform:

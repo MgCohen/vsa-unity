@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using VSA.Contracts;
-using VSA.Handlers.Requests;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Handlers.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Scripts
 {
     internal sealed class ListScriptsHandler : RequestHandler<ListScripts, ScriptList>
     {

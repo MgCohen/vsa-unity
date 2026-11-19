@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using UnityEngine;
-using VSA.Contracts;
-using VSA.Handlers.Requests;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Handlers.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Touch
 {
     internal sealed class TouchScreenHandler : RequestHandler<TouchScreen, TouchResult>
     {
@@ -13,7 +12,6 @@ namespace VSA.TestSuite.Spike
 
         public override async Task<Result<TouchResult>> HandleAsync(Envelope<TouchScreen> envelope)
         {
-            await Awaitable.MainThreadAsync();
             var hit = await touch.Touch(envelope.Message.Point, envelope.Cancellation);
             return new TouchResult(envelope.Message.Point, hit != null ? hit.name : null);
         }

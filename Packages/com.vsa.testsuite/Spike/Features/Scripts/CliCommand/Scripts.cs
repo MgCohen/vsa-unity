@@ -1,15 +1,12 @@
 using System.Threading.Tasks;
 using Unity.Pipeline.Commands;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Scripts
 {
-    /// <summary>
-    /// Commands of the scripts feature. The CLI calls them by name, and scripts call them
-    /// as methods, for example Scripts.Run("lab_button").
-    /// </summary>
     public static class Scripts
     {
-        [CliCommand("scripts.run", "Run a test script by name. Each step goes through the hooks")]
+        [CliCommand("scripts.run", "Run a test script by name. Each step goes through the pipeline steps")]
         public static Task<ScriptResult> Run([CliArg("name", "The script name, from scripts.list")] string name)
             => SessionBus.Send(new RunScript(name));
 

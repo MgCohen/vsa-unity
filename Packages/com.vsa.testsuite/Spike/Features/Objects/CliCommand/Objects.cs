@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
 using Unity.Pipeline.Commands;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
-    /// <summary>
-    /// Commands of the objects feature. The CLI calls them by name, and scripts call them
-    /// as methods, for example Objects.Find("LabCanvas/LabButton").
-    /// </summary>
     public static class Objects
     {
         [CliCommand("objects.find", "Find an active object by hierarchy path and return its screen point")]

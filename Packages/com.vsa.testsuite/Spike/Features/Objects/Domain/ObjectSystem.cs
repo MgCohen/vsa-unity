@@ -1,25 +1,16 @@
 using System;
 using UnityEngine;
+using VSA.TestSuite.Spike.Features.Touch;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
-    /// <summary>
-    /// Finds objects and gives their screen points. Simple on purpose: GameObject.Find sees
-    /// active objects only, and it searches all loaded scenes each time.
-    /// </summary>
     public sealed class ObjectSystem
     {
         public GameObject Find(string path)
-        {
-            var target = GameObject.Find(path)
-                ?? throw new InvalidOperationException($"No active object at '{path}'");
-            return target;
-        }
+            => GameObject.Find(path) ?? throw new InvalidOperationException($"No active object at '{path}'");
 
-        /// <summary>The active object at the path, or null.</summary>
         public GameObject TryFind(string path) => GameObject.Find(path);
 
-        /// <summary>The center of a UI object, or the screen projection of a world object.</summary>
         public Point ScreenPoint(GameObject target)
         {
             if (target.transform is RectTransform rect)

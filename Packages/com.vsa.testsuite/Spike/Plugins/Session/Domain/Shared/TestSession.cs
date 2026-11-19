@@ -1,8 +1,7 @@
 using System;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Plugins.Session
 {
-    /// <summary>One test session: one instance for each app run. A new session gets a new id.</summary>
     public sealed class TestSession
     {
         public string Id { get; } = Guid.NewGuid().ToString("N").Substring(0, 8);

@@ -32,7 +32,7 @@ namespace Umpire.Unity.VContainer {
         public bool StartedTheApp => app != null;
 
         // True while the app of this scope runs.
-        public bool AppIsRunning => app != null && app.IsRunning;
+        public bool AppIsRunning => app != null && app.State == AppState.Running;
 
         protected sealed override void Configure(IContainerBuilder builder) {
             // VContainer injects autoInjectGameObjects before the build callbacks, so before the app runs.

@@ -29,6 +29,22 @@ namespace Umpire.Unity.Editor.Tests {
         }
     }
 
+    public sealed class ShellEditModeTests {
+        // Unity sends the Reset message when a component is added in the Editor. A static method with that name
+        // logs "Failed to call static function Reset".
+        [Test]
+        public void A_shell_added_in_Edit_Mode_logs_no_error() {
+            var go = new UnityEngine.GameObject("Shell");
+            try {
+                go.AddComponent<VsaShell>();
+
+                UnityEngine.TestTools.LogAssert.NoUnexpectedReceived();
+            } finally {
+                UnityEngine.Object.DestroyImmediate(go);
+            }
+        }
+    }
+
     public sealed class CompilerFilesTests {
         const string Rules = "# rules\nis_global = true\nglobal_level = -1\n\numpire.UMP010101.max = 120\n";
 

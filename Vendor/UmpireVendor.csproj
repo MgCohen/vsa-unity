@@ -2,7 +2,7 @@
   <!-- Only for vendor.cs: dotnet publish of this project gives the Umpire packages and their dependencies for Unity. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <UmpireVersion>0.2.0-preview.5</UmpireVersion>
+    <UmpireVersion>0.2.0-preview.6</UmpireVersion>
     <!-- The analyzers of preview.4 and later need System.Collections.Immutable 9.0. The Roslyn of Unity 6000.6
          (.NET SDK 8.0) has 8.0, so they do not load (CS8032, and Unity does not show it). Keep the last analyzers
          that load until Umpire fixes this. The analyzers read source only, so they need not match UmpireVersion. -->

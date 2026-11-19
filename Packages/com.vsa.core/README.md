@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.5) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.6) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
@@ -68,14 +68,14 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 | `Stop()`, `Run()` | Stop the app, and start it again. `Run()` starts the app only from `Stopped`. |
 
 - A second shell disables itself and does nothing. A scene change does not stop the app.
-- `AppHost.Build` does not read the arguments, so the app gets no configuration from them.
+- `AppHost` reads `--Key=Value` and `--Key value` of the arguments into `IConfiguration`. It ignores other arguments, for example `-batchmode`.
 
 ## The Unity host
 
 | Item | Behavior |
 |---|---|
 | Log | `UnityLogProvider` writes to the Unity console |
-| Presenter events | `LivePresenters.Dispatch` runs them after `Awaitable.MainThreadAsync()` |
+| Presenter events | A presenter (`IPresenterHandler<T>`) gets each event on the thread of the publish. `PresenterComponent` moves each `Render` to the main thread. |
 | Settings | Assets on the shell, then `UnitySettings` classes |
 | Modules | The module scan, or the list of a derived host |
 
@@ -147,6 +147,7 @@ Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallba
 | Limit | Result |
 |---|---|
 | Each scene view makes its own scope | Two views of one presenter type get two presenters. They do not share state. |
+| The scope of a view is a live `PresenterScope` | A scope that does not resolve `PresenterScope` gets no events. A factory that calls `Bind` must resolve it in its own scope. |
 | The view reads the static `Shell.Services` | A service locator: an exception to the composition rule |
 | No app runs at `Start` | The view gets no presenter and shows no error |
 

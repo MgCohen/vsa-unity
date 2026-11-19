@@ -2,7 +2,7 @@ using Greeter;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
-using VSA.Unity;
+using Umpire.Unity;
 
 namespace VContainerSample {
     public sealed class GreetingLabel : PresenterComponent<GreeterPresenter> {

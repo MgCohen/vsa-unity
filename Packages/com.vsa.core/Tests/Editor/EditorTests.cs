@@ -1,63 +1,41 @@
 using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Umpire.Kernels;
+using Umpire.Vsa;
 using UnityEditor;
-using VSA.Composition;
 
-namespace VSA.Unity.Editor.Tests {
-    public sealed class OneApp : VsaApp<OneApp> {
-        protected override VsaBuilder Builder(string[] args) => VsaBuilder.Create(args).Modules();
+namespace Umpire.Unity.Editor.Tests {
+    // An app over the Unity host with no modules. The module scan does not read a test assembly.
+    public sealed class EmptyHost : UnityHost {
+        public EmptyHost() : base(Array.Empty<Module>()) {
+        }
+    }
+
+    public sealed class EmptyApp : App<Vsa<EmptyHost>> {
     }
 
     public sealed class UnityHostTests {
-        [TearDown]
-        public void StopTheApp() => OneApp.Stop();
-
         [Test]
-        public void Run_returns_while_the_app_runs() {
-            Assert.That(OneApp.Run(Array.Empty<string>()), Is.Zero);
+        public void An_app_over_the_Unity_host_starts_and_stops_in_Edit_Mode() {
+            var app = new EmptyApp();
 
-            Assert.That(OneApp.IsRunning, Is.True);
-            Assert.That(VsaHost.IsRunning, Is.True);
-        }
+            app.Start(Array.Empty<string>());
+            Assert.That(app.State, Is.EqualTo(AppState.Running));
+            app.Stop();
 
-        [Test]
-        public void The_exit_of_the_play_mode_stops_the_app() {
-            OneApp.Run(Array.Empty<string>());
-
-            UnityVsaHost.OnPlayMode(PlayModeStateChange.ExitingPlayMode);
-
-            Assert.That(OneApp.IsRunning, Is.False);
-            Assert.That(VsaHost.IsRunning, Is.False);
-        }
-
-        [Test]
-        public void The_start_of_the_play_mode_does_not_stop_the_app() {
-            OneApp.Run(Array.Empty<string>());
-
-            UnityVsaHost.OnPlayMode(PlayModeStateChange.ExitingEditMode);
-
-            Assert.That(OneApp.IsRunning, Is.True);
-        }
-
-        [Test]
-        public void Run_after_Stop_starts_the_app_again() {
-            OneApp.Run(Array.Empty<string>());
-            OneApp.Stop();
-
-            OneApp.Run(Array.Empty<string>());
-
-            Assert.That(OneApp.IsRunning, Is.True);
+            Assert.That(app.State, Is.EqualTo(AppState.Stopped));
         }
     }
 
     public sealed class CompilerFilesTests {
-        const string Rules = "# rules\nis_global = true\nglobal_level = -1\n\nvsa.VSA1008.max = 120\n";
+        const string Rules = "# rules\nis_global = true\nglobal_level = -1\n\numpire.UMP010101.max = 120\n";
 
         [Test]
-        public void A_new_globalconfig_has_the_VSA_block() =>
+        public void A_new_globalconfig_has_the_package_block() =>
             Assert.That(CompilerFiles.GlobalConfig("", Rules), Is.EqualTo(
-                "is_global = true\n" + CompilerFiles.Begin + "\n# rules\n\nvsa.VSA1008.max = 120\n" + CompilerFiles.End + "\n"));
+                "is_global = true\n" + CompilerFiles.Begin + "\n# rules\n\numpire.UMP010101.max = 120\n" + CompilerFiles.End + "\n"));
 
         [Test]
         public void The_globalconfig_keeps_the_lines_of_the_consumer() {
@@ -68,49 +46,54 @@ namespace VSA.Unity.Editor.Tests {
         }
 
         [Test]
-        public void The_globalconfig_replaces_the_old_VSA_block() {
-            var old = CompilerFiles.GlobalConfig("", "vsa.VSA1008.max = 80\n");
+        public void The_globalconfig_replaces_the_last_package_block() {
+            var old = CompilerFiles.GlobalConfig("", "umpire.UMP010101.max = 80\n");
 
             var text = CompilerFiles.GlobalConfig(old, Rules);
 
-            Assert.That(text, Does.Contain("vsa.VSA1008.max = 120").And.Not.Contain("= 80"));
+            Assert.That(text, Does.Contain("umpire.UMP010101.max = 120").And.Not.Contain("= 80"));
             Assert.That(CompilerFiles.GlobalConfig(text, Rules), Is.EqualTo(text));
         }
     }
 
     public sealed class AnalyzerTests {
-        const string Analyzer = "Packages/com.vsa.core/Runtime/VSA.Analyzers.dll";
+        static readonly string[] Analyzers = {
+            "Packages/com.vsa.core/Runtime/Umpire.Kernels.Analyzers.dll",
+            "Packages/com.vsa.core/Runtime/Umpire.Vsa.Analyzers.dll",
+        };
 
-        [Test]
-        public void The_analyzer_DLL_has_the_RoslynAnalyzer_label() =>
-            Assert.That(AssetDatabase.GetLabels(AssetDatabase.LoadMainAssetAtPath(Analyzer)), Does.Contain("RoslynAnalyzer"));
+        [TestCaseSource(nameof(Analyzers))]
+        public void The_analyzer_DLL_has_the_RoslynAnalyzer_label(string analyzer) =>
+            Assert.That(AssetDatabase.GetLabels(AssetDatabase.LoadMainAssetAtPath(analyzer)), Does.Contain("RoslynAnalyzer"));
 
-        [Test]
-        public void The_analyzer_DLL_is_not_in_a_player_or_the_editor() {
-            var plugin = (PluginImporter)AssetImporter.GetAtPath(Analyzer);
+        [TestCaseSource(nameof(Analyzers))]
+        public void The_analyzer_DLL_is_not_in_a_player_or_the_editor(string analyzer) {
+            var plugin = (PluginImporter)AssetImporter.GetAtPath(analyzer);
 
             Assert.That(plugin.GetCompatibleWithAnyPlatform(), Is.False);
             Assert.That(plugin.GetCompatibleWithEditor(), Is.False);
         }
 
-        [Test]
-        public void The_analyzers_run_on_an_assembly_that_references_VSA_Unity() {
-            var rsp = System.IO.Directory.GetFiles("Library/Bee/artifacts", "VSA.Unity.Editor.Tests.rsp", System.IO.SearchOption.AllDirectories);
+        [TestCaseSource(nameof(Analyzers))]
+        public void The_analyzers_run_on_an_assembly_that_references_Umpire_Unity(string analyzer) {
+            var rsp = Directory.GetFiles("Library/Bee/artifacts", "Umpire.Unity.Editor.Tests.rsp", SearchOption.AllDirectories);
+            var name = Path.GetFileName(analyzer).Replace(".", "\\.");
 
             Assert.That(rsp, Is.Not.Empty);
-            Assert.That(System.IO.File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/VSA\\.Analyzers\\.dll\""));
+            Assert.That(File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/" + name + "\""));
         }
 
         [Test]
         public void The_shipped_config_is_the_text_that_the_editor_script_writes_in_a_new_project() =>
             Assert.That(CompilerFiles.GlobalConfig("", CompilerFiles.RulesText()),
-                Is.EqualTo(System.IO.File.ReadAllText(CompilerFiles.ShippedConfigPath()).Replace("\r\n", "\n")));
+                Is.EqualTo(File.ReadAllText(CompilerFiles.ShippedConfigPath()).Replace("\r\n", "\n")));
 
         [Test]
-        public void The_package_has_the_rule_values_for_the_editor_script() {
+        public void The_package_has_the_rule_values_of_both_analyzers() {
             var text = CompilerFiles.GlobalConfig("", CompilerFiles.RulesText());
 
-            Assert.That(text, Does.Contain("vsa.VSA1008.max = ").And.Contain("vsa.VSA1012.kind_order = "));
+            Assert.That(text, Does.Contain("Umpire.Kernels.Analyzers").And.Contain("Umpire.Vsa.Analyzers"));
+            Assert.That(text, Does.Contain("dotnet_diagnostic.UMP010203.severity = none"));
         }
     }
 }

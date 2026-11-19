@@ -1,23 +1,36 @@
 using System.Threading;
 using System.Threading.Tasks;
-using VSA.Composition;
-using VSA.Contracts;
-using VSA.Contracts.Events;
-using VSA.Contracts.Requests;
-using VSA.Handlers.Requests;
-using VSA.Module;
-using VSA.Presenters;
+using Umpire.Kernels;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa;
+using Umpire.Vsa.Contracts.Events;
+using Umpire.Vsa.Contracts.Requests;
+using Umpire.Vsa.Definition;
+using Umpire.Vsa.Handlers.Requests;
+using Umpire.Vsa.Presenters;
 
 namespace System.Runtime.CompilerServices {
     static class IsExternalInit {
     }
 }
 
-namespace VSA.Unity.Tests {
-    // A small module for the tests. The app gives it with Modules(...), so the module scan does not find it.
-    public sealed class ProbeModule : VSA.Module.Module {
-        public override void Configure(ModuleBuilder module) {
-        }
+namespace Umpire.Unity.Tests {
+    // A small module for the tests. The module scan does not read a test assembly, so ProbeHost gives the module.
+    public sealed class ProbeModule : Module<ProbeSettings> {
+        public static ProbeSettings Bound { get; private set; }
+
+        public override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) =>
+            Bound = settings;
+    }
+
+    public sealed class ProbeSettings {
+        public string Text { get; set; } = "default";
+    }
+
+    // The settings of ProbeModule in code. UnityHost finds the class in the assembly of the module.
+    public sealed class CodeSettings : UnitySettings {
+        public override TSettings Get<TSettings>(Module module) =>
+            module is ProbeModule ? new ProbeSettings { Text = "code" } as TSettings : null;
     }
 
     public sealed record PingRequest(string Text) : IRequest<PongResponse>;
@@ -37,23 +50,23 @@ namespace VSA.Unity.Tests {
         }
     }
 
-    public sealed class PingPresenter : Presenter, IPresenterEvent<Ponged> {
-        public PingPresenter(IBus bus) : base(bus) {
+    public sealed class PingPresenter : Presenter, IPresenterHandler<Ponged> {
+        public PingPresenter(IRequestSender requests) : base(requests) {
         }
 
         public string Last { get; private set; } = "";
         public int EventThread { get; private set; } = -1;
         public bool Disposed { get; private set; }
 
-        public Task PingAsync(string text) => Bus.Send(new PingRequest(text));
+        public Task<Result<PongResponse>> PingAsync(string text) => Requests.SendAsync(new PingRequest(text));
 
         // A change of this presenter only: Run raises Changed two times, and no event goes to the other presenters.
         public Task TouchAsync() => Run(new OpState(), () => Task.FromResult<Error>(null));
 
-        public Task OnEventAsync(Ponged integrationEvent, CancellationToken ct) {
-            Last = integrationEvent.Text;
+        public Task<Result<Unit>> HandleAsync(Envelope<Ponged> envelope) {
+            Last = envelope.Message.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
-            return Task.CompletedTask;
+            return Task.FromResult<Result<Unit>>(Unit.Value);
         }
 
         protected override void Dispose(bool disposing) {
@@ -62,12 +75,27 @@ namespace VSA.Unity.Tests {
         }
     }
 
-    // The app class of the tests. It selects the Unity host, so the host scan does not run.
-    public sealed class ProbeApp : VsaApp<ProbeApp> {
-        protected override VsaBuilder Builder(string[] args) => VsaBuilder.Create(args).Modules(new ProbeModule()).UseUnityHost();
+    // The host of the tests: the Unity host with the probe module.
+    public sealed class ProbeHost : UnityHost {
+        public ProbeHost() : base(new ProbeModule()) {
+        }
     }
 
-    // The host component of the tests.
-    public sealed class ProbeHost : VsaHost<ProbeApp> {
+    // The shell of the tests. It counts the app hooks.
+    public sealed class ProbeShell : Shell<Vsa<ProbeHost>> {
+        public static int Starts;
+        public static int Stops;
+
+        protected override void OnStart() => Starts++;
+
+        protected override void OnStop() => Stops++;
+    }
+
+    // A shell with hooks that does not name the host. UnityHost has no module list here, so Umpire scans the
+    // loaded assemblies of the project for modules.
+    public sealed class HookShell : VsaShell<VsaArchitecture> {
+        public static int Starts;
+
+        protected override void OnStart() => Starts++;
     }
 }

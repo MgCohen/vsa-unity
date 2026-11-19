@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using Debug = UnityEngine.Debug;
 
-namespace VSA.Unity {
+namespace Umpire.Unity {
     // Writes the logs of the app to the Unity console. The Unity host adds it.
     public sealed class UnityLogProvider : ILoggerProvider {
         public ILogger CreateLogger(string categoryName) => new UnityLogger(categoryName);

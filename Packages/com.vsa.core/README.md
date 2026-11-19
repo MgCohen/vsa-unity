@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.3) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.5) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
@@ -21,7 +21,7 @@ The rules have default values, so a project compiles without step 1. Step 1 give
 | Path | Contains |
 |---|---|
 | `Runtime/Plugins/` | The Umpire DLLs and their dependencies (26 DLLs) |
-| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10) |
+| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), version 0.2.0-preview.3 (see "Analyzers") |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
 | `Documentation~/Default.globalconfig` | The rule values for the install step |
@@ -63,8 +63,9 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 | `Settings` (Inspector) | The `ModuleSettingsAsset` assets of the app |
 | `Services` (static) | The services of the running app, else null |
 | `AppIsRunning` (static) | True while the app runs |
+| `State` | The state of the app of this shell: `Stopped`, `Running` or `Stopping` |
 | `Owner` (static) | The shell that owns the app, else null |
-| `Stop()`, `Run()` | Stop the app, and start it again |
+| `Stop()`, `Run()` | Stop the app, and start it again. `Run()` starts the app only from `Stopped`. |
 
 - A second shell disables itself and does nothing. A scene change does not stop the app.
 - `AppHost.Build` does not read the arguments, so the app gets no configuration from them.
@@ -219,6 +220,8 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 ## Analyzers
 
 `Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries.
+
+The analyzers are version 0.2.0-preview.3 (`UmpireAnalyzerVersion` in `Vendor/UmpireVendor.csproj`). The analyzers of preview.4 and later need `System.Collections.Immutable` 9.0, and the compiler of Unity 6000.6 (.NET SDK 8.0) has 8.0. So they do not load: the compiler gives `CS8032`, and Unity does not show it. The analyzers read source code only, so their version does not need to match the runtime DLLs.
 
 | Assembly | Umpire rules | Rule values from |
 |---|---|---|

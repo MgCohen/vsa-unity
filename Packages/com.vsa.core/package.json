@@ -1,6 +1,6 @@
 {
   "name": "com.vsa.core",
-  "version": "0.2.0-preview.3",
+  "version": "0.2.0-preview.5",
   "displayName": "Umpire VSA Core",
   "description": "The Umpire framework and its VSA pack for Unity: the portable Umpire DLLs, the analyzers, the shells and the Unity host (Shell, VsaShell, UnityHost), and the uGUI view base (PresenterComponent<T>).",
   "unity": "6000.6",

@@ -59,7 +59,10 @@ Directory.Delete(output, recursive: true);
 // The analyzers and their rule values (PackageDownload). In the folder of the VSA.Unity asmdef, the analyzers run on
 // VSA.Unity and on each assembly that references it. The label RoslynAnalyzer in the .meta file makes Unity use
 // the DLL as an analyzer, not as a library.
-var analyzerPackage = Path.Combine(GlobalPackages(), "umpire.vsa.analyzers", version.ToLowerInvariant());
+var analyzerVersion = Regex.Match(File.ReadAllText(project), "<UmpireAnalyzerVersion>(.+)</UmpireAnalyzerVersion>") is { Success: true } pin
+    ? pin.Groups[1].Value
+    : version;
+var analyzerPackage = Path.Combine(GlobalPackages(), "umpire.vsa.analyzers", analyzerVersion.ToLowerInvariant());
 string[] analyzerNames = ["Umpire.Kernels.Analyzers", "Umpire.Vsa.Analyzers"];
 foreach (var old in Directory.GetFiles(Path.Combine(package, "Runtime"), "*.Analyzers.dll")
     .Where(path => !analyzerNames.Contains(Path.GetFileNameWithoutExtension(path)))) {
@@ -92,7 +95,7 @@ File.WriteAllText(Path.Combine(package, "Documentation~", "Default.globalconfig"
 var manifest = Path.Combine(package, "package.json");
 File.WriteAllText(manifest, Regex.Replace(File.ReadAllText(manifest), "\"version\": \"[^\"]*\"", $"\"version\": \"{version}\""));
 
-Console.WriteLine($"Packages/com.vsa.core {version}: {dlls.Count} DLLs.");
+Console.WriteLine($"Packages/com.vsa.core {version}: {dlls.Count} DLLs. Analyzers: {analyzerVersion}.");
 return 0;
 
 static string GlobalPackages() {

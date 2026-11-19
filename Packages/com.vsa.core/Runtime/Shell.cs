@@ -53,7 +53,7 @@ namespace Umpire.Unity {
         public static IServiceProvider Services => current?.Services;
 
         // True while an app that a shell or a VContainer root scope started runs.
-        public static bool AppIsRunning => current != null && current.IsRunning;
+        public static bool AppIsRunning => current != null && current.State == AppState.Running;
 
         public string[] Arguments {
             get => arguments;
@@ -63,14 +63,17 @@ namespace Umpire.Unity {
         // The module settings assets of this shell.
         public IReadOnlyList<ModuleSettingsAsset> SettingsAssets => settings;
 
-        public bool IsRunning => app != null && app.IsRunning;
+        // The state of the app of this shell: Stopped before the first start and after a stop.
+        public AppState State => app != null ? app.State : AppState.Stopped;
+
+        public bool IsRunning => State == AppState.Running;
 
         protected abstract App CreateApp();
 
-        // Starts the app again after Stop. If the app runs, it does nothing.
+        // Starts the app again after Stop. If the app runs or stops now, it does nothing.
         // The name is not Start, because Unity calls a method named Start as a message.
         public void Run() {
-            if (owner == this && !IsRunning) {
+            if (owner == this && State == AppState.Stopped) {
                 app.Start(arguments);
             }
         }

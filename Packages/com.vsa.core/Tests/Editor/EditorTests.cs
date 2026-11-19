@@ -22,10 +22,10 @@ namespace Umpire.Unity.Editor.Tests {
             var app = new EmptyApp();
 
             app.Start(Array.Empty<string>());
-            Assert.That(app.IsRunning, Is.True);
+            Assert.That(app.State, Is.EqualTo(AppState.Running));
             app.Stop();
 
-            Assert.That(app.IsRunning, Is.False);
+            Assert.That(app.State, Is.EqualTo(AppState.Stopped));
         }
     }
 

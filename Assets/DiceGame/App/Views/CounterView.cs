@@ -22,16 +22,15 @@ namespace DiceGame.App.Views {
             set => label = value;
         }
 
-        protected override void Start() {
-            base.Start();
-            roll.onClick.AddListener(() => _ = Presenter?.RollAsync());
-            _ = Presenter?.LoadAsync();
-        }
-
         protected override void Render() {
             var error = Presenter.Roll.Error ?? Presenter.Load.Error;
             var last = Presenter.Count == 0 ? "-" : Presenter.Last.ToString();
             label.text = error != null ? "Error: " + error : "Rolls: " + Presenter.Count + "   Last: " + last;
+        }
+
+        void Start() {
+            roll.onClick.AddListener(() => _ = Presenter?.RollAsync());
+            _ = Presenter?.LoadAsync();
         }
     }
 }

@@ -27,22 +27,41 @@ namespace Umpire.Unity.Tests {
             }
         }
 
-        [UnityTest]
-        public IEnumerator A_view_in_a_scene_gets_its_presenter_from_the_app() {
-            Shells.Start();
+        [Test]
+        public void A_view_in_a_loaded_scene_gets_its_presenter_at_the_app_start() {
             var view = Label();
 
-            yield return null;
+            Shells.Start();
 
             Assert.That(view.Presenter, Is.Not.Null);
             Assert.That(view.Renders, Is.EqualTo(1));
         }
 
+        [Test]
+        public void Two_views_share_one_presenter() {
+            var first = Label();
+            var second = Label();
+
+            Shells.Start();
+
+            Assert.That(first.Presenter, Is.Not.Null);
+            Assert.That(second.Presenter, Is.SameAs(first.Presenter));
+        }
+
+        [Test]
+        public void An_inactive_view_gets_its_presenter() {
+            var view = Label();
+            view.gameObject.SetActive(false);
+
+            Shells.Start();
+
+            Assert.That(view.Presenter, Is.Not.Null);
+        }
+
         [UnityTest]
         public IEnumerator The_view_renders_the_event_of_its_module() {
-            Shells.Start();
             var view = Label();
-            yield return null;
+            Shells.Start();
 
             var send = view.Presenter.PingAsync("event");
             yield return new WaitUntil(() => send.IsCompleted && view.Label.text == "event");
@@ -51,19 +70,59 @@ namespace Umpire.Unity.Tests {
         }
 
         [UnityTest]
-        public IEnumerator The_destroy_of_the_view_disposes_its_scope() {
-            Shells.Start();
+        public IEnumerator The_presenter_gets_an_event_after_the_destroy_of_the_view() {
             var view = Label();
-            yield return null;
+            Shells.Start();
             var presenter = view.Presenter;
-
             Object.DestroyImmediate(view.gameObject);
 
+            var send = presenter.PingAsync("alone");
+            yield return new WaitUntil(() => send.IsCompleted && presenter.Last == "alone");
+
+            Assert.That(presenter.Disposed, Is.False);
+            Assert.That(presenter.Last, Is.EqualTo("alone"));
+        }
+
+        [Test]
+        public void The_app_stop_disposes_the_presenter_and_releases_the_view() {
+            var view = Label();
+            var shell = Shells.Start();
+            var presenter = view.Presenter;
+
+            shell.Stop();
+
             Assert.That(presenter.Disposed, Is.True);
+            Assert.That(view.Presenter, Is.Null);
+        }
+
+        [Test]
+        public void A_new_start_gives_the_view_a_new_presenter() {
+            var view = Label();
+            var shell = Shells.Start();
+            var first = view.Presenter;
+            shell.Stop();
+
+            shell.Run();
+
+            Assert.That(view.Presenter, Is.Not.Null.And.Not.SameAs(first));
+        }
+
+        [Test]
+        public void A_view_of_a_factory_keeps_its_presenter_at_the_stop_and_the_start() {
+            var shell = Shells.Start();
+            using var scope = Shell.Services.CreateScope();
+            var given = scope.ServiceProvider.GetRequiredService<PingPresenter>();
+            var view = Label();
+            view.Bind(given);
+
+            shell.Stop();
+            shell.Run();
+
+            Assert.That(view.Presenter, Is.SameAs(given));
         }
 
         [UnityTest]
-        public IEnumerator Bind_before_Start_gives_the_presenter_of_a_factory() {
+        public IEnumerator Bind_gives_the_presenter_of_a_factory() {
             Shells.Start();
             using var scope = Shell.Services.CreateScope();
             var given = scope.ServiceProvider.GetRequiredService<PingPresenter>();

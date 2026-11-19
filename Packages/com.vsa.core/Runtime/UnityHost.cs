@@ -9,12 +9,17 @@ using Umpire.Vsa.Presenters;
 using UnityEngine;
 
 namespace Umpire.Unity {
-    // The Unity host: the Unity log and the settings sources. A presenter gets its events on the thread of the
-    // publish, and PresenterComponent moves each Render to the main thread.
+    // The Unity host: the Unity log, the settings sources and the presenter scope of the app. One app is one
+    // presenter scope: it is live from the start of the host to its end, and the host injects its presenters into
+    // the views of the loaded scenes. A presenter gets its events on the thread of the publish, and
+    // PresenterComponent moves each Render to the main thread.
     // Without a module list, Umpire finds the modules in the loaded assemblies that reference Umpire.Kernels.
     // To give the modules, derive a host with a public constructor:
     //   public sealed class GameHost : UnityHost { public GameHost() : base(new ScoreModule()) { } }
     public class UnityHost : AppHost {
+        IServiceScope presenters;
+        ViewInjector views;
+
         public UnityHost() {
         }
 
@@ -34,6 +39,25 @@ namespace Umpire.Unity {
             services.AddLogging(logging => logging.AddProvider(new UnityLogProvider()));
             foreach (var (type, instance) in HostImports.Take()) {
                 services.AddSingleton(type, instance);
+            }
+        }
+
+        // Makes the presenter scope of the app, makes it live, and injects the views. It runs before App.OnStart.
+        public sealed override void Start(IServiceProvider services, AppStop stop) {
+            presenters = services.CreateScope();
+            presenters.ServiceProvider.GetRequiredService<PresenterScope>();
+            views = new ViewInjector(presenters.ServiceProvider);
+        }
+
+        // Stops the injection and ends the presenter scope before the services of the app.
+        public sealed override void Dispose() {
+            try {
+                views?.Dispose();
+                presenters?.Dispose();
+            } finally {
+                views = null;
+                presenters = null;
+                base.Dispose();
             }
         }
 

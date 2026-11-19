@@ -75,6 +75,7 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 | Item | Behavior |
 |---|---|
 | Log | `UnityLogProvider` writes to the Unity console |
+| Presenter scope | One app is one presenter scope. It is live from the host start to the host end. |
 | Presenter events | A presenter (`IPresenterHandler<T>`) gets each event on the thread of the publish. `PresenterComponent` moves each `Render` to the main thread. |
 | Settings | Assets on the shell, then `UnitySettings` classes |
 | Modules | The module scan, or the list of a derived host |
@@ -132,26 +133,38 @@ public sealed class CounterLabel : PresenterComponent<CounterPresenter> {
 
 | Item | Behavior |
 |---|---|
-| Presenter | `Bind`, else an app scope in `Start` |
+| Presenter | From `Bind` only. The view never resolves it. |
 | Render | On `Bind` and on `Changed`, on the main thread |
 | `Bind` again | Same presenter: nothing. Other presenter: stops to listen to the last one. |
-| `OnDestroy` | Stops to listen. Disposes the scope that the view made. |
+| `OnDestroy` | Stops to listen. The scope that gave the presenter owns it. |
 
-- A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from a new scope of the running app.
-- An override of `Start` or `OnDestroy` calls the base method.
+- The app injects the scene views. A factory or VContainer can call `Bind` before that.
+- An override of `OnDestroy` calls the base method.
 
 ### Scene views
 
-Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallback gives these views a presenter. It has these limits:
+The app scope gives the presenters of the scene views. `UnityHost` makes this scope at its start, makes it live, and disposes it at its end, before the services of the app.
 
-| Limit | Result |
+```text
+UnityHost.Start ── app scope: live ── inject each loaded scene ── App.OnStart
+SceneManager.sceneLoaded ── inject that scene          (after Awake, before Start)
+App.Stop ── views release their presenters ── app scope disposed ── services disposed
+```
+
+| Case | Result |
 |---|---|
-| Each scene view makes its own scope | Two views of one presenter type get two presenters. They do not share state. |
-| The scope of a view is a live `PresenterScope` | A scope that does not resolve `PresenterScope` gets no events. A factory that calls `Bind` must resolve it in its own scope. |
-| The view reads the static `Shell.Services` | A service locator: an exception to the composition rule |
-| No app runs at `Start` | The view gets no presenter and shows no error |
+| Two views of one presenter type | One presenter. All views of the app share it. |
+| Scene change | The presenter and its state stay |
+| Destroy of a view | The presenter stays and gets its events |
+| View with a presenter at the injection | It keeps that presenter |
+| Inactive view | It gets its presenter |
+| View that `Instantiate` makes after the scene load | No presenter. A factory must call `Bind`. |
+| App stop | The views release their presenters. A new start injects them again. |
+| No app runs | The view gets no presenter and shows no error |
 
-If a consumer needs shared presenters or injection into scene objects, use [VContainer](#vcontainer). A view that has a presenter before `Start` does not use the fallback.
+- A view has its presenter in `Start`, because Unity raises `sceneLoaded` before `Start`.
+- To get a second presenter scope, start a second app.
+- In an app that a VContainer root scope starts, an `[Inject]` that calls `Bind` replaces the presenter of the app scope.
 
 ## VContainer
 

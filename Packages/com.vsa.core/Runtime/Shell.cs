@@ -128,8 +128,9 @@ namespace Umpire.Unity {
         }
 
         // Without a domain reload (Enter Play Mode Options), the static fields keep their values.
+        // The name is not Reset, because Unity sends a Reset message when a component is added in the Editor.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() {
+        static void ClearStatics() {
             owner = null;
             current = null;
         }

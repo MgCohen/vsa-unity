@@ -58,7 +58,7 @@ namespace Sample {
             Task.FromResult<Result<string>>("moved card " + envelope.Message.Card + " to " + default(TZone).Name);
     }
 
-    public sealed class PingPresenter : Presenter, IPresenterEvent<Ponged> {
+    public sealed class PingPresenter : Presenter, IPresenterHandler<Ponged> {
         public PingPresenter(IRequestSender requests) : base(requests) {
         }
 
@@ -67,10 +67,10 @@ namespace Sample {
 
         public Task<Result<PongResponse>> PingAsync(string text) => Requests.SendAsync(new PingRequest(text));
 
-        public Task OnEventAsync(Ponged integrationEvent, CancellationToken ct) {
-            Last = integrationEvent.Text;
+        public Task<Result<Unit>> HandleAsync(Envelope<Ponged> envelope) {
+            Last = envelope.Message.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
-            return Task.CompletedTask;
+            return Task.FromResult<Result<Unit>>(Unit.Value);
         }
     }
 }

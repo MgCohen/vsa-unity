@@ -42,7 +42,7 @@ namespace Greeter {
         }
     }
 
-    public sealed class GreeterPresenter : Presenter, IPresenterEvent<Greeted> {
+    public sealed class GreeterPresenter : Presenter, IPresenterHandler<Greeted> {
         public GreeterPresenter(IRequestSender requests) : base(requests) {
         }
 
@@ -51,10 +51,10 @@ namespace Greeter {
 
         public Task<Result<GreetResponse>> GreetAsync(string name) => Requests.SendAsync(new GreetRequest(name));
 
-        public Task OnEventAsync(Greeted integrationEvent, CancellationToken ct) {
-            Last = integrationEvent.Text;
-            Count = integrationEvent.Count;
-            return Task.CompletedTask;
+        public Task<Result<Unit>> HandleAsync(Envelope<Greeted> envelope) {
+            Last = envelope.Message.Text;
+            Count = envelope.Message.Count;
+            return Task.FromResult<Result<Unit>>(Unit.Value);
         }
     }
 }

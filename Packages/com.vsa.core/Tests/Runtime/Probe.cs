@@ -50,7 +50,7 @@ namespace Umpire.Unity.Tests {
         }
     }
 
-    public sealed class PingPresenter : Presenter, IPresenterEvent<Ponged> {
+    public sealed class PingPresenter : Presenter, IPresenterHandler<Ponged> {
         public PingPresenter(IRequestSender requests) : base(requests) {
         }
 
@@ -63,10 +63,10 @@ namespace Umpire.Unity.Tests {
         // A change of this presenter only: Run raises Changed two times, and no event goes to the other presenters.
         public Task TouchAsync() => Run(new OpState(), () => Task.FromResult<Error>(null));
 
-        public Task OnEventAsync(Ponged integrationEvent, CancellationToken ct) {
-            Last = integrationEvent.Text;
+        public Task<Result<Unit>> HandleAsync(Envelope<Ponged> envelope) {
+            Last = envelope.Message.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
-            return Task.CompletedTask;
+            return Task.FromResult<Result<Unit>>(Unit.Value);
         }
 
         protected override void Dispose(bool disposing) {

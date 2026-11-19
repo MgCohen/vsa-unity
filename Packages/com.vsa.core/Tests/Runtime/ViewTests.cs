@@ -1,5 +1,6 @@
 using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Vsa.Presenters;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -112,6 +113,7 @@ namespace Umpire.Unity.Tests {
         public IEnumerator A_destroyed_view_does_not_render() {
             Shells.Start();
             using var scope = Shell.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<PresenterScope>();
             var presenter = scope.ServiceProvider.GetRequiredService<PingPresenter>();
             var view = Label();
             view.Bind(presenter);

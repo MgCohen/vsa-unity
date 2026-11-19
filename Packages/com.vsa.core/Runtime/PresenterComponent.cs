@@ -4,8 +4,9 @@ using Umpire.Vsa.Presenters;
 
 namespace Umpire.Unity {
     // A uGUI view of one presenter. It only renders: it calls Render on Bind and on each Changed, on the main thread.
-    // A factory gives the presenter with Bind. A view in a scene with no Bind before Start gets the presenter
-    // from a new scope of the running app, and the view disposes that scope.
+    // A factory gives the presenter with Bind, and the scope of that presenter must be a live PresenterScope.
+    // A view in a scene with no Bind before Start makes a new scope of the running app, makes it a live
+    // PresenterScope, gets the presenter from it, and disposes that scope with the view.
     public abstract class PresenterComponent<T> : MonoBehaviour where T : Presenter {
         IServiceScope scope;
 
@@ -32,6 +33,7 @@ namespace Umpire.Unity {
                 return;
             }
             scope = Shell.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<PresenterScope>();
             Bind(scope.ServiceProvider.GetRequiredService<T>());
         }
 

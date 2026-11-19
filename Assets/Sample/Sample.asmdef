@@ -12,6 +12,7 @@
     "Umpire.Vsa.Contracts.Requests.dll",
     "Umpire.Vsa.Handlers.Commands.dll",
     "Umpire.Vsa.Handlers.Requests.dll",
+    "Umpire.Vsa.Handlers.Events.dll",
     "Umpire.Vsa.Presenters.dll",
     "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
   ],

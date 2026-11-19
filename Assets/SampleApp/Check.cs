@@ -42,8 +42,6 @@ namespace SampleApp {
         IEnumerator Run() {
             Line("backend", Application.isEditor ? "editor" : "player");
             Line("shell", Shell.Owner.GetType().FullName, "SampleApp.SampleShell");
-            var dispatch = Shell.Services.GetService<LivePresenters.Dispatch>() != null ? "main thread" : "none";
-            Line("presenter-dispatch", dispatch, "main thread");
             var types = Shell.Services.GetRequiredService<AppTypes>();
             Line("modules", string.Join(",", types.Modules.Select(m => m.Name)), "Sample");
             var moves = types.Registered()
@@ -65,8 +63,8 @@ namespace SampleApp {
             yield return WaitAtMostTenSeconds(() => ping.IsCompleted && Presenter.Last == "far");
             Line("request", TextOf(ping, pong => pong.Text), "pong far");
             Line("presenter-last", Presenter.Last, "far");
-            var thread = Presenter.EventThread == main ? "main thread" : "thread " + Presenter.EventThread;
-            Line("presenter-event", thread, "main thread");
+            var thread = Presenter.EventThread == main ? "main thread" : "the publish thread";
+            Line("presenter-event", thread, "the publish thread");
         }
 
         IEnumerator SendStructArguments() {

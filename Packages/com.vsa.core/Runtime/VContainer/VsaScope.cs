@@ -1,10 +1,11 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Vsa.Presenters;
 
 namespace Umpire.Unity.VContainer {
     // The VSA scope of one VContainer scope. VContainer makes one for each LifetimeScope (Lifetime.Scoped)
     // and disposes it with that LifetimeScope. The VSA scope starts at the first use, so a scope can be
-    // built before the app runs.
+    // built before the app runs. It is a live PresenterScope, so its presenters get the events.
     public sealed class VsaScope : IDisposable {
         IServiceScope scope;
         bool disposed;
@@ -20,6 +21,7 @@ namespace Umpire.Unity.VContainer {
                         "No VSA app runs. Start the app with VsaLifetimeScope<TPack> or a Shell " +
                         "before a VContainer scope resolves a VSA service.");
                     scope = root.CreateScope();
+                    scope.ServiceProvider.GetService<PresenterScope>();
                 }
                 return scope.ServiceProvider;
             }

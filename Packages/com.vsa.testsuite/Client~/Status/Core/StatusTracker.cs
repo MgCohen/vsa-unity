@@ -66,7 +66,6 @@ namespace VSA.TestSuite.Client.Status
         {
             var m = Memory;
             if (now.LogSize > m.LogSize) return true;
-            if (now.ActivitySize > m.ActivitySize) return true;
             if (now.ProgressText != null && now.ProgressText != m.ProgressText) return true;
             if (now.BeaconOwn && now.BeaconSeq != m.BeaconSeq) return true;
             // Unity's progress bars and step text: the startup window and the in-Editor busy window.
@@ -81,7 +80,6 @@ namespace VSA.TestSuite.Client.Status
         {
             var m = Memory;
             m.LogSize = Math.Max(m.LogSize, now.LogSize);
-            m.ActivitySize = Math.Max(m.ActivitySize, now.ActivitySize);
             m.ProgressText = now.ProgressText ?? m.ProgressText;
             if (now.BeaconOwn) m.BeaconSeq = now.BeaconSeq;
             m.CpuMs = now.ProcCpuMs;

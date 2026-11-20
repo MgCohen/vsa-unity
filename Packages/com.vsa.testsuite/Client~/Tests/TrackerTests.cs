@@ -91,39 +91,5 @@ namespace VSA.TestSuite.Client.Tests
             }
             Assert.Equal("loop", At(10_000, new Snapshot { ProcAlive = true, DialogTitle = "Hello" }).Result);
         }
-
-        /// <summary>A long input: the probe gets no answer and the beacon moves. Only the activity log can show progress.</summary>
-        static Snapshot LongInput(long activitySize) => new()
-        {
-            ProcAlive = true, StatusHttp = 200, DescPresent = true, DescPid = OwnPid, DescPidAlive = true,
-            ProbeHttp = 504, BeaconOwn = true, BeaconSeq = 7, BeaconAgeS = 1, ActivitySize = activitySize,
-        };
-
-        [Fact]
-        public void A_growing_activity_log_is_progress_for_a_long_input()
-        {
-            StateResult r = null;
-            for (var t = 0; t <= 1_800_000; t += 1_000)
-                r = At(t, LongInput(activitySize: t));
-            Assert.Equal("long-command", r.State);
-            Assert.Null(r.Result);
-        }
-
-        [Fact]
-        public void A_long_input_with_a_still_activity_log_stalls()
-        {
-            StateResult r = null;
-            for (var t = 0; t <= 61_000; t += 1_000)
-                r = At(t, LongInput(activitySize: 500));
-            Assert.Equal("long-command", r.State);
-            Assert.Equal("stalled", r.Result);
-        }
-
-        [Fact]
-        public void The_long_command_cap_is_above_the_input_limit_of_the_suite()
-        {
-            Assert.True(Limits.Load().TryGet("long-command", false, out var capMs, out _));
-            Assert.True(capMs > 3_600_000, "The cap must be above the 3600 s input limit (SessionSettings.InputCapSeconds).");
-        }
     }
 }

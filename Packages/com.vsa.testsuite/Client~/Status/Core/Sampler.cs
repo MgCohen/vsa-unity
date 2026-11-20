@@ -13,7 +13,6 @@ namespace VSA.TestSuite.Client.Status
             new ProgressSource(),
             new WindowSource(),
             new LogSource(),
-            new ActivitySource(),
             new CrashSource(),
             new BeaconSource(),
             new ProbeSource(),

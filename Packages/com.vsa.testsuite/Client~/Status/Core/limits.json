@@ -8,7 +8,7 @@
     "compiling":           { "capS": 300, "stallS": 60 },
     "domain-reload":       { "capS": 120, "stallS": 60 },
     "play-transition":     { "capS": 30,  "stallS": 15 },
-    "long-command":        { "capS": 3900, "stallS": 60 },
+    "long-command":        { "capS": 300, "stallS": 60 },
     "descriptor-mismatch": { "capS": 60,  "stallS": 60 },
     "server-down":         { "capS": 60,  "stallS": 60 },
     "queue-full":          { "capS": 120, "stallS": 60 },

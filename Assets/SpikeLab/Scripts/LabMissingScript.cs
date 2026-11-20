@@ -11,7 +11,7 @@ namespace SpikeLab
         public override async Task Run(ScriptContext script)
         {
             await script.Send(new FindObject("LabCanvas/LabButton"));
-            await script.Send(new WaitForObject("Missing/Thing", 1));
+            await script.Send(new WaitForObject("Missing/Thing", ObjectState.Active, 1));
         }
     }
 }

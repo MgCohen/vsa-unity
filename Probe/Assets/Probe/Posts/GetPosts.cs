@@ -15,7 +15,7 @@ namespace Probe.Posts {
             this.store = store;
         }
 
-        public override Task<Result<GetPostsResponse>> HandleAsync(Envelope<GetPostsRequest> envelope) =>
+        public override Task<Result<GetPostsResponse>> HandleAsync(IEnvelope<GetPostsRequest> envelope) =>
             Task.FromResult<Result<GetPostsResponse>>(new GetPostsResponse(store.Posts.Count));
     }
 }

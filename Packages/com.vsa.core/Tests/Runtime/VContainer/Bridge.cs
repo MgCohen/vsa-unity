@@ -46,7 +46,7 @@ namespace Umpire.Unity.VContainer.Tests {
             this.events = events;
         }
 
-        public override async Task<Result<GreetResponse>> HandleAsync(Envelope<GreetRequest> envelope) {
+        public override async Task<Result<GreetResponse>> HandleAsync(IEnvelope<GreetRequest> envelope) {
             var text = greeting.Text + " " + envelope.Message.Name;
             await events.PublishAsync(new Greeted(text), envelope.Cancellation);
             return new GreetResponse(text);
@@ -62,7 +62,7 @@ namespace Umpire.Unity.VContainer.Tests {
 
         public Task<Result<GreetResponse>> GreetAsync(string name) => Requests.SendAsync(new GreetRequest(name));
 
-        public Task<Result<Unit>> HandleAsync(Envelope<Greeted> envelope) {
+        public Task<Result<Unit>> HandleAsync(IEnvelope<Greeted> envelope) {
             Last = envelope.Message.Text;
             return Task.FromResult<Result<Unit>>(Unit.Value);
         }

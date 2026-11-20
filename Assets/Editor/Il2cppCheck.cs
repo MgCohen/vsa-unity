@@ -9,7 +9,6 @@ using UnityEngine;
 public static class Il2cppCheck {
     const string Scene = "Assets/Check.unity";
 
-    // -checkBackend Mono2x gives a Mono player. The default is IL2CPP at stripping Minimal.
     public static void Build() {
         var output = Argument("-checkOutput") ?? Path.GetFullPath("Il2cppCheck/Player");
         var useBackend = Enum.Parse<ScriptingImplementation>(Argument("-checkBackend") ?? "IL2CPP");
@@ -34,7 +33,8 @@ public static class Il2cppCheck {
             AssetDatabase.SaveAssets();
         }
         var summary = report.summary;
-        Debug.Log($"CHECK build {summary.result} backend={useBackend} stripping={useStripping} errors={summary.totalErrors}");
+        Debug.Log($"CHECK build {summary.result} backend={useBackend} stripping={useStripping} "
+            + $"errors={summary.totalErrors}");
         EditorApplication.Exit(summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 

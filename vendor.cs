@@ -1,6 +1,6 @@
 // Copies the Umpire packages and their dependencies into Packages/com.vsa.core/Runtime/Plugins. Unity cannot restore
 // NuGet packages, so git keeps the DLLs. Run this script again after you change UmpireVersion in Vendor/UmpireVendor.csproj.
-// The script also writes UmpireVersion to the package version, and copies the analyzers and their rule values.
+// The script also writes UmpireVersion to the package version, and copies the two analyzer DLLs.
 //
 //   dotnet run --file vendor.cs
 //
@@ -56,13 +56,11 @@ foreach (var (name, path) in dlls) {
 }
 Directory.Delete(output, recursive: true);
 
-// The analyzers and their rule values (PackageDownload). In the folder of the VSA.Unity asmdef, the analyzers run on
+// The analyzers (PackageDownload). Each rule has its defaults on its class, so no rule values ship.
+// In the folder of the VSA.Unity asmdef, the analyzers run on
 // VSA.Unity and on each assembly that references it. The label RoslynAnalyzer in the .meta file makes Unity use
 // the DLL as an analyzer, not as a library.
-var analyzerVersion = Regex.Match(File.ReadAllText(project), "<UmpireAnalyzerVersion>(.+)</UmpireAnalyzerVersion>") is { Success: true } pin
-    ? pin.Groups[1].Value
-    : version;
-var analyzerPackage = Path.Combine(GlobalPackages(), "umpire.vsa.analyzers", analyzerVersion.ToLowerInvariant());
+var analyzerPackage = Path.Combine(GlobalPackages(), "umpire.vsa.analyzers", version.ToLowerInvariant());
 string[] analyzerNames = ["Umpire.Kernels.Analyzers", "Umpire.Vsa.Analyzers"];
 foreach (var old in Directory.GetFiles(Path.Combine(package, "Runtime"), "*.Analyzers.dll")
     .Where(path => !analyzerNames.Contains(Path.GetFileNameWithoutExtension(path)))) {
@@ -77,25 +75,10 @@ foreach (var name in analyzerNames) {
     }
 }
 
-// The rule values of the analyzers, as the file that a consumer copies to Assets/Default.globalconfig. Unity reads
-// no globalconfig from a package. Unity does not import a folder that ends with "~". The editor script CompilerFiles
-// reads the block of this file, and an EditMode test checks that the file is the same as the text that CompilerFiles writes.
-var rules = analyzerNames
-    .SelectMany(name => File.ReadAllText(Path.Combine(analyzerPackage, "build", name + ".globalconfig"))
-        .Replace("\r\n", "\n").TrimEnd('\n').Split('\n')
-        .Where(line => !Regex.IsMatch(line, @"^\s*(is_global|global_level)\s*="))
-        .SkipWhile(line => line.Trim().Length == 0)
-        .Append(""))
-    .SkipLast(1);
-string[] config = ["is_global = true", "# BEGIN com.vsa.core: the editor script of the package writes these lines.", .. rules,
-    "# END com.vsa.core"];
-Directory.CreateDirectory(Path.Combine(package, "Documentation~"));
-File.WriteAllText(Path.Combine(package, "Documentation~", "Default.globalconfig"), string.Join("\n", config) + "\n");
-
 var manifest = Path.Combine(package, "package.json");
 File.WriteAllText(manifest, Regex.Replace(File.ReadAllText(manifest), "\"version\": \"[^\"]*\"", $"\"version\": \"{version}\""));
 
-Console.WriteLine($"Packages/com.vsa.core {version}: {dlls.Count} DLLs. Analyzers: {analyzerVersion}.");
+Console.WriteLine($"Packages/com.vsa.core {version}: {dlls.Count} DLLs and the analyzers.");
 return 0;
 
 static string GlobalPackages() {

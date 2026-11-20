@@ -26,7 +26,7 @@ namespace Sample {
 
         public PingHandler(IIntegrationEventPublisher events) => this.events = events;
 
-        public override async Task<Result<PongResponse>> HandleAsync(Envelope<PingRequest> envelope) {
+        public override async Task<Result<PongResponse>> HandleAsync(IEnvelope<PingRequest> envelope) {
             await events.PublishAsync(new Ponged(envelope.Message.Text), envelope.Cancellation);
             return new PongResponse("pong " + envelope.Message.Text);
         }
@@ -54,7 +54,7 @@ namespace Sample {
     }
 
     sealed class MoveHandler<TZone> : CommandHandler<Move<TZone>, string> where TZone : struct, IZone {
-        public override Task<Result<string>> HandleAsync(Envelope<Move<TZone>> envelope) =>
+        public override Task<Result<string>> HandleAsync(IEnvelope<Move<TZone>> envelope) =>
             Task.FromResult<Result<string>>("moved card " + envelope.Message.Card + " to " + default(TZone).Name);
     }
 
@@ -67,7 +67,7 @@ namespace Sample {
 
         public Task<Result<PongResponse>> PingAsync(string text) => Requests.SendAsync(new PingRequest(text));
 
-        public Task<Result<Unit>> HandleAsync(Envelope<Ponged> envelope) {
+        public Task<Result<Unit>> HandleAsync(IEnvelope<Ponged> envelope) {
             Last = envelope.Message.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
             return Task.FromResult<Result<Unit>>(Unit.Value);

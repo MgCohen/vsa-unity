@@ -21,11 +21,6 @@ namespace SampleApp {
         protected override void Render() {
         }
 
-        protected override void Start() {
-            base.Start();
-            StartCoroutine(Run());
-        }
-
         static IEnumerator WaitAtMostTenSeconds(Func<bool> done) {
             var end = Time.realtimeSinceStartup + WaitSeconds;
             while (!done() && Time.realtimeSinceStartup < end) {
@@ -38,6 +33,10 @@ namespace SampleApp {
             : !send.IsCompleted ? "not done"
             : send.Result.IsSuccess ? text(send.Result.Value)
             : send.Result.Error.Message;
+
+        void Start() {
+            StartCoroutine(Run());
+        }
 
         IEnumerator Run() {
             Line("backend", Application.isEditor ? "editor" : "player");

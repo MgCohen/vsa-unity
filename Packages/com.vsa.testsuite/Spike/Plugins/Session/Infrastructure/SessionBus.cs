@@ -16,7 +16,6 @@ namespace VSA.TestSuite.Spike.Plugins.Session
         public static async Task<TraceReply> Send<TResponse>(IRequest<TResponse> request)
             where TResponse : IResponse
         {
-            SessionProgress.Target = PipelineProgress.KeepCommandTarget();
             var services = App();
             await StartIfNeeded(services);
             var settings = services.GetRequiredService<SessionSettings>();

@@ -15,7 +15,7 @@ namespace Probe.Posts {
             this.store = store;
         }
 
-        public override Task<Result<RenamePostResult>> HandleAsync(Envelope<RenamePostCommand> envelope) {
+        public override Task<Result<RenamePostResult>> HandleAsync(IEnvelope<RenamePostCommand> envelope) {
             var index = envelope.Message.Id - 1;
             store.Posts[index] = store.Posts[index] with { Title = envelope.Message.Title };
             return Task.FromResult<Result<RenamePostResult>>(new RenamePostResult(store.Posts[index].Title));

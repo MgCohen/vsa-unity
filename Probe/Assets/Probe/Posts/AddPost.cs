@@ -18,7 +18,7 @@ namespace Probe.Posts {
             this.events = events;
         }
 
-        public override async Task<Result<AddPostResponse>> HandleAsync(Envelope<AddPostRequest> envelope) {
+        public override async Task<Result<AddPostResponse>> HandleAsync(IEnvelope<AddPostRequest> envelope) {
             var post = new Post(store.Posts.Count + 1, envelope.Message.Title);
             store.Posts.Add(post);
             await events.PublishAsync(new PostAdded(post.Id), envelope.Cancellation);

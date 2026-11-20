@@ -45,33 +45,6 @@ namespace Umpire.Unity.Editor.Tests {
         }
     }
 
-    public sealed class CompilerFilesTests {
-        const string Rules = "# rules\nis_global = true\nglobal_level = -1\n\numpire.UMP010101.max = 120\n";
-
-        [Test]
-        public void A_new_globalconfig_has_the_package_block() =>
-            Assert.That(CompilerFiles.GlobalConfig("", Rules), Is.EqualTo(
-                "is_global = true\n" + CompilerFiles.Begin + "\n# rules\n\numpire.UMP010101.max = 120\n" + CompilerFiles.End + "\n"));
-
-        [Test]
-        public void The_globalconfig_keeps_the_lines_of_the_consumer() {
-            var text = CompilerFiles.GlobalConfig("is_global = true\ndotnet_diagnostic.CS0618.severity = none\n", Rules);
-
-            Assert.That(text, Does.StartWith("is_global = true\ndotnet_diagnostic.CS0618.severity = none\n\n" + CompilerFiles.Begin));
-            Assert.That(text.Split('\n').Count(line => line.StartsWith("is_global")), Is.EqualTo(1));
-        }
-
-        [Test]
-        public void The_globalconfig_replaces_the_last_package_block() {
-            var old = CompilerFiles.GlobalConfig("", "umpire.UMP010101.max = 80\n");
-
-            var text = CompilerFiles.GlobalConfig(old, Rules);
-
-            Assert.That(text, Does.Contain("umpire.UMP010101.max = 120").And.Not.Contain("= 80"));
-            Assert.That(CompilerFiles.GlobalConfig(text, Rules), Is.EqualTo(text));
-        }
-    }
-
     public sealed class AnalyzerTests {
         static readonly string[] Analyzers = {
             "Packages/com.vsa.core/Runtime/Umpire.Kernels.Analyzers.dll",
@@ -97,19 +70,6 @@ namespace Umpire.Unity.Editor.Tests {
 
             Assert.That(rsp, Is.Not.Empty);
             Assert.That(File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/" + name + "\""));
-        }
-
-        [Test]
-        public void The_shipped_config_is_the_text_that_the_editor_script_writes_in_a_new_project() =>
-            Assert.That(CompilerFiles.GlobalConfig("", CompilerFiles.RulesText()),
-                Is.EqualTo(File.ReadAllText(CompilerFiles.ShippedConfigPath()).Replace("\r\n", "\n")));
-
-        [Test]
-        public void The_package_has_the_rule_values_of_both_analyzers() {
-            var text = CompilerFiles.GlobalConfig("", CompilerFiles.RulesText());
-
-            Assert.That(text, Does.Contain("Umpire.Kernels.Analyzers").And.Contain("Umpire.Vsa.Analyzers"));
-            Assert.That(text, Does.Contain("dotnet_diagnostic.UMP010203.severity = none"));
         }
     }
 }

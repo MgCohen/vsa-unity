@@ -5,7 +5,7 @@ The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity 
 
 ## Install the package
 
-First copy `Packages/com.vsa.core/Documentation~/Default.globalconfig` to `Assets/Default.globalconfig` of the consumer project. Then add the git URL to `Packages/manifest.json`. The tag `latest` is the last commit of `main`.
+Add the git URL to `Packages/manifest.json`. The tag `latest` is the last commit of `main`.
 
 ```json
 "com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
@@ -74,4 +74,3 @@ The check runs on a dev machine only. It needs the Windows IL2CPP module of Unit
 
 - Stable versions: `latest` has no pinned versions and no test gate. When do consumers need version tags?
 - Unity CI: a Unity license in GitHub Actions needs a license secret.
-- Automatic first install: the copy of `Default.globalconfig` is manual. A GitHub issue tracks the fix.

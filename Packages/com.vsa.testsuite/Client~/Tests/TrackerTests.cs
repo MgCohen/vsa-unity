@@ -91,5 +91,12 @@ namespace VSA.TestSuite.Client.Tests
             }
             Assert.Equal("loop", At(10_000, new Snapshot { ProcAlive = true, DialogTitle = "Hello" }).Result);
         }
+
+        [Fact]
+        public void A_long_command_may_run_for_an_hour()
+        {
+            Assert.True(Limits.Load().TryGet("long-command", false, out var capMs, out _));
+            Assert.True(capMs > 3_600_000, "A long command, for example a test script, may run for one hour.");
+        }
     }
 }

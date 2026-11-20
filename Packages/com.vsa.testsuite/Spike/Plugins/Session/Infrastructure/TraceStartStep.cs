@@ -18,7 +18,7 @@ namespace VSA.TestSuite.Spike.Plugins.Session
         public override Task<object> BeforeAsync(Envelope envelope)
         {
             var node = trace.Begin(envelope);
-            SessionProgress.Tick(node.Name);
+            ActivityLog.Write("start " + node.Name);
             var step = node.IsStep ? $"step={node.Index} " : "";
             var head = $"{Tag} {Indent(envelope)}start {step}{envelope.Message}";
             Debug.Log($"{head} depth={envelope.Depth} frame={node.StartFrame}");

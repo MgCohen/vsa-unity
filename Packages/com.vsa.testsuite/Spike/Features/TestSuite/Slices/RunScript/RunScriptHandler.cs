@@ -20,7 +20,7 @@ namespace VSA.TestSuite.Spike.Features.TestSuite
             this.session = session;
         }
 
-        public override async Task<Result<ScriptResult>> HandleAsync(Envelope<RunScript> envelope)
+        public override async Task<Result<ScriptResult>> HandleAsync(IEnvelope<RunScript> envelope)
         {
             var script = catalog.Create(envelope.Message.Name);
             var context = new ScriptContext(requests, script.Name, envelope.Cancellation);

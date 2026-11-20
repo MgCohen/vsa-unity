@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike.Features.Evidence
 
         public ScreenshotOnFailHandler(ScreenshotSystem screenshots) => this.screenshots = screenshots;
 
-        public override async Task<Result<Unit>> HandleAsync(Envelope<StepFailed> envelope)
+        public override async Task<Result<Unit>> HandleAsync(IEnvelope<StepFailed> envelope)
         {
             await screenshots.Take(envelope.Message.Folder, "screenshot", CancellationToken.None);
             return Unit.Value;

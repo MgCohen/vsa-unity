@@ -10,7 +10,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public TouchScreenHandler(TouchSystem touch) => this.touch = touch;
 
-        public override async Task<Result<TouchResult>> HandleAsync(Envelope<TouchScreen> envelope)
+        public override async Task<Result<TouchResult>> HandleAsync(IEnvelope<TouchScreen> envelope)
         {
             var hit = await touch.Touch(envelope.Message.Point, envelope.Cancellation);
             return new TouchResult(envelope.Message.Point, hit != null ? hit.name : null);

@@ -18,7 +18,7 @@ namespace VSA.TestSuite.Spike.Features.Evidence
             this.session = session;
         }
 
-        public override async Task<Result<ScreenshotResult>> HandleAsync(Envelope<TakeScreenshot> envelope)
+        public override async Task<Result<ScreenshotResult>> HandleAsync(IEnvelope<TakeScreenshot> envelope)
         {
             var name = envelope.Message.Name;
             if (string.IsNullOrEmpty(name)) name = $"screenshot_{Time.frameCount}";

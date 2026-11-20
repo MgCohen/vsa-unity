@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
 
         public StopRecordingHandler(RecordingSystem recording) => this.recording = recording;
 
-        public override async Task<Result<StopResult>> HandleAsync(Envelope<StopRecording> envelope)
+        public override async Task<Result<StopResult>> HandleAsync(IEnvelope<StopRecording> envelope)
         {
             await Awaitable.MainThreadAsync();
             var video = recording.Stop("stopped");

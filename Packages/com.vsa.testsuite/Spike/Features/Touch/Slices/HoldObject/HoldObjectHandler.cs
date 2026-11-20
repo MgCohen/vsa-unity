@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public HoldObjectHandler(IRequestSender requests) => this.requests = requests;
 
-        public override async Task<Result<HoldObjectResult>> HandleAsync(Envelope<HoldObject> envelope)
+        public override async Task<Result<HoldObjectResult>> HandleAsync(IEnvelope<HoldObject> envelope)
         {
             var found = await requests.SendAsync(new FindObject(envelope.Message.Path), envelope.Cancellation);
             if (!found.IsSuccess) return found.Error;

@@ -1,0 +1,16 @@
+is_global = true
+
+# The spike is consumer code: each Umpire rule that can run in Unity is an error.
+# Unity uses this file in place of Assets/Default.globalconfig for this asmdef.
+dotnet_diagnostic.UMP010101.severity = error
+dotnet_diagnostic.UMP010102.severity = error
+dotnet_diagnostic.UMP010103.severity = error
+dotnet_diagnostic.UMP010104.severity = error
+dotnet_diagnostic.UMP010105.severity = error
+dotnet_diagnostic.UMP010106.severity = error
+
+# Off: only .umpireconfig can start these rules, and Unity does not give that file to the compiler (vsa-unity#57).
+dotnet_diagnostic.UMP010203.severity = none
+dotnet_diagnostic.UMP010205.severity = none
+dotnet_diagnostic.UMP010206.severity = none
+dotnet_diagnostic.UMP010207.severity = none

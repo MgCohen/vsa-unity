@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public DragScreenHandler(TouchSystem touch) => this.touch = touch;
 
-        public override async Task<Result<DragResult>> HandleAsync(Envelope<DragScreen> envelope)
+        public override async Task<Result<DragResult>> HandleAsync(IEnvelope<DragScreen> envelope)
         {
             var drag = envelope.Message;
             var startFrame = Time.frameCount;

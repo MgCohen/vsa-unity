@@ -17,7 +17,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
             this.session = session;
         }
 
-        public override async Task<Result<StartResult>> HandleAsync(Envelope<StartRecording> envelope)
+        public override async Task<Result<StartResult>> HandleAsync(IEnvelope<StartRecording> envelope)
         {
             await Awaitable.MainThreadAsync();
             var name = string.IsNullOrEmpty(envelope.Message.Name) ? "video" : envelope.Message.Name;

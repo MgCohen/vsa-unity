@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Evidence
 
         public GetFolderHandler(TestSession session) => this.session = session;
 
-        public override Task<Result<FolderResult>> HandleAsync(Envelope<GetFolder> envelope)
+        public override Task<Result<FolderResult>> HandleAsync(IEnvelope<GetFolder> envelope)
             => Task.FromResult<Result<FolderResult>>(new FolderResult(session.Id, session.Folder));
     }
 }

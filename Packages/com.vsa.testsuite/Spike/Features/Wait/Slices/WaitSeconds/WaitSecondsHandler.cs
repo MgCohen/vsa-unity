@@ -7,7 +7,7 @@ namespace VSA.TestSuite.Spike.Features.Wait
 {
     internal sealed class WaitSecondsHandler : RequestHandler<WaitSeconds, WaitResult>
     {
-        public override async Task<Result<WaitResult>> HandleAsync(Envelope<WaitSeconds> envelope)
+        public override async Task<Result<WaitResult>> HandleAsync(IEnvelope<WaitSeconds> envelope)
         {
             var startFrame = Time.frameCount;
             var startTime = Time.realtimeSinceStartup;

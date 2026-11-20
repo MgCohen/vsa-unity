@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Objects
 
         public AssertTextHandler(ObjectSystem objects) => this.objects = objects;
 
-        public override Task<Result<TextResult>> HandleAsync(Envelope<AssertText> envelope)
+        public override Task<Result<TextResult>> HandleAsync(IEnvelope<AssertText> envelope)
         {
             var assert = envelope.Message;
             var text = objects.Text(assert.Path);

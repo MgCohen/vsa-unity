@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Scenes
 
         public LoadSceneHandler(SceneSystem scenes) => this.scenes = scenes;
 
-        public override async Task<Result<SceneResult>> HandleAsync(Envelope<LoadScene> envelope)
+        public override async Task<Result<SceneResult>> HandleAsync(IEnvelope<LoadScene> envelope)
         {
             var load = envelope.Message;
             var startFrame = Time.frameCount;

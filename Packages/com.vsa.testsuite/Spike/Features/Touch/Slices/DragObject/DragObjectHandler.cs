@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public DragObjectHandler(IRequestSender requests) => this.requests = requests;
 
-        public override async Task<Result<DragObjectResult>> HandleAsync(Envelope<DragObject> envelope)
+        public override async Task<Result<DragObjectResult>> HandleAsync(IEnvelope<DragObject> envelope)
         {
             var drag = envelope.Message;
             var from = await requests.SendAsync(new FindObject(drag.Path), envelope.Cancellation);

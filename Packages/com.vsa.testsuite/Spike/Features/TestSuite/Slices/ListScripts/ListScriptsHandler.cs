@@ -10,7 +10,7 @@ namespace VSA.TestSuite.Spike.Features.TestSuite
 
         public ListScriptsHandler(ScriptCatalog catalog) => this.catalog = catalog;
 
-        public override Task<Result<ScriptList>> HandleAsync(Envelope<ListScripts> envelope)
+        public override Task<Result<ScriptList>> HandleAsync(IEnvelope<ListScripts> envelope)
             => Task.FromResult<Result<ScriptList>>(new ScriptList(catalog.Names()));
     }
 }

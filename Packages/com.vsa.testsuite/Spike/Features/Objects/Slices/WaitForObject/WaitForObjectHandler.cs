@@ -12,7 +12,7 @@ namespace VSA.TestSuite.Spike.Features.Objects
 
         public WaitForObjectHandler(ObjectSystem objects) => this.objects = objects;
 
-        public override async Task<Result<WaitForResult>> HandleAsync(Envelope<WaitForObject> envelope)
+        public override async Task<Result<WaitForResult>> HandleAsync(IEnvelope<WaitForObject> envelope)
         {
             var wait = envelope.Message;
             var startFrame = Time.frameCount;

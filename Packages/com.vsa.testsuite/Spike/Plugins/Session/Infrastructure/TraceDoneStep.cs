@@ -23,7 +23,6 @@ namespace VSA.TestSuite.Spike.Plugins.Session
         {
             var node = trace.Finish(envelope);
             if (node == null) return;
-            ActivityLog.Write(node.Status + " " + node.Name);
             var head = $"{TraceStartStep.Tag} {TraceStartStep.Indent(envelope)}";
             var tail = $"state={envelope.State} frames={node.Frames}";
             if (node.Status == TraceNode.Ok)

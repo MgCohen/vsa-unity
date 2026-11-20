@@ -1,0 +1,7 @@
+{
+  "name": "Umpire.Unity.Editor",
+  "rootNamespace": "Umpire.Unity.Editor",
+  "references": ["Umpire.Unity"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

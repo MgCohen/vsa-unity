@@ -1,0 +1,21 @@
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]serSettings/
+/Builds/
+/Results/
+/Vendor/bin/
+/Vendor/obj/
+/*.sln
+/*.slnx
+/*.csproj
+# ProbeEditor.Build writes the scene of the player.
+/Assets/Probe.unity
+/Assets/Probe.unity.meta
+# vendor.cs writes the DLLs. Run it after a clone.
+/Assets/Plugins/
+/Assets/Plugins.meta
+# ProbeEditor.SaveScene writes the settings asset of the shell.
+/Assets/Probe/Lab/LabSettings.asset
+/Assets/Probe/Lab/LabSettings.asset.meta

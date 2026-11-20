@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Only for vendor.cs: dotnet publish of this project gives the Umpire packages and their dependencies for Unity. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <UmpireVersion>0.2.0-preview.6</UmpireVersion>
+    <!-- The analyzers of preview.4 and later need System.Collections.Immutable 9.0. The Roslyn of Unity 6000.6
+         (.NET SDK 8.0) has 8.0, so they do not load (CS8032, and Unity does not show it). Keep the last analyzers
+         that load until Umpire fixes this. The analyzers read source only, so they need not match UmpireVersion. -->
+    <UmpireAnalyzerVersion>0.2.0-preview.3</UmpireAnalyzerVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Each portable layer of the VSA pack. Umpire.Vsa brings Umpire.Kernels, Umpire.Markers and Umpire.Config. -->
+    <PackageReference Include="Umpire.Vsa" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Composition" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Domain" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Infrastructure" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Presenters" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Requests" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Commands" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Contracts.Events" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Requests" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Commands" Version="$(UmpireVersion)" />
+    <PackageReference Include="Umpire.Vsa.Handlers.Events" Version="$(UmpireVersion)" />
+    <!-- The analyzers (Roslyn 4.10 build) and their rule values (build/*.globalconfig). vendor.cs copies both. -->
+    <PackageDownload Include="Umpire.Vsa.Analyzers" Version="[$(UmpireVersion)]" />
+  </ItemGroup>
+</Project>

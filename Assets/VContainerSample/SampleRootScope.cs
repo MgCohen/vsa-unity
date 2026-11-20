@@ -1,10 +1,11 @@
 using Greeter;
 using UnityEngine;
+using Umpire.Unity.VContainer;
+using Umpire.Vsa;
 using VContainer;
-using VSA.Unity.VContainer;
 
 namespace VContainerSample {
-    public sealed class SampleRootScope : VsaLifetimeScope<VContainerSampleApp> {
+    public sealed class SampleRootScope : VsaLifetimeScope<Vsa<GreeterHost>> {
         [SerializeField] string greeting = "Hello from VContainer";
 
         protected override void ConfigureScope(IContainerBuilder builder) =>

@@ -2,22 +2,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using VSA.Contracts.Requests;
-using VSA.Presenters;
+using Umpire.Vsa.Contracts.Requests;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Plugins.Session
 {
-    /// <summary>
-    /// What a running script uses. Each Send is one step: it goes through the pipeline as a child of
-    /// the script request, so the hooks see it. After each step the script continues on the main thread.
-    /// </summary>
     public sealed class ScriptContext
     {
-        readonly IBus bus;
+        readonly IRequestSender requests;
 
-        public ScriptContext(IBus bus, string script, CancellationToken cancel)
+        public ScriptContext(IRequestSender requests, string script, CancellationToken cancel)
         {
-            this.bus = bus;
+            this.requests = requests;
             Script = script;
             Cancel = cancel;
         }
@@ -32,17 +27,19 @@ namespace VSA.TestSuite.Spike
             where TResponse : IResponse
         {
             Steps++;
-            var result = await bus.Send(request, Cancel);
+            var result = await requests.SendAsync(request, Cancel);
             await Awaitable.MainThreadAsync();
             return result.IsSuccess
                 ? result.Value
                 : throw new InvalidOperationException($"Script '{Script}' step {Steps} failed: {result.Error}");
         }
 
-        /// <summary>Stops the script with a clear message if the condition is false.</summary>
         public void Check(bool condition, string message)
         {
-            if (!condition) throw new InvalidOperationException($"Script '{Script}' check failed after step {Steps}: {message}");
+            if (!condition)
+                throw new InvalidOperationException($"Script '{Script}' check failed after step {Steps}: {message}");
         }
+
+        public void EndSession() => throw new ScriptEnded(Script);
     }
 }

@@ -1,24 +1,25 @@
 using System.Threading.Tasks;
-using VSA.Contracts;
-using VSA.Handlers.Requests;
-using VSA.Presenters;
+using Umpire.Messages.Contracts;
+using Umpire.Vsa.Handlers.Requests;
+using Umpire.Vsa.Contracts.Requests;
+using VSA.TestSuite.Spike.Features.Objects;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Touch
 {
-    /// <summary>No logic of its own: it sends FindObject, then TouchScreen at the point found.</summary>
     internal sealed class TouchObjectHandler : RequestHandler<TouchObject, TouchObjectResult>
     {
-        readonly IBus bus;
+        readonly IRequestSender requests;
 
-        public TouchObjectHandler(IBus bus) => this.bus = bus;
+        public TouchObjectHandler(IRequestSender requests) => this.requests = requests;
 
         public override async Task<Result<TouchObjectResult>> HandleAsync(Envelope<TouchObject> envelope)
         {
-            var found = await bus.Send(new FindObject(envelope.Message.Path), envelope.Cancellation);
+            var found = await requests.SendAsync(new FindObject(envelope.Message.Path), envelope.Cancellation);
             if (!found.IsSuccess) return found.Error;
-            var touched = await bus.Send(new TouchScreen(found.Value.Point), envelope.Cancellation);
+            var touched = await requests.SendAsync(new TouchScreen(found.Value.Point), envelope.Cancellation);
             if (!touched.IsSuccess) return touched.Error;
-            return new TouchObjectResult(found.Value.Path, found.Value.Name, found.Value.Point, touched.Value.Hit);
+            var value = found.Value;
+            return new TouchObjectResult(value.Path, value.Name, value.Point, touched.Value.Hit);
         }
     }
 }

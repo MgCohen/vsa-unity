@@ -1,0 +1,6 @@
+{
+  "name": "Umpire.Unity",
+  "rootNamespace": "Umpire.Unity",
+  "references": ["UnityEngine.UI"],
+  "autoReferenced": true
+}

@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Kernels;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
-    /// <summary>The objects feature. VSA finds its handlers. The module adds its systems.</summary>
-    public sealed class ObjectsModule : VSA.Module.Module
+    public sealed class ObjectsModule : Module
     {
-        public override void Configure(VSA.Module.ModuleBuilder module)
-            => module.Services.AddSingleton<ObjectSystem>();
+        public override void Configure(IServiceCollection services) => services.AddSingleton<ObjectSystem>();
     }
 }

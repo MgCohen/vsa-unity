@@ -1,7 +1,8 @@
-using VSA.Contracts.Requests;
+using Umpire.Vsa.Contracts.Requests;
+using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike
+namespace VSA.TestSuite.Spike.Features.Objects
 {
-    /// <summary>Wait until an active object is at the path, for at most Seconds of real time.</summary>
-    public sealed record WaitForObject(string Path, float Seconds) : IRequest<WaitResult>;
+    public sealed record WaitForObject(string Path, ObjectState State, float Seconds)
+        : TestRequest, IRequest<WaitForResult>;
 }

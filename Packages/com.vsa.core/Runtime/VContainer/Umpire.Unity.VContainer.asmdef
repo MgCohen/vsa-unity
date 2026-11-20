@@ -1,0 +1,14 @@
+{
+  "name": "Umpire.Unity.VContainer",
+  "rootNamespace": "Umpire.Unity.VContainer",
+  "references": ["Umpire.Unity", "VContainer"],
+  "autoReferenced": true,
+  "defineConstraints": ["UMPIRE_VCONTAINER"],
+  "versionDefines": [
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "1.16.0",
+      "define": "UMPIRE_VCONTAINER"
+    }
+  ]
+}

@@ -20,7 +20,8 @@ namespace VSA.TestSuite.Spike.Packs.TestSuite
         protected override void Rules(RuleBook rules)
         {
             base.Rules(rules);
-            rules.For<CliCommand>().Uses<Contracts>().And<Contracts.Requests>().And<Infrastructure>();
+            rules.For<CliCommand>().Uses<Contracts>().And<Contracts.Requests>().And<Infrastructure>()
+                .And<Domain.Shared>();
         }
     }
 }

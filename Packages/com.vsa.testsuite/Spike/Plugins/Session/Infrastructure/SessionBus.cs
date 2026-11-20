@@ -13,7 +13,7 @@ namespace VSA.TestSuite.Spike.Plugins.Session
     {
         static CancellationTokenSource run = new CancellationTokenSource();
 
-        public static async Task<TraceReply> Send<TResponse>(IRequest<TResponse> request)
+        public static async Task<TraceReply> Send<TResponse>(TestRequest<TResponse> request)
             where TResponse : IResponse
         {
             var services = App();

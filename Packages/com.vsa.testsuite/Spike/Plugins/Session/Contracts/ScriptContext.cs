@@ -23,7 +23,7 @@ namespace VSA.TestSuite.Spike.Plugins.Session
 
         public int Steps { get; private set; }
 
-        public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request)
+        public async Task<TResponse> Send<TResponse>(TestRequest<TResponse> request)
             where TResponse : IResponse
         {
             Steps++;

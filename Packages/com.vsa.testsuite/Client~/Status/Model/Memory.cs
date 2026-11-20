@@ -17,6 +17,7 @@ namespace VSA.TestSuite.Client.Status
 
         // Fingerprint of the last progress signals.
         public long LogSize;
+        public long ActivitySize;
         public string ProgressText;
         public long BeaconSeq;
         public double CpuMs;

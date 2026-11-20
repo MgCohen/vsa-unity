@@ -66,6 +66,8 @@ namespace VSA.TestSuite.Client.Status
 
         // log: unity.log of the own Editor
         public long LogSize;
+        // activity: TestRuns/activity.log of the test suite; it grows while an input works
+        public long ActivitySize;
         public List<string> LogLines;     // new marker lines since the last sample
         public int? LogIsHuman;
         public int? LogStartBugReporter;

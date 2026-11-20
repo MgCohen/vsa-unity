@@ -5,6 +5,10 @@ namespace VSA.TestSuite.Spike.Features.Touch
 {
     public sealed class TouchModule : Module
     {
-        public override void Configure(IServiceCollection services) => services.AddSingleton<TouchSystem>();
+        public override void Configure(IServiceCollection services)
+        {
+            services.AddSingleton<TouchOverlay>();
+            services.AddSingleton<TouchSystem>();
+        }
     }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "VSA.TestSuite.Spike.Editor",
+  "rootNamespace": "VSA.TestSuite.Spike.Editor",
+  "references": [
+    "VSA.TestSuite.Spike",
+    "Unity.Recorder",
+    "Unity.Recorder.Editor"
+  ],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false,
+  "defineConstraints": ["VSA_SPIKE_RECORDER"],
+  "versionDefines": [
+    {
+      "name": "com.unity.recorder",
+      "expression": "5.0.0",
+      "define": "VSA_SPIKE_RECORDER"
+    }
+  ]
+}

@@ -27,3 +27,6 @@ TestResults*.xml
 
 # com.vsa.testsuite run folders
 /Runs/
+
+# Run folders of the test suite spike
+/TestRuns/

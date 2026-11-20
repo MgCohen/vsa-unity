@@ -5,7 +5,7 @@ using UnityEngine;
 using Umpire.Vsa.Contracts.Requests;
 using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike.Features.Scripts
+namespace VSA.TestSuite.Spike.Features.TestSuite
 {
     internal sealed class RunScriptHandler : RequestHandler<RunScript, ScriptResult>
     {

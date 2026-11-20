@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using VSA.TestSuite.Spike.Plugins.Session;
 
-namespace VSA.TestSuite.Spike.Features.Scripts
+namespace VSA.TestSuite.Spike.Features.TestSuite
 {
     public sealed class ScriptCatalog
     {

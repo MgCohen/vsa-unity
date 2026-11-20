@@ -39,5 +39,7 @@ namespace VSA.TestSuite.Spike.Plugins.Session
             if (!condition)
                 throw new InvalidOperationException($"Script '{Script}' check failed after step {Steps}: {message}");
         }
+
+        public void EndSession() => throw new ScriptEnded(Script);
     }
 }

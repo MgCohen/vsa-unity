@@ -1,12 +1,11 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.6) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.9) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
 
-1. Copy [`Documentation~/Default.globalconfig`](Documentation~/Default.globalconfig) to `Assets/Default.globalconfig`.
-2. Add the package to `Packages/manifest.json`:
+Add the package to `Packages/manifest.json`:
 
 ```json
 "com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
@@ -14,18 +13,16 @@ A Unity app starts with one shell component on a GameObject of the first scene. 
 
 The tag `latest` is the last commit of `main`. To get a later commit, click **Update** in the Package Manager.
 
-The rules have default values, so a project compiles without step 1. Step 1 gives the rule values and the disabled rules of the Umpire version of the package.
+Each rule has its default values and its default severity on its class, so the package ships no rule values.
 
 ## Contents
 
 | Path | Contains |
 |---|---|
-| `Runtime/Plugins/` | The Umpire DLLs and their dependencies (26 DLLs) |
-| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), version 0.2.0-preview.3 (see "Analyzers") |
+| `Runtime/Plugins/` | `Umpire.dll` and its third-party dependencies (11 DLLs) |
+| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
-| `Documentation~/Default.globalconfig` | The rule values for the install step |
-| `Editor/` | `CompilerFiles` |
 | `Tests/` | EditMode and PlayMode tests |
 
 Unity 6 ships `System.Text.Json`, `System.Collections.Immutable` and the `Microsoft.Extensions.*.Abstractions` DLLs of DI and logging. The package does not ship a second copy, because a second copy is a compile error.
@@ -235,28 +232,21 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 
 `Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries.
 
-The analyzers are version 0.2.0-preview.3 (`UmpireAnalyzerVersion` in `Vendor/UmpireVendor.csproj`). The analyzers of preview.4 and later need `System.Collections.Immutable` 9.0, and the compiler of Unity 6000.6 (.NET SDK 8.0) has 8.0. So they do not load: the compiler gives `CS8032`, and Unity does not show it. The analyzers read source code only, so their version does not need to match the runtime DLLs.
+The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private load context. So the analyzers load in the compiler of Unity 6000.6, which has `System.Collections.Immutable` 8.0. If the config reader does not load, the compiler gives `UMP010003`.
 
 | Assembly | Umpire rules | Rule values from |
 |---|---|---|
-| A consumer asmdef that references `Umpire.Unity` | Yes | `Assets/Default.globalconfig` |
-| `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | `Assets/Default.globalconfig` |
+| A consumer asmdef that references `Umpire.Unity` | Yes | The defaults, or `Assets/Default.globalconfig` |
+| `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | The defaults, or `Assets/Default.globalconfig` |
 | A consumer asmdef with no `Umpire.Unity` reference | No | None |
 | The package asmdefs | Off | `<AsmdefName>.globalconfig` |
 
 - The analyzer folder sets the scope: Unity runs the analyzers on `Umpire.Unity` and on each assembly that references it.
 - Module asmdefs often do not reference `Umpire.Unity`. The .NET test build checks the module code.
+- To change a severity, write `dotnet_diagnostic.<rule ID>.severity = <value>` in `Assets/Default.globalconfig`. Unity reads this file for all assemblies.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
+- The analyzers read other rule values from `.umpireconfig` only. Unity does not give that file to the compiler yet (#32), so these values stay at their defaults.
 - The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
-
-## Editor scripts
-
-| Script | Does |
-|---|---|
-| `CompilerFiles` | Updates `Assets/Default.globalconfig` |
-
-- `Assets/Default.globalconfig` gets the block of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. The block holds the text of `build/Umpire.Kernels.Analyzers.globalconfig` and `build/Umpire.Vsa.Analyzers.globalconfig` of the NuGet package. Unity reads only this name for all assemblies.
-- The script changes only its own lines. The menu item **Tools > Umpire > Write Compiler Files** runs `CompilerFiles` again.
 - The package code is C# 9, the default language version of Unity 6000.6.
 
 ## IL2CPP

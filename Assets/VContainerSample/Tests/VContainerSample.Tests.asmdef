@@ -3,7 +3,7 @@
   "rootNamespace": "VContainerSample.Tests",
   "references": ["VContainerSample", "Greeter", "Umpire.Unity", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "overrideReferences": true,
-  "precompiledReferences": ["nunit.framework.dll", "Umpire.Kernels.dll", "Umpire.Messages.Contracts.dll", "Umpire.Vsa.Contracts.Requests.dll", "Umpire.Vsa.Handlers.Events.dll", "Umpire.Vsa.Presenters.dll"],
+  "precompiledReferences": ["nunit.framework.dll", "Umpire.dll"],
   "autoReferenced": false,
   "defineConstraints": ["UNITY_INCLUDE_TESTS"]
 }

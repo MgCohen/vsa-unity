@@ -42,6 +42,21 @@ namespace VSA.TestSuite.Spike.Plugins.Session
             return new EndResult(true, folder);
         }
 
+        public static async Task<SessionInfo> Info()
+        {
+            await Awaitable.MainThreadAsync();
+            var session = Shell.AppIsRunning ? Shell.Services.GetRequiredService<TestSession>() : null;
+            return new SessionInfo(
+                Application.platform.ToString(),
+                Application.isEditor,
+                Application.isPlaying,
+                Time.frameCount,
+                Math.Round(Time.realtimeSinceStartupAsDouble, 3),
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
+                System.Diagnostics.Process.GetCurrentProcess().Id,
+                session?.Folder != null ? session.Id : null);
+        }
+
         public static void AppStopping()
         {
             if (Shell.Services == null) return;

@@ -12,7 +12,7 @@ namespace SpikeLab
         public override async Task Run(ScriptContext script)
         {
             var load = script.Send(new LoadScene("SpikeLabScene2", false));
-            var wait = script.Send(new WaitForObject("Scene2Canvas/Scene2Button", 5));
+            var wait = script.Send(new WaitForObject("Scene2Canvas/Scene2Button", ObjectState.Active, 5));
             await Task.WhenAll(load, wait);
             script.Check(wait.Result.Frames > 0, $"the wait took {wait.Result.Frames} frames");
         }

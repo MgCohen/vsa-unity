@@ -6,25 +6,26 @@ using UnityEngine;
 
 namespace VSA.TestSuite.Spike.Features.Objects
 {
-    internal sealed class WaitForObjectHandler : RequestHandler<WaitForObject, WaitResult>
+    internal sealed class WaitForObjectHandler : RequestHandler<WaitForObject, WaitForResult>
     {
         readonly ObjectSystem objects;
 
         public WaitForObjectHandler(ObjectSystem objects) => this.objects = objects;
 
-        public override async Task<Result<WaitResult>> HandleAsync(Envelope<WaitForObject> envelope)
+        public override async Task<Result<WaitForResult>> HandleAsync(Envelope<WaitForObject> envelope)
         {
             var wait = envelope.Message;
             var startFrame = Time.frameCount;
             var startTime = Time.realtimeSinceStartup;
             while (true)
             {
-                var target = objects.TryFind(wait.Path);
+                var state = objects.State(wait.Path);
                 var seconds = Time.realtimeSinceStartup - startTime;
-                if (target != null)
-                    return new WaitResult(wait.Path, target.name, Time.frameCount - startFrame, seconds);
+                if (state == wait.State)
+                    return new WaitForResult(wait.Path, state, Time.frameCount - startFrame, seconds);
                 if (seconds >= wait.Seconds)
-                    throw new InvalidOperationException($"No active object at '{wait.Path}' after {wait.Seconds} s");
+                    throw new InvalidOperationException(
+                        $"'{wait.Path}' is {state}, not {wait.State}, after {wait.Seconds} s");
                 await Awaitable.NextFrameAsync(envelope.Cancellation);
             }
         }

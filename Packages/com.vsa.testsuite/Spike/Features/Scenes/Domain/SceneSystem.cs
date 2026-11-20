@@ -18,5 +18,12 @@ namespace VSA.TestSuite.Spike.Features.Scenes
             await Awaitable.NextFrameAsync(cancel);
             return SceneManager.GetSceneAt(SceneManager.sceneCount - 1).name;
         }
+
+        public Task<string> Reset(string name, int? seed, CancellationToken cancel)
+        {
+            if (seed.HasValue) UnityEngine.Random.InitState(seed.Value);
+            var scene = string.IsNullOrEmpty(name) ? SceneManager.GetActiveScene().name : name;
+            return Load(scene, false, cancel);
+        }
     }
 }

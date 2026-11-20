@@ -245,7 +245,7 @@ The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private 
 - Module asmdefs often do not reference `Umpire.Unity`. The .NET test build checks the module code.
 - To change a severity, write `dotnet_diagnostic.<rule ID>.severity = <value>` in `Assets/Default.globalconfig`. Unity reads this file for all assemblies.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
-- The analyzers read other rule values from `.umpireconfig` only. Unity does not give that file to the compiler yet (#32), so these values stay at their defaults.
+- The analyzers read other rule values from `.umpireconfig` only. Unity does not give that file to the compiler yet (#57), so these values stay at their defaults.
 - The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
 - The package code is C# 9, the default language version of Unity 6000.6.
 
@@ -256,7 +256,7 @@ The package supports managed stripping Minimal. It has no `link.xml`. Umpire mar
 | Stripping | Result (probe, IL2CPP, no `link.xml`) |
 |---|---|
 | Minimal | Pass |
-| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails. |
+| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails (MgCohen/vsa-template#223). |
 
 | Player of the sample check | Stripping | Result |
 |---|---|---|
@@ -265,5 +265,4 @@ The package supports managed stripping Minimal. It has no `link.xml`. Umpire mar
 
 ## Open questions
 
-- Package name: the package id is `com.vsa.core`, and the assemblies are `Umpire.Unity.*`. Does the package get an Umpire id?
-- Arguments: does `UnityHost` give the shell arguments to the app configuration?
+The open questions are GitHub issues: https://github.com/MgCohen/vsa-unity/issues. For example, the package id is #26.

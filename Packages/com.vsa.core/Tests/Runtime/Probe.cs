@@ -22,7 +22,20 @@ namespace Umpire.Unity.Tests {
         public override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) {
             Bound = settings;
             Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<PingController>(services);
+            // One FreshController for each view: the module registration wins over the scan of the scene targets.
+            Umpire.Factories.FactoryRegistrationExtensions.AddFactory<FreshController>(services);
         }
+    }
+
+    // A controller with no registration. The scan of the scene targets registers it as scoped.
+    public sealed class NoteController {
+        public NoteController(PingPresenter presenter) => Presenter = presenter;
+
+        public PingPresenter Presenter { get; }
+    }
+
+    // A controller that the module registers with a factory.
+    public sealed class FreshController {
     }
 
     // A view controller: a plain class that the app scope makes, with the presenter of the app scope.

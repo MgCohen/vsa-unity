@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Umpire.Architecture;
 using Umpire.Factories;
+using Umpire.Unity.Factories;
 using Umpire.Kernels;
 using Umpire.Vsa.Presenters;
 using UnityEngine;
@@ -38,11 +39,11 @@ namespace Umpire.Unity {
 
         protected sealed override void Configure(IServiceCollection services, AppTypes types) {
             services.AddLogging(logging => logging.AddProvider(new UnityLogProvider()));
-            // The scene injection binds each bound behaviour through the binder of the factories.
-            FactoryRegistrations.AddBinder(services);
             foreach (var (type, instance) in HostImports.Take()) {
                 services.AddSingleton(type, instance);
             }
+            // The scene injection binds each bound behaviour through the binder of the factories.
+            AddSceneTargets(services, types, FactoryRegistrations.AddBinder(services));
         }
 
         // Makes the presenter scope of the app, makes it live, and injects the views. It runs before App.OnStart.
@@ -62,6 +63,33 @@ namespace Umpire.Unity {
                 presenters = null;
                 base.Dispose();
             }
+        }
+
+        // Registers the T of each Bound<T> class of the app as scoped, if T has no registration and no factory: one
+        // target for each app scope, as for a presenter. A scene controller then needs no registration. Configure runs
+        // after the modules, so a module registration wins, for example AddFactory<T>() for one target for each copy.
+        static void AddSceneTargets(IServiceCollection services, AppTypes types, FactoryRegistry factories) {
+            var shell = Shell.Owner != null ? LoadedTypes.Of(Shell.Owner.GetType().Assembly) : Enumerable.Empty<Type>();
+            var behaviours = types.Declared()
+                .Concat(shell)
+                .Where(type => type.IsClass && !type.IsAbstract && typeof(IBoundBehaviour).IsAssignableFrom(type))
+                .Distinct();
+            foreach (var behaviour in behaviours) {
+                var target = TargetOf(behaviour);
+                if (target != null && target.IsClass && !target.IsAbstract && !target.ContainsGenericParameters
+                    && !factories.Has(target)) {
+                    FactoryRegistrations.AddIfAbsent(services, ServiceDescriptor.Scoped(target, target));
+                }
+            }
+        }
+
+        static Type TargetOf(Type behaviour) {
+            for (var type = behaviour; type != null; type = type.BaseType) {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Bound<>)) {
+                    return type.GetGenericArguments()[0];
+                }
+            }
+            return null;
         }
 
         // The UnitySettings classes of the modules and of the shell assembly. The app class of a shell is in this

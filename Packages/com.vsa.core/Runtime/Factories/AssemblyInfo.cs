@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
 
-// The Unity factories and the Unity host register the binder with the same steps as AddFactory.
-[assembly: InternalsVisibleTo("Umpire.Unity.Factories")]
+// The Unity host and the prefab factories of Umpire.Unity register the binder with the same steps as AddFactory.
 [assembly: InternalsVisibleTo("Umpire.Unity")]

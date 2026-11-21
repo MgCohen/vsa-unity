@@ -1,5 +1,5 @@
 {
   "name": "SampleApp",
   "rootNamespace": "SampleApp",
-  "references": ["Sample", "Umpire.Unity", "Umpire.Factories", "Umpire.Unity.Factories"]
+  "references": ["Sample", "Umpire.Unity", "Umpire.Factories"]
 }

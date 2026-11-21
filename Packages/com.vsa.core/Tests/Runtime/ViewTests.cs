@@ -25,6 +25,12 @@ namespace Umpire.Unity.Tests {
         protected override void OnRelease() => Releases++;
     }
 
+    public sealed class PingNote : View<NoteController> {
+    }
+
+    public sealed class FreshView : View<FreshController> {
+    }
+
     public sealed class ViewTests {
         [TearDown]
         public void StopTheApp() {
@@ -34,6 +40,12 @@ namespace Umpire.Unity.Tests {
             }
             foreach (var panel in Object.FindObjectsByType<PingPanel>(FindObjectsInactive.Include)) {
                 Object.DestroyImmediate(panel.gameObject);
+            }
+            foreach (var note in Object.FindObjectsByType<PingNote>(FindObjectsInactive.Include)) {
+                Object.DestroyImmediate(note.gameObject);
+            }
+            foreach (var fresh in Object.FindObjectsByType<FreshView>(FindObjectsInactive.Include)) {
+                Object.DestroyImmediate(fresh.gameObject);
             }
         }
 
@@ -78,6 +90,30 @@ namespace Umpire.Unity.Tests {
             Shells.Start();
 
             Assert.That(panel.Target, Is.SameAs(given));
+        }
+
+        [Test]
+        public void A_view_of_a_controller_with_no_registration_gets_one_controller_for_the_app() {
+            var label = Label();
+            var first = new GameObject("Note").AddComponent<PingNote>();
+            var second = new GameObject("Note").AddComponent<PingNote>();
+
+            Shells.Start();
+
+            Assert.That(first.Target, Is.Not.Null);
+            Assert.That(second.Target, Is.SameAs(first.Target));
+            Assert.That(first.Target.Presenter, Is.SameAs(label.Presenter));
+        }
+
+        [Test]
+        public void A_module_registration_of_a_controller_wins_over_the_scan() {
+            var first = new GameObject("Fresh").AddComponent<FreshView>();
+            var second = new GameObject("Fresh").AddComponent<FreshView>();
+
+            Shells.Start();
+
+            Assert.That(first.Target, Is.Not.Null);
+            Assert.That(second.Target, Is.Not.SameAs(first.Target));
         }
 
         [Test]

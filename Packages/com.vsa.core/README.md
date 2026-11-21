@@ -23,7 +23,7 @@ Each rule has its default values and its default severity on its class, so the p
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `View<T>`, `PresenterComponent<T>` |
 | `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<TArg, T>`, `IBindable<T>`. No engine references. |
-| `Runtime/UnityFactories/` | `Umpire.Unity.Factories`: `Bound<T>`, `IPrefabFactory<T>`, `AddPrefabFactory` |
+| `Runtime/UnityFactories/` | In `Umpire.Unity`, namespace `Umpire.Unity.Factories`: `Bound<T>`, `IPrefabFactory<T>`, `AddPrefabFactory` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
 | `Tests/` | EditMode and PlayMode tests |
 
@@ -174,7 +174,7 @@ public sealed class Label : IBindable<CounterModel> {
 
 ### Prefab factories
 
-`Umpire.Unity.Factories` makes copies of prefabs and binds their behaviours. A behaviour derives from `Bound<T>`. It can be a view, a character or any other object.
+The prefab factories (`Umpire.Unity`, namespace `Umpire.Unity.Factories`) make copies of prefabs and bind their behaviours. A behaviour derives from `Bound<T>`. It can be a view, a character or any other object.
 
 ```csharp
 public sealed class Character : Bound<CharacterModel> {
@@ -218,7 +218,7 @@ Roll button ── CounterPresenter.Changed ── RollListView (View<RollListCo
         └─ IFactory<int, RollEntry>: new RollEntry(number, CounterPresenter.Last) ── RollEntryView.Bind
 ```
 
-- `DiceViewsModule` (`Assets/DiceGame/App`) registers the controller and the two factories.
+- `DiceViewsModule` (`Assets/DiceGame/App`) registers the two factories. `RollListController` needs no registration (see "Scene views").
 - The Play Mode test `DiceGame.PlayTests` presses Start and Roll two times, then checks the two bound lines.
 
 ## Views
@@ -249,11 +249,11 @@ public sealed class RollListView : View<RollListController> {
     protected override void OnRelease() => Target.Changed -= OnChanged;
 }
 
-services.AddScoped<RollListController>();   // in a module: one controller for each app
+// No registration: the host registers RollListController as scoped, one for each app.
 ```
 
 - A controller can take presenters and factories in its constructor. The view gets them through its controller.
-- An assembly definition that uses `View<T>` or `PresenterComponent<T>` references `Umpire.Unity`, `Umpire.Unity.Factories` and `Umpire.Factories`. Unity does not give the base assemblies to it.
+- An assembly definition that uses `View<T>` or `PresenterComponent<T>` references `Umpire.Unity` and `Umpire.Factories`. Unity does not give the base assembly `Umpire.Factories` (`IBindable<T>`) to it.
 
 ### Scene views
 
@@ -273,7 +273,8 @@ App.Stop ── views release their presenters ── app scope disposed ── 
 | View with a presenter at the injection | It keeps that presenter |
 | Inactive view | It gets its presenter |
 | View that `Instantiate` makes after the scene load | No target. Use a prefab factory (`IPrefabFactory<T>`). |
-| View of a controller with no registration | No target. The Console shows the error. |
+| View of a controller with no registration | One controller for each app. The host registers it as scoped. |
+| View of a controller with a module registration or a factory | The module registration wins, for example `AddFactory<T>()` for one controller for each view |
 | App stop | The views release their presenters. A new start injects them again. |
 | No app runs | The view gets no presenter and shows no error |
 

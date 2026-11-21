@@ -94,7 +94,7 @@ namespace Umpire.Factories {
         }
     }
 
-    // The registration steps that the Unity factories (Umpire.Unity.Factories) also use.
+    // The registration steps that Umpire.Unity (the prefab factories and the Unity host) also uses.
     static class FactoryRegistrations {
         // Adds the registry of the factories and the binder, one time for each service collection.
         public static FactoryRegistry AddBinder(IServiceCollection services) {

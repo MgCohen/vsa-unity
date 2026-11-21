@@ -1,11 +1,13 @@
 # The IL2CPP player check of the package (dev machine). It builds the Windows IL2CPP player of the sample
-# (managed stripping Minimal), runs it, and reads the CHECK lines of the player log.
+# (managed stripping Minimal, or Low with -Stripping Low), runs it, and reads the CHECK lines of the player log.
 #
-#   ./il2cpp-check.ps1 [-Unity <path of Unity.exe>]
+#   ./il2cpp-check.ps1 [-Unity <path of Unity.exe>] [-Stripping Minimal|Low]
 #
 # Exit code 0: the build succeeded, and the player wrote "CHECK done ok" and no FAIL line.
 param(
-    [string]$Unity = "C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor\Unity.exe"
+    [string]$Unity = "C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor\Unity.exe",
+    [ValidateSet("Minimal", "Low")]
+    [string]$Stripping = "Minimal"
 )
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
@@ -15,7 +17,7 @@ if (Test-Path $player) { Remove-Item -Recurse -Force $player }
 New-Item -ItemType Directory -Force $out | Out-Null
 
 $build = Join-Path $out "build.log"
-& $Unity -batchmode -nographics -projectPath $root -executeMethod Il2cppCheck.Build -checkOutput $player -logFile $build | Out-Null
+& $Unity -batchmode -nographics -projectPath $root -executeMethod Il2cppCheck.Build -checkOutput $player -checkStripping $Stripping -logFile $build | Out-Null
 $built = $LASTEXITCODE
 Select-String -Path $build -Pattern "^CHECK " | ForEach-Object { $_.Line }
 if ($built -ne 0) {

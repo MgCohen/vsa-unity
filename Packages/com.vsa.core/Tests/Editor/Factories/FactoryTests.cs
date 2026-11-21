@@ -139,6 +139,27 @@ namespace Umpire.Factories.Tests {
         }
 
         [Test]
+        public void The_binder_with_an_argument_gets_the_target_from_the_factory_with_an_argument() {
+            using var provider = Build(services =>
+                services.AddFactory<int, Counter>((p, start) => new Counter(p.GetRequiredService<Store>()) { Start = start }));
+            var display = new Display();
+
+            provider.GetRequiredService<IBinder>().Bind(display, 5);
+
+            Assert.That(display.Target.Start, Is.EqualTo(5));
+        }
+
+        [Test]
+        public void The_binder_with_an_argument_and_no_factory_with_an_argument_gives_a_clear_error() {
+            using var provider = Build(services => services.AddFactory<Counter>());
+
+            var error = Assert.Throws<InvalidOperationException>(() =>
+                provider.GetRequiredService<IBinder>().Bind(new Display(), 5));
+
+            StringAssert.Contains("AddFactory<TArg, Counter>", error.Message);
+        }
+
+        [Test]
         public void A_product_that_binds_to_two_types_gives_an_error() {
             using var provider = Build(services => services.AddFactory<Counter>());
 

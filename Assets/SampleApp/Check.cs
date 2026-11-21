@@ -50,6 +50,9 @@ namespace SampleApp {
             Line("typeArguments", string.Join(",", moves), "Deck,Hand");
             yield return SendFromAnotherThread();
             yield return SendStructArguments();
+            foreach (var (name, value, expected) in FactoryCheck.Run()) {
+                Line(name, value, expected);
+            }
             Debug.Log(failures == 0 ? "CHECK done ok" : $"CHECK done failures={failures}");
             if (!Application.isEditor) {
                 Application.Quit(failures == 0 ? 0 : 1);

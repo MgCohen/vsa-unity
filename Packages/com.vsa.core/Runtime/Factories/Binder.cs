@@ -10,13 +10,25 @@ namespace Umpire.Factories {
     sealed class FactoryRegistry {
         readonly Dictionary<Type, Func<IServiceProvider, object>> creators = new Dictionary<Type, Func<IServiceProvider, object>>();
 
+        readonly Dictionary<Type, Func<IServiceProvider, object, object>> argumentCreators =
+            new Dictionary<Type, Func<IServiceProvider, object, object>>();
+
         public void Add(Type product, Func<IServiceProvider, object> create) {
             if (!creators.ContainsKey(product)) {
                 creators.Add(product, create);
             }
         }
 
+        public void Add(Type product, Func<IServiceProvider, object, object> create) {
+            if (!argumentCreators.ContainsKey(product)) {
+                argumentCreators.Add(product, create);
+            }
+        }
+
         public bool TryGet(Type product, out Func<IServiceProvider, object> create) => creators.TryGetValue(product, out create);
+
+        public bool TryGet(Type product, out Func<IServiceProvider, object, object> create) =>
+            argumentCreators.TryGetValue(product, out create);
     }
 
     // Binds each IBindable<T> product to a T from the scope of this binder.
@@ -30,19 +42,29 @@ namespace Umpire.Factories {
         }
 
         public void Bind(object product) {
-            if (product == null) {
-                return;
-            }
-            var plan = BindPlan.Of(product.GetType());
+            var plan = product == null ? null : BindPlan.Of(product.GetType());
             if (plan == null) {
                 return;
             }
-            var target = registry.TryGet(plan.Target, out var create)
+            var target = registry.TryGet(plan.Target, out Func<IServiceProvider, object> create)
                 ? create(provider)
                 : provider.GetService(plan.Target) ?? throw new InvalidOperationException(
                     $"{product.GetType().FullName} binds to {plan.Target.FullName}, but {plan.Target.Name} has no factory " +
                     $"and no registration. Call AddFactory<{plan.Target.Name}>() or register it.");
             plan.Invoke(product, target);
+        }
+
+        public void Bind(object product, object arg) {
+            var plan = product == null ? null : BindPlan.Of(product.GetType());
+            if (plan == null) {
+                return;
+            }
+            if (!registry.TryGet(plan.Target, out Func<IServiceProvider, object, object> create)) {
+                throw new InvalidOperationException(
+                    $"{product.GetType().FullName} binds to {plan.Target.FullName} with an argument, but {plan.Target.Name} " +
+                    $"has no factory with an argument. Call AddFactory<TArg, {plan.Target.Name}>(create).");
+            }
+            plan.Invoke(product, create(provider, arg));
         }
     }
 
@@ -50,6 +72,19 @@ namespace Umpire.Factories {
     // that the product class implements, so it needs no MakeGenericMethod.
     sealed class BindPlan {
         static readonly Dictionary<Type, BindPlan> plans = new Dictionary<Type, BindPlan>();
+
+        // The Unity linker keeps a method only if code calls it. No code calls IBindable<T>.Bind directly, so at
+        // stripping Low the player lost its metadata, and GetMethod gave null. This call keeps IBindable<T>.Bind and
+        // each Bind that implements it. It never runs: the linker cannot know the value of the field.
+        static bool never = false;
+
+        static BindPlan() {
+            if (never) {
+                KeepBind<object>(null, null);
+            }
+        }
+
+        static void KeepBind<T>(IBindable<T> product, T target) => product.Bind(target);
 
         readonly MethodInfo bind;
 

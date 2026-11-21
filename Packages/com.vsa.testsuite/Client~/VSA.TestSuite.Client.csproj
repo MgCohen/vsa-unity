@@ -9,5 +9,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Samples/**" />
+    <Compile Remove="Cli/**" />
+    <Compile Remove="Tests/**" />
+    <None Remove="Cli/**;Tests/**" />
+    <EmbeddedResource Include="Status/Core/limits.json" LogicalName="VSA.TestSuite.Client.Status.limits.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="vsa-unity" />
+    <InternalsVisibleTo Include="statuslab" />
+    <InternalsVisibleTo Include="VSA.TestSuite.Client.Tests" />
   </ItemGroup>
 </Project>

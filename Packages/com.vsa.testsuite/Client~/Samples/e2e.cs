@@ -38,7 +38,7 @@ async Task<string> ExpectFail(Func<Task> body, string code)
 using var game = await Game.AttachEditor(project);
 Console.WriteLine("Attached: " + game.Transport.Instance);
 
-await Check("health ready", async () => (await game.Health.Probe()).ToString());
+await Check("status ready", async () => (await game.Status.Check()).ToString());
 await Check("enter play mode", async () => { await game.EnterPlayMode(); return "ticking"; });
 await Check("set up lab UI", async () => (await game.Command("labrt.setup_ui")).ToString());
 // Static fields keep their values if the project enters Play Mode with no domain reload.
@@ -82,14 +82,15 @@ await Check("10 clicks, then count", async () =>
     await game.AssertText("LabCanvas/LabLabel", "clicks=" + (start + 11));
     return "ms: " + string.Join(", ", times.Select(t => t.ToString("0")));
 });
-await Check("long async action stays Ready", async () =>
+// An async action holds the command queue, so the probe waits: the state is long-command, not frozen.
+await Check("long async action is long-command", async () =>
 {
     var wait = game.WaitSeconds(3);
     await Task.Delay(1000);
-    var during = await game.Health.Probe();
+    var during = await game.Status.Check();
     await wait;
-    if (during.State != HealthState.Ready) throw new Exception("During the wait: " + during);
-    return $"{during.State} in {during.Ms} ms";
+    if (during.State is not ("long-command" or "play-running")) throw new Exception("During the wait: " + during);
+    return during.ToString();
 });
 async Task<JsonElement> Info() => await game.Command("labsuite.info");
 await Check("hold object 400 ms", async () =>
@@ -214,18 +215,18 @@ await Check("script lab_fail stops at the assert", () => ExpectFail(() => game.R
 await Check("unknown script is NotFound", () => ExpectFail(() => game.RunScript("no_such_script"), "NotFound"));
 await Check("exit play mode", async () => { await game.ExitPlayMode(); return ""; });
 
-// Health: freeze the main thread, then probe from outside.
-await Check("frozen main thread is Frozen", async () =>
+// Status: freeze the main thread, then read the state from outside.
+// A command that blocks the main thread shows as long-command while /api/progress is active, else as frozen.
+await Check("frozen main thread is frozen or long-command", async () =>
 {
     var freeze = game.Transport.Exec(new[] { "lab.freeze_now", "--seconds", "6" }, 20000);
     await Task.Delay(1500);
-    var during = await game.Health.Probe();
+    var during = await game.Status.Check();
     var frozeFor = await freeze;
     if (!frozeFor.Success) throw new Exception("The freeze command failed: " + frozeFor);
-    var after = await game.Health.Probe();
-    if (during.State != HealthState.Frozen) throw new Exception("During the freeze: " + during);
-    if (after.State != HealthState.Ready) throw new Exception("After the freeze: " + after);
-    return $"during: {during.State} in {during.Ms} ms, after: {after.State}";
+    var after = await game.Status.WaitReady(10000);
+    if (during.State is not ("frozen" or "long-command")) throw new Exception("During the freeze: " + during);
+    return $"during: {during}, after: {after}";
 });
 
 Console.WriteLine($"\n{pass} passed, {fail} failed");

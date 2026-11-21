@@ -1,0 +1,73 @@
+{
+  "_reason": "Corrections measured in run 1 of Playbook B (2026-11-17). Recordings keep the truth of their run; the replay applies these. T02: an import that blocks the main thread shows 'Hold on...' (frozen) before Unity names it 'Importing'. T30: the probe waits behind the trigger command for one sample (long-command). T32: with all Editor ports taken, the server never starts while the main thread runs: server-down. T35: the 2 s probe waits in the queue and gets 504, never 429, so a full queue reads as long-command. T37: a package that cannot resolve makes the -automated Editor exit with code 1 and no dialog: start-failed. T30: a Unity event less than 10 s before the stop makes the first label domain-reload; server-down follows within 15 s.",
+  "T18": {
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "DetectMs": 15000
+  },
+  "T19": {
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "DetectMs": 15000
+  },
+  "T20": {
+    "Allowed": [
+      "ready-idle",
+      "long-command|domain-reload",
+      "exited"
+    ]
+  },
+  "T24": {
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start|exited|crash"
+    ]
+  },
+  "T02": {
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "DetectMs": 10000
+  },
+  "T30": {
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "server-down|domain-reload",
+      "cold-start|domain-reload|settling",
+      "ready-idle"
+    ],
+    "DetectMs": 15000
+  },
+  "T32": {
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ]
+  },
+  "T35": {
+    "Key": "long-command"
+  },
+  "T37": {
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "DetectMs": 20000,
+    "Key": "start-failed"
+  }
+}

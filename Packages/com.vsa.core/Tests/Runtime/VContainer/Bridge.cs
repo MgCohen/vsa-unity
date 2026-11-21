@@ -82,7 +82,7 @@ namespace Umpire.Unity.VContainer.Tests {
     // A host that does not derive from UnityHost, so the imports cannot reach the app.
     public sealed class PlainHost : AppHost {
         public PlainHost() {
-            Modules = new Module[] { new BridgeModule() };
+            ModuleProvider = new FixedModules(new BridgeModule());
         }
     }
 

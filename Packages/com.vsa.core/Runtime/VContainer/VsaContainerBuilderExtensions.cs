@@ -27,7 +27,7 @@ namespace Umpire.Unity.VContainer {
 
         // Registers each presenter of the modules. Give the modules of the app, for example the modules of its host.
         public static void RegisterVsaPresenters(this IContainerBuilder builder, params Module[] modules) {
-            var presenters = new AppTypes(modules).ConcreteTypesOf(typeof(Presenter)).Distinct();
+            var presenters = new AppTypes(new FixedModules(modules)).ConcreteTypesOf(typeof(Presenter)).Distinct();
             foreach (var type in presenters) {
                 builder.RegisterVsa(type);
             }

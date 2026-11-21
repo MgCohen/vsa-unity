@@ -2,7 +2,7 @@
   <!-- Only for vendor.cs: dotnet publish of this project gives the Umpire packages and their dependencies for Unity. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <UmpireVersion>0.2.0-preview.12</UmpireVersion>
+    <UmpireVersion>0.2.0-preview.20</UmpireVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- One Umpire.dll for the whole framework. The other DLLs are its third-party dependencies. -->

@@ -13,7 +13,7 @@ namespace Umpire.Unity {
     // presenter scope: it is live from the start of the host to its end, and the host injects its presenters into
     // the views of the loaded scenes. A presenter gets its events on the thread of the publish, and
     // PresenterComponent moves each Render to the main thread.
-    // Without a module list, Umpire finds the modules in the loaded assemblies that reference Umpire.Kernels.
+    // Without a module list, Umpire scans the loaded assemblies for modules (ScannedModules).
     // To give the modules, derive a host with a public constructor:
     //   public sealed class GameHost : UnityHost { public GameHost() : base(new ScoreModule()) { } }
     public class UnityHost : AppHost {
@@ -23,9 +23,9 @@ namespace Umpire.Unity {
         public UnityHost() {
         }
 
-        // Gives the modules of the app. Umpire then reads only the assemblies of these modules.
+        // Gives the modules of the app (FixedModules). Umpire then reads only the assemblies of these modules.
         protected UnityHost(params Module[] modules) {
-            Modules = modules;
+            ModuleProvider = new FixedModules(modules);
         }
 
         // Unity has no .umpireconfig in its base folder. The host asks the assets on the shell first,

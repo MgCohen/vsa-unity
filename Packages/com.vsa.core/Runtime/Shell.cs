@@ -7,7 +7,7 @@ namespace Umpire.Unity {
     // The shell of an Umpire app over a pack: it makes the app and starts it. Derive from it to use the app hooks
     // or another pack, for example: public sealed class GameShell : Shell<Vsa<GameArchitecture, GameHost>> { }
     // A VSA app with the Unity host uses VsaShell (no hooks) or VsaShell<TArchitecture>.
-    public abstract class Shell<TPack> : Shell where TPack : Pack, new() {
+    public abstract class Shell<TPack> : Shell, IAppEntry<TPack> where TPack : Pack, new() {
         protected override App CreateApp() => new ShellApp(this);
 
         protected virtual void OnStart() {

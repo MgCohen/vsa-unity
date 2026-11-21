@@ -20,6 +20,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | Path | Contains |
 |---|---|
 | `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
+| `Packages/com.vsa.testsuite/` | The test suite package: drives a running game from the `unity` CLI. It has no VSA reference. See its [README](Packages/com.vsa.testsuite/README.md). |
 | `Assets/Sample/` | A small module in one asmdef |
 | `Assets/SampleApp/` | `SampleShell`, `SampleHost` and the `Check` view of the IL2CPP check |
 | `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
@@ -34,6 +35,7 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | `dotnet run --file vendor.cs` | Copies the DLLs of `UmpireVersion` to the package |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
+| `dotnet run --file e2e.cs` (in `Packages/com.vsa.testsuite/Client~/Samples`) | Runs the test suite checks against an open Editor of this project |
 
 `vendor.cs` reads GitHub Packages, so set `GITHUB_TOKEN` first, for example `$env:GITHUB_TOKEN = gh auth token`.
 

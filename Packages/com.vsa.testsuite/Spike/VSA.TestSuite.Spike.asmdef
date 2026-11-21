@@ -1,0 +1,10 @@
+{
+  "name": "VSA.TestSuite.Spike",
+  "rootNamespace": "VSA.TestSuite.Spike",
+  "references": [
+    "Unity.Pipeline.Attributes",
+    "UnityEngine.UI",
+    "Umpire.Unity"
+  ],
+  "autoReferenced": true
+}

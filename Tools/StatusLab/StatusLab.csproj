@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>statuslab</AssemblyName>
+    <RootNamespace>StatusLab</RootNamespace>
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="results/**" />
+    <ProjectReference Include="../../Packages/com.vsa.testsuite/Client~/VSA.TestSuite.Client.csproj" />
+  </ItemGroup>
+</Project>

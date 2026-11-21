@@ -11,4 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/DiceGame/Scenes/DiceGame.unity
     guid: 6f8dde4ea2a5509419068ba1644d7867
+  - enabled: 1
+    path: Assets/TestSuiteLab/TestSuiteLab.unity
+    guid: c8b14947f92c07f43a0e84bece3772bf
+  - enabled: 1
+    path: Assets/SpikeLab/SpikeLab.unity
+    guid: 4b31def0b39eb93469ca8122847763ae
+  - enabled: 1
+    path: Assets/SpikeLab/SpikeLabScene2.unity
+    guid: 9b44bf39898174c4d9071391569a6e46
   m_configObjects: {}

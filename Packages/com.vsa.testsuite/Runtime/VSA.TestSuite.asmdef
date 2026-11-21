@@ -1,0 +1,17 @@
+{
+  "name": "VSA.TestSuite",
+  "rootNamespace": "VSA.TestSuite",
+  "references": [
+    "Unity.Pipeline.Attributes",
+    "UnityEngine.UI",
+    "Unity.InputSystem"
+  ],
+  "autoReferenced": true,
+  "versionDefines": [
+    {
+      "name": "com.unity.inputsystem",
+      "expression": "1.0.0",
+      "define": "VSA_TESTSUITE_INPUT_SYSTEM"
+    }
+  ]
+}

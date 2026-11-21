@@ -1,0 +1,3333 @@
+[
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T01",
+    "Step": "A1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 30042
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 626,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 61697
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61732
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T03",
+    "Step": "A3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3421,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 121573
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T05",
+    "Step": "A4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "FirstChangeMs": 3375,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 7757
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T05c",
+    "Step": "A4",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "compile-failed",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "compile-failed",
+      "compiling",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3885,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 11366
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T06",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing|play-transition|long-command|frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "ready-idle",
+      "importing",
+      "play-running"
+    ],
+    "FirstChangeMs": 4004,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 10861
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T07",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running"
+    ],
+    "Observed": [
+      "play-running"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 15039
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T08",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "play-paused"
+    ],
+    "Observed": [
+      "play-running",
+      "play-paused"
+    ],
+    "FirstChangeMs": 32,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 10096
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T08c",
+    "Step": "A5",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "play-paused",
+      "play-running"
+    ],
+    "Observed": [
+      "play-paused",
+      "play-running"
+    ],
+    "FirstChangeMs": 94,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8008
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T06b",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running|play-paused",
+      "importing|play-transition|long-command|frozen|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "play-running",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3811,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 5787
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T09",
+    "Step": "A6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 62,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 37187
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": false,
+    "Why": "frozen at never ms, limit 5000",
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 5000,
+    "Results": [],
+    "ExpectResult": "stalled",
+    "DurationMs": 111680
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2396,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91661
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 362,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 31596
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T13",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10015
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T13b",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10083
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T13c",
+    "Step": "A10",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 5222
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T14",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3671,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120016
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T15",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120173
+  },
+  {
+    "File": "A-run1.ndjson.gz",
+    "Case": "A-r1/T16",
+    "Step": "A12",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command|frozen|cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "domain-reload",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4363,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 119157
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T01",
+    "Step": "A1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 30079
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 612,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 61668
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61518
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T03",
+    "Step": "A3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3746,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 121643
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T05",
+    "Step": "A4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "FirstChangeMs": 3890,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 8732
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T05c",
+    "Step": "A4",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "compile-failed",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "compile-failed",
+      "compiling",
+      "importing",
+      "domain-reload",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3989,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 11106
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T06",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing|play-transition|long-command|frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "ready-idle",
+      "importing",
+      "play-running"
+    ],
+    "FirstChangeMs": 3998,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 10585
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T07",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running"
+    ],
+    "Observed": [
+      "play-running"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 15029
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T08",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "play-paused"
+    ],
+    "Observed": [
+      "play-running",
+      "play-paused"
+    ],
+    "FirstChangeMs": 78,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 10174
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T08c",
+    "Step": "A5",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "play-paused",
+      "play-running"
+    ],
+    "Observed": [
+      "play-paused",
+      "play-running"
+    ],
+    "FirstChangeMs": 110,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8077
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T06b",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running|play-paused",
+      "importing|play-transition|long-command|frozen|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "play-running",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4275,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 5942
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T09",
+    "Step": "A6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 373,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 37274
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4985,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91915
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2610,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91887
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 267,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 31589
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T13",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10133
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T13b",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10144
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T13c",
+    "Step": "A10",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 5186
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T14",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4829,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120048
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T15",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120190
+  },
+  {
+    "File": "A-run2.ndjson.gz",
+    "Case": "A-r2/T16",
+    "Step": "A12",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command|frozen|cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "domain-reload",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4046,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 121551
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T01",
+    "Step": "A1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 30020
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": false,
+    "Why": "importing at never ms, limit 10000",
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 61706
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61562
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T03",
+    "Step": "A3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3695,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 121662
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T05",
+    "Step": "A4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "compile-failed"
+    ],
+    "FirstChangeMs": 3783,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 8083
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T05c",
+    "Step": "A4",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "compile-failed",
+      "compiling|importing|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "compile-failed",
+      "compiling",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4000,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 11635
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T06",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing|play-transition|long-command|frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "ready-idle",
+      "importing",
+      "play-running"
+    ],
+    "FirstChangeMs": 3833,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 10386
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T07",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running"
+    ],
+    "Observed": [
+      "play-running"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 15032
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T08",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "play-paused"
+    ],
+    "Observed": [
+      "play-running",
+      "play-paused"
+    ],
+    "FirstChangeMs": 109,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 10140
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T08c",
+    "Step": "A5",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "play-paused",
+      "play-running"
+    ],
+    "Observed": [
+      "play-paused",
+      "play-running"
+    ],
+    "FirstChangeMs": 122,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8046
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T06b",
+    "Step": "A5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running|play-paused",
+      "importing|play-transition|long-command|frozen|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "play-running",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4813,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 6544
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T09",
+    "Step": "A6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 310,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 37631
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2559,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91651
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2536,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91843
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 233,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 31707
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T13",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10113
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T13b",
+    "Step": "A10",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 10092
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T13c",
+    "Step": "A10",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 5199
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T14",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 3491,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120221
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T15",
+    "Step": "A11",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|compiling|importing|domain-reload",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 120091
+  },
+  {
+    "File": "A-run3.ndjson.gz",
+    "Case": "A-r3/T16",
+    "Step": "A12",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "compiling|importing|domain-reload|long-command|frozen|cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "compiling",
+      "importing",
+      "domain-reload",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4495,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 117836
+  },
+  {
+    "File": "A3-A-r1.ndjson.gz",
+    "Case": "A-r1/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 7051,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 11938
+  },
+  {
+    "File": "A3-A-r1.ndjson.gz",
+    "Case": "A-r1/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61690
+  },
+  {
+    "File": "A3-A-r1.ndjson.gz",
+    "Case": "A-r1/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2629,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91740
+  },
+  {
+    "File": "A3-A-r1.ndjson.gz",
+    "Case": "A-r1/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2663,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91857
+  },
+  {
+    "File": "A3-A-r1.ndjson.gz",
+    "Case": "A-r1/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 315,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 4129
+  },
+  {
+    "File": "A3-A-r2.ndjson.gz",
+    "Case": "A-r2/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 7093,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 11934
+  },
+  {
+    "File": "A3-A-r2.ndjson.gz",
+    "Case": "A-r2/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61567
+  },
+  {
+    "File": "A3-A-r2.ndjson.gz",
+    "Case": "A-r2/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2814,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91938
+  },
+  {
+    "File": "A3-A-r2.ndjson.gz",
+    "Case": "A-r2/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2430,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91748
+  },
+  {
+    "File": "A3-A-r2.ndjson.gz",
+    "Case": "A-r2/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 496,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 31601
+  },
+  {
+    "File": "A3-A-r3.ndjson.gz",
+    "Case": "A-r3/T02",
+    "Step": "A2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|frozen|importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "importing",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 7013,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 11930
+  },
+  {
+    "File": "A3-A-r3.ndjson.gz",
+    "Case": "A-r3/T02c",
+    "Step": "A2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "importing",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 61509
+  },
+  {
+    "File": "A3-A-r3.ndjson.gz",
+    "Case": "A-r3/T10",
+    "Step": "A7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2368,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91758
+  },
+  {
+    "File": "A3-A-r3.ndjson.gz",
+    "Case": "A-r3/T11",
+    "Step": "A8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "frozen",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2398,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91905
+  },
+  {
+    "File": "A3-A-r3.ndjson.gz",
+    "Case": "A-r3/T12",
+    "Step": "A9",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "native-dialog",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 172,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 31622
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T17",
+    "Step": "B1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor"
+    ],
+    "FirstChangeMs": 107,
+    "DetectMs": 2000,
+    "Results": [],
+    "DurationMs": 10249
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T18",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 6504,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 17916
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T20",
+    "Step": "B3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|domain-reload",
+      "exited"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "domain-reload",
+      "exited"
+    ],
+    "FirstChangeMs": 4846,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 8620
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T21",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 634,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 4424
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T21b",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor"
+    ],
+    "FirstChangeMs": 159,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8142
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T22",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 377,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 4075
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T22b",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "no-editor"
+    ],
+    "FirstChangeMs": 345,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8222
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T23",
+    "Step": "B6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor|no-editor",
+      "cold-start|backup-prompt|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 414,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 17954
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T24",
+    "Step": "B7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start|exited|crash"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start",
+      "exited"
+    ],
+    "FirstChangeMs": 14467,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 16272
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T24c",
+    "Step": "B7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor|stale-descriptor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 231,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 19270
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 123,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 202241
+  },
+  {
+    "File": "B-run1.ndjson.gz",
+    "Case": "B-r1/T27",
+    "Step": "B10",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 6420,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 19072
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T17",
+    "Step": "B1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor"
+    ],
+    "Observed": [
+      "no-editor"
+    ],
+    "DetectMs": 2000,
+    "Results": [],
+    "DurationMs": 10072
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T18",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 6076,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 18137
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T20",
+    "Step": "B3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|domain-reload",
+      "exited"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "domain-reload",
+      "exited"
+    ],
+    "FirstChangeMs": 4223,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 8448
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T21",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 92,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 4102
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T21b",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "FirstChangeMs": 192,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8237
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T22",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 139,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 3078
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T22b",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "no-editor"
+    ],
+    "FirstChangeMs": 314,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8195
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T23",
+    "Step": "B6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor|no-editor",
+      "cold-start|backup-prompt|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 265,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 16550
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T24",
+    "Step": "B7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start|exited|crash"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start",
+      "exited"
+    ],
+    "FirstChangeMs": 14633,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 16231
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T24c",
+    "Step": "B7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor|stale-descriptor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 405,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 18393
+  },
+  {
+    "File": "B-run2.ndjson.gz",
+    "Case": "B-r1/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 141,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 522861
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T17",
+    "Step": "B1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor"
+    ],
+    "FirstChangeMs": 45,
+    "DetectMs": 2000,
+    "Results": [],
+    "DurationMs": 10049
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T18",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 6180,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 16623
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T20",
+    "Step": "B3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|domain-reload",
+      "exited"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "domain-reload",
+      "exited"
+    ],
+    "FirstChangeMs": 4294,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 8501
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T21",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 774,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 4508
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T21b",
+    "Step": "B4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor"
+    ],
+    "FirstChangeMs": 262,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8218
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T22",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "crash"
+    ],
+    "Observed": [
+      "ready-idle",
+      "crash"
+    ],
+    "FirstChangeMs": 222,
+    "DetectMs": 3000,
+    "Results": [],
+    "DurationMs": 3035
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T22b",
+    "Step": "B5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor",
+      "no-editor"
+    ],
+    "Observed": [
+      "crash",
+      "no-editor"
+    ],
+    "FirstChangeMs": 312,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 8206
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T23",
+    "Step": "B6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "stale-descriptor|no-editor",
+      "cold-start|backup-prompt|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "crash",
+      "stale-descriptor",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 210,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 16767
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T24",
+    "Step": "B7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start|exited|crash"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "safe-mode",
+      "cold-start",
+      "exited"
+    ],
+    "FirstChangeMs": 13792,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 15549
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T24c",
+    "Step": "B7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor|stale-descriptor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 261,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 17601
+  },
+  {
+    "File": "B-run3.ndjson.gz",
+    "Case": "B-r2/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 141,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 205569
+  },
+  {
+    "File": "B8-r1.ndjson.gz",
+    "Case": "B-r1/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 106,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 177457
+  },
+  {
+    "File": "B8-r2.ndjson.gz",
+    "Case": "B-r2/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 156,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 176595
+  },
+  {
+    "File": "B8-r3.ndjson.gz",
+    "Case": "B-r3/T25",
+    "Step": "B8",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "exited|crash",
+      "no-editor|stale-descriptor|foreign-editor",
+      "cold-start|settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "crash",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 13,
+    "DetectMs": 10000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 185718
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T30",
+    "Step": "C1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "server-down|domain-reload",
+      "cold-start|domain-reload|settling",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "server-down",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 2329,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 42695
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T31",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 328,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 17545
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T32",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "FirstChangeMs": 434,
+    "DetectMs": 15000,
+    "Results": [
+      "stuck"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 201685
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T32c",
+    "Step": "C2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command|server-down",
+      "ready-idle"
+    ],
+    "Observed": [
+      "server-down"
+    ],
+    "DetectMs": 0,
+    "Results": [
+      "stuck"
+    ],
+    "DurationMs": 121562
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T33",
+    "Step": "C3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 78,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 13519
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T34",
+    "Step": "C4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 60177
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T35",
+    "Step": "C5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|queue-full",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 495,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 27050
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T36",
+    "Step": "C6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "FirstChangeMs": 2599,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91721
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T37",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 12689,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 241752
+  },
+  {
+    "File": "C-run1.ndjson.gz",
+    "Case": "C-r1/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 193,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 21273
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T30",
+    "Step": "C1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "server-down|domain-reload",
+      "cold-start|domain-reload|settling",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "domain-reload",
+      "server-down",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4889,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 42775
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T31",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 186,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 17335
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T32",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "FirstChangeMs": 263,
+    "DetectMs": 15000,
+    "Results": [
+      "stuck"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 201605
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T32c",
+    "Step": "C2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command|server-down",
+      "ready-idle"
+    ],
+    "Observed": [
+      "server-down"
+    ],
+    "DetectMs": 0,
+    "Results": [
+      "stuck"
+    ],
+    "DurationMs": 121696
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T33",
+    "Step": "C3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 201,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 5943
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T34",
+    "Step": "C4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 60235
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T35",
+    "Step": "C5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|queue-full",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 14,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 26963
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T36",
+    "Step": "C6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "FirstChangeMs": 2550,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91777
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T37",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 11766,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 241659
+  },
+  {
+    "File": "C-run2.ndjson.gz",
+    "Case": "C-r2/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 91,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 20144
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T30",
+    "Step": "C1",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command",
+      "server-down|domain-reload",
+      "cold-start|domain-reload|settling",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "domain-reload",
+      "server-down",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 4901,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 42511
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T31",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 92,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 18877
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T32",
+    "Step": "C2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "Observed": [
+      "exited",
+      "no-editor",
+      "cold-start",
+      "server-down"
+    ],
+    "FirstChangeMs": 93,
+    "DetectMs": 15000,
+    "Results": [
+      "stuck"
+    ],
+    "ExpectResult": "stalled|stuck",
+    "DurationMs": 201701
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T32c",
+    "Step": "C2",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command|server-down",
+      "ready-idle"
+    ],
+    "Observed": [
+      "server-down"
+    ],
+    "DetectMs": 0,
+    "Results": [
+      "stuck"
+    ],
+    "DurationMs": 121571
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T33",
+    "Step": "C3",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "descriptor-mismatch",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 340,
+    "DetectMs": 5000,
+    "Results": [],
+    "DurationMs": 13695
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T34",
+    "Step": "C4",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle"
+    ],
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 60083
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T35",
+    "Step": "C5",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "ready-idle",
+      "long-command|queue-full",
+      "ready-idle"
+    ],
+    "Observed": [
+      "ready-idle",
+      "long-command",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 77,
+    "DetectMs": 10000,
+    "Results": [],
+    "DurationMs": 26978
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T36",
+    "Step": "C6",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "Observed": [
+      "play-running",
+      "long-command",
+      "frozen",
+      "play-running"
+    ],
+    "FirstChangeMs": 2587,
+    "DetectMs": 5000,
+    "Results": [
+      "stalled"
+    ],
+    "ExpectResult": "stalled",
+    "DurationMs": 91600
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T37",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 13180,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 241535
+  },
+  {
+    "File": "C-run3.ndjson.gz",
+    "Case": "C-r3/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 315,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 20551
+  },
+  {
+    "File": "C7-r1.ndjson.gz",
+    "Case": "C-r1/T37",
+    "Step": "C7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 12866,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 14474
+  },
+  {
+    "File": "C7-r1.ndjson.gz",
+    "Case": "C-r1/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 418,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 19767
+  },
+  {
+    "File": "C7-r2.ndjson.gz",
+    "Case": "C-r2/T37",
+    "Step": "C7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 14906,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 16652
+  },
+  {
+    "File": "C7-r2.ndjson.gz",
+    "Case": "C-r2/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 278,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 28771
+  },
+  {
+    "File": "C7-r3.ndjson.gz",
+    "Case": "C-r3/T37",
+    "Step": "C7",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "start-failed"
+    ],
+    "FirstChangeMs": 10605,
+    "DetectMs": 20000,
+    "Results": [],
+    "DurationMs": 12120
+  },
+  {
+    "File": "C7-r3.ndjson.gz",
+    "Case": "C-r3/T37c",
+    "Step": "C7",
+    "Scored": false,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "start-failed",
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 511,
+    "DetectMs": 0,
+    "Results": [],
+    "DurationMs": 20781
+  },
+  {
+    "File": "T19-r1.ndjson.gz",
+    "Case": "B-r1/T19",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 7568,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 57964
+  },
+  {
+    "File": "T19-r2.ndjson.gz",
+    "Case": "B-r1/T19",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 8206,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 56578
+  },
+  {
+    "File": "T19-r3.ndjson.gz",
+    "Case": "B-r2/T19",
+    "Step": "B2",
+    "Scored": true,
+    "Pass": true,
+    "Allowed": [
+      "no-editor",
+      "cold-start",
+      "settling|importing|compiling|domain-reload|long-command",
+      "ready-idle"
+    ],
+    "Observed": [
+      "no-editor",
+      "cold-start",
+      "settling",
+      "ready-idle"
+    ],
+    "FirstChangeMs": 6808,
+    "DetectMs": 15000,
+    "Results": [],
+    "DurationMs": 53460
+  }
+]

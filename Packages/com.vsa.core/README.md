@@ -22,6 +22,7 @@ Each rule has its default values and its default severity on its class, so the p
 | `Runtime/Plugins/` | `Umpire.dll` and its third-party dependencies (11 DLLs) |
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
+| `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<T>`, `IBindable<T>`. No engine references. |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
 | `Tests/` | EditMode and PlayMode tests |
 
@@ -119,6 +120,50 @@ public sealed class GameSettings : UnitySettings {
 - Unity serializes fields, not properties, and it cannot serialize a `Dictionary`. Keep a list of pairs in the asset, and make the dictionary in `Create`.
 - `UnityHost` finds the `UnitySettings` classes in the module assemblies and in the assembly of the shell.
 - The host does not read `.umpireconfig`.
+
+## Factories
+
+A module registers each factory. Code injects the typed factory, not the container.
+
+```csharp
+public override void Configure(IServiceCollection services) {
+    services.AddFactory<CounterModel>();                                       // also registers CounterModel
+    services.AddFactory<int, Label>((provider, size) => new Label(size));      // with an argument
+}
+
+public Board(IFactory<CounterModel> models, IFactory<int, Label> labels) { ... }
+```
+
+| Form | Registers | `Create` |
+|---|---|---|
+| `AddFactory<T>()` | `IFactory<T>`, and T as transient if T has no registration | Resolves T |
+| `AddFactory<T>(create)` | `IFactory<T>` | Calls `create(provider)` |
+| `AddFactory<TArg, T>(create)` | `IFactory<TArg, T>` | Calls `create(provider, arg)` |
+| `AddFactory<T, TFactory>()` | `IFactory<T>`, and TFactory as transient if it has no registration | Calls `TFactory.Create()` |
+
+- The first registration of a type wins. A call does not replace a factory or a product that exists.
+- A factory resolves from the scope that resolves it. A scoped product is one for each scope.
+- A transient product or factory class that is `IDisposable` stops the start: the scope keeps each disposable transient until it ends. Register it as scoped or singleton first.
+- A product of `AddFactory<T>(create)` or `AddFactory<TArg, T>(create)` is not in the container. The caller owns it.
+
+### Bind a product
+
+If a product is `IBindable<T>`, the factory gets a T and calls `Bind` before `Create` returns.
+
+```csharp
+public sealed class Label : IBindable<CounterModel> {
+    public void Bind(CounterModel target) => ...;
+}
+```
+
+| T has | T comes from |
+|---|---|
+| A factory (`AddFactory<T>`) | That factory: a new T for each product |
+| A registration only | The scope, for example a scoped presenter |
+| Neither | An error that names T |
+
+- `IBinder.Bind(object)` binds an object that no factory made. If the object is not `IBindable<T>`, it does nothing.
+- A product binds to one type only.
 
 ## Views
 

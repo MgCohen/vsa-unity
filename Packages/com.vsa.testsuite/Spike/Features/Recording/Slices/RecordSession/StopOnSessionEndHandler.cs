@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
 
         public StopOnSessionEndHandler(RecordingSystem recording) => this.recording = recording;
 
-        public override Task<Result<Unit>> HandleAsync(Envelope<SessionEnded> envelope)
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<SessionEnded> envelope)
         {
             recording.Stop("session end: " + envelope.Message.Reason);
             return Task.FromResult<Result<Unit>>(Unit.Value);

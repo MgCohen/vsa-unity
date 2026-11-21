@@ -13,7 +13,7 @@ namespace Probe.Posts {
             this.store = store;
         }
 
-        public override Task<Result<Unit>> HandleAsync(Envelope<PostAdded> envelope) {
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<PostAdded> envelope) {
             store.Published++;
             return Task.FromResult<Result<Unit>>(Unit.Value);
         }

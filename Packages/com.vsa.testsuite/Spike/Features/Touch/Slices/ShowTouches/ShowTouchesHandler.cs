@@ -10,7 +10,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public ShowTouchesHandler(TouchOverlay overlay) => this.overlay = overlay;
 
-        public override Task<Result<OverlayResult>> HandleAsync(Envelope<ShowTouches> envelope)
+        public override Task<Result<OverlayResult>> HandleAsync(IEnvelope<ShowTouches> envelope)
         {
             overlay.On = envelope.Message.On;
             return Task.FromResult<Result<OverlayResult>>(new OverlayResult(overlay.On));

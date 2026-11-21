@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Touch
 
         public HoldScreenHandler(TouchSystem touch) => this.touch = touch;
 
-        public override async Task<Result<HoldResult>> HandleAsync(Envelope<HoldScreen> envelope)
+        public override async Task<Result<HoldResult>> HandleAsync(IEnvelope<HoldScreen> envelope)
         {
             var hold = envelope.Message;
             var startFrame = Time.frameCount;

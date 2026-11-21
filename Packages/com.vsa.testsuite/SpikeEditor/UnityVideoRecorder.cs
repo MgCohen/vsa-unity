@@ -60,6 +60,17 @@ namespace VSA.TestSuite.Spike.Editor
             }
         }
 
+        static GameViewInputSettings EvenGameView()
+        {
+            var input = new GameViewInputSettings();
+            var width = Screen.width & ~1;
+            var height = Screen.height & ~1;
+            if (width == Screen.width && height == Screen.height) return input;
+            input.OutputWidth = width;
+            input.OutputHeight = height;
+            return input;
+        }
+
         void Prepare(string pathNoExtension, RecordingSettings options)
         {
             settings = ScriptableObject.CreateInstance<RecorderControllerSettings>();
@@ -78,17 +89,6 @@ namespace VSA.TestSuite.Spike.Editor
             settings.SetRecordModeToManual();
             settings.FrameRatePlayback = FrameRatePlayback.Variable;
             settings.FrameRate = options.FrameRate;
-        }
-
-        static GameViewInputSettings EvenGameView()
-        {
-            var input = new GameViewInputSettings();
-            var width = Screen.width & ~1;
-            var height = Screen.height & ~1;
-            if (width == Screen.width && height == Screen.height) return input;
-            input.OutputWidth = width;
-            input.OutputHeight = height;
-            return input;
         }
 
         void Release()

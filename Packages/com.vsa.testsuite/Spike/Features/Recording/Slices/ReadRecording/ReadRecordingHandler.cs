@@ -10,7 +10,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
 
         public ReadRecordingHandler(RecordingSystem recording) => this.recording = recording;
 
-        public override Task<Result<RecordingStatus>> HandleAsync(Envelope<ReadRecording> envelope)
+        public override Task<Result<RecordingStatus>> HandleAsync(IEnvelope<ReadRecording> envelope)
         {
             var file = (recording.Current ?? recording.Last)?.File;
             var active = recording.Current != null;

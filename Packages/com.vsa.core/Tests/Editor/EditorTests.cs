@@ -29,30 +29,19 @@ namespace Umpire.Unity.Editor.Tests {
         }
     }
 
-    public sealed class CompilerFilesTests {
-        const string Rules = "# rules\nis_global = true\nglobal_level = -1\n\numpire.UMP010101.max = 120\n";
-
+    public sealed class ShellEditModeTests {
+        // Unity sends the Reset message when a component is added in the Editor. A static method with that name
+        // logs "Failed to call static function Reset".
         [Test]
-        public void A_new_globalconfig_has_the_package_block() =>
-            Assert.That(CompilerFiles.GlobalConfig("", Rules), Is.EqualTo(
-                "is_global = true\n" + CompilerFiles.Begin + "\n# rules\n\numpire.UMP010101.max = 120\n" + CompilerFiles.End + "\n"));
+        public void A_shell_added_in_Edit_Mode_logs_no_error() {
+            var go = new UnityEngine.GameObject("Shell");
+            try {
+                go.AddComponent<VsaShell>();
 
-        [Test]
-        public void The_globalconfig_keeps_the_lines_of_the_consumer() {
-            var text = CompilerFiles.GlobalConfig("is_global = true\ndotnet_diagnostic.CS0618.severity = none\n", Rules);
-
-            Assert.That(text, Does.StartWith("is_global = true\ndotnet_diagnostic.CS0618.severity = none\n\n" + CompilerFiles.Begin));
-            Assert.That(text.Split('\n').Count(line => line.StartsWith("is_global")), Is.EqualTo(1));
-        }
-
-        [Test]
-        public void The_globalconfig_replaces_the_last_package_block() {
-            var old = CompilerFiles.GlobalConfig("", "umpire.UMP010101.max = 80\n");
-
-            var text = CompilerFiles.GlobalConfig(old, Rules);
-
-            Assert.That(text, Does.Contain("umpire.UMP010101.max = 120").And.Not.Contain("= 80"));
-            Assert.That(CompilerFiles.GlobalConfig(text, Rules), Is.EqualTo(text));
+                UnityEngine.TestTools.LogAssert.NoUnexpectedReceived();
+            } finally {
+                UnityEngine.Object.DestroyImmediate(go);
+            }
         }
     }
 
@@ -81,19 +70,6 @@ namespace Umpire.Unity.Editor.Tests {
 
             Assert.That(rsp, Is.Not.Empty);
             Assert.That(File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/" + name + "\""));
-        }
-
-        [Test]
-        public void The_shipped_config_is_the_text_that_the_editor_script_writes_in_a_new_project() =>
-            Assert.That(CompilerFiles.GlobalConfig("", CompilerFiles.RulesText()),
-                Is.EqualTo(File.ReadAllText(CompilerFiles.ShippedConfigPath()).Replace("\r\n", "\n")));
-
-        [Test]
-        public void The_package_has_the_rule_values_of_both_analyzers() {
-            var text = CompilerFiles.GlobalConfig("", CompilerFiles.RulesText());
-
-            Assert.That(text, Does.Contain("Umpire.Kernels.Analyzers").And.Contain("Umpire.Vsa.Analyzers"));
-            Assert.That(text, Does.Contain("dotnet_diagnostic.UMP010203.severity = none"));
         }
     }
 }

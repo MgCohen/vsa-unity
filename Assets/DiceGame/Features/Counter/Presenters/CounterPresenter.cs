@@ -5,7 +5,6 @@ using Umpire.Vsa.Contracts.Requests;
 using Umpire.Vsa.Presenters;
 
 namespace DiceGame.Features.Counter.Presenters {
-    // The state of the counter view: the number of rolls and the last value.
     public sealed class CounterPresenter : Presenter {
         public CounterPresenter(IRequestSender requests) : base(requests) {
         }

@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Objects
 
         public AssertStateHandler(ObjectSystem objects) => this.objects = objects;
 
-        public override Task<Result<StateResult>> HandleAsync(Envelope<AssertState> envelope)
+        public override Task<Result<StateResult>> HandleAsync(IEnvelope<AssertState> envelope)
         {
             var assert = envelope.Message;
             var state = objects.State(assert.Path);

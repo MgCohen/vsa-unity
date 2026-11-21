@@ -6,11 +6,7 @@
   "overrideReferences": true,
   "precompiledReferences": [
     "nunit.framework.dll",
-    "Umpire.Architecture.dll",
-    "Umpire.Kernels.dll",
-    "Umpire.Markers.dll",
-    "Umpire.Vsa.dll",
-    "Umpire.Vsa.Composition.dll",
+    "Umpire.dll",
     "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
   ],
   "autoReferenced": false,

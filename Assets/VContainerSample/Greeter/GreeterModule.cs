@@ -35,7 +35,7 @@ namespace Greeter {
             this.events = events;
         }
 
-        public override async Task<Result<GreetResponse>> HandleAsync(Envelope<GreetRequest> envelope) {
+        public override async Task<Result<GreetResponse>> HandleAsync(IEnvelope<GreetRequest> envelope) {
             var text = $"{source.Greeting}, {envelope.Message.Name}!";
             await events.PublishAsync(new Greeted(text, Interlocked.Increment(ref count)), envelope.Cancellation);
             return new GreetResponse(text);
@@ -51,7 +51,7 @@ namespace Greeter {
 
         public Task<Result<GreetResponse>> GreetAsync(string name) => Requests.SendAsync(new GreetRequest(name));
 
-        public Task<Result<Unit>> HandleAsync(Envelope<Greeted> envelope) {
+        public Task<Result<Unit>> HandleAsync(IEnvelope<Greeted> envelope) {
             Last = envelope.Message.Text;
             Count = envelope.Message.Count;
             return Task.FromResult<Result<Unit>>(Unit.Value);

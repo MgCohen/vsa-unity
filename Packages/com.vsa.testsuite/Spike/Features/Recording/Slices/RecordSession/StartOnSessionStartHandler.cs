@@ -17,7 +17,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
             this.settings = settings;
         }
 
-        public override async Task<Result<Unit>> HandleAsync(Envelope<SessionStarted> envelope)
+        public override async Task<Result<Unit>> HandleAsync(IEnvelope<SessionStarted> envelope)
         {
             if (!settings.RecordSessions) return Unit.Value;
             await Awaitable.MainThreadAsync();

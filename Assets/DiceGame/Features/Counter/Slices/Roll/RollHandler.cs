@@ -7,7 +7,6 @@ using Umpire.Vsa.Handlers.Requests;
 using Umpire.Vsa.Infrastructure;
 
 namespace DiceGame.Features.Counter.Slices.Roll {
-    // Sends RollDice to the dice plugin, then adds the value to the roll log.
     sealed class RollHandler : RequestHandler<RollRequest, RollResponse> {
         const int Sides = 6;
 
@@ -19,7 +18,7 @@ namespace DiceGame.Features.Counter.Slices.Roll {
             this.logs = logs;
         }
 
-        public override async Task<Result<RollResponse>> HandleAsync(Envelope<RollRequest> envelope) {
+        public override async Task<Result<RollResponse>> HandleAsync(IEnvelope<RollRequest> envelope) {
             var roll = await commands.SendAsync(new RollDice(Sides), envelope.Cancellation);
             if (!roll.IsSuccess) {
                 return roll.Error;

@@ -3,6 +3,7 @@
   "rootNamespace": "VSA.TestSuite.Spike.Editor",
   "references": [
     "VSA.TestSuite.Spike",
+    "Umpire.Unity",
     "Unity.Recorder",
     "Unity.Recorder.Editor"
   ],

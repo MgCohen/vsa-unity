@@ -11,7 +11,7 @@ namespace VSA.TestSuite.Spike.Features.Scenes
 
         public ResetSceneHandler(SceneSystem scenes) => this.scenes = scenes;
 
-        public override async Task<Result<SceneResult>> HandleAsync(Envelope<ResetScene> envelope)
+        public override async Task<Result<SceneResult>> HandleAsync(IEnvelope<ResetScene> envelope)
         {
             var reset = envelope.Message;
             var startFrame = Time.frameCount;

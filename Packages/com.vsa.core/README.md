@@ -1,12 +1,11 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.6) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.11) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
 
-1. Copy [`Documentation~/Default.globalconfig`](Documentation~/Default.globalconfig) to `Assets/Default.globalconfig`.
-2. Add the package to `Packages/manifest.json`:
+Add the package to `Packages/manifest.json`:
 
 ```json
 "com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
@@ -14,18 +13,16 @@ A Unity app starts with one shell component on a GameObject of the first scene. 
 
 The tag `latest` is the last commit of `main`. To get a later commit, click **Update** in the Package Manager.
 
-The rules have default values, so a project compiles without step 1. Step 1 gives the rule values and the disabled rules of the Umpire version of the package.
+Each rule has its default values and its default severity on its class, so the package ships no rule values.
 
 ## Contents
 
 | Path | Contains |
 |---|---|
-| `Runtime/Plugins/` | The Umpire DLLs and their dependencies (26 DLLs) |
-| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), version 0.2.0-preview.3 (see "Analyzers") |
+| `Runtime/Plugins/` | `Umpire.dll` and its third-party dependencies (11 DLLs) |
+| `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
-| `Documentation~/Default.globalconfig` | The rule values for the install step |
-| `Editor/` | `CompilerFiles` |
 | `Tests/` | EditMode and PlayMode tests |
 
 Unity 6 ships `System.Text.Json`, `System.Collections.Immutable` and the `Microsoft.Extensions.*.Abstractions` DLLs of DI and logging. The package does not ship a second copy, because a second copy is a compile error.
@@ -75,6 +72,7 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 | Item | Behavior |
 |---|---|
 | Log | `UnityLogProvider` writes to the Unity console |
+| Presenter scope | One app is one presenter scope. It is live from the host start to the host end. |
 | Presenter events | A presenter (`IPresenterHandler<T>`) gets each event on the thread of the publish. `PresenterComponent` moves each `Render` to the main thread. |
 | Settings | Assets on the shell, then `UnitySettings` classes |
 | Modules | The module scan, or the list of a derived host |
@@ -132,26 +130,38 @@ public sealed class CounterLabel : PresenterComponent<CounterPresenter> {
 
 | Item | Behavior |
 |---|---|
-| Presenter | `Bind`, else an app scope in `Start` |
+| Presenter | From `Bind` only. The view never resolves it. |
 | Render | On `Bind` and on `Changed`, on the main thread |
 | `Bind` again | Same presenter: nothing. Other presenter: stops to listen to the last one. |
-| `OnDestroy` | Stops to listen. Disposes the scope that the view made. |
+| `OnDestroy` | Stops to listen. The scope that gave the presenter owns it. |
 
-- A factory calls `Bind`. A view in a scene with no `Bind` gets its presenter from a new scope of the running app.
-- An override of `Start` or `OnDestroy` calls the base method.
+- The app injects the scene views. A factory or VContainer can call `Bind` before that.
+- An override of `OnDestroy` calls the base method.
 
 ### Scene views
 
-Unity makes the views of a scene, so no factory calls `Bind`. The `Start` fallback gives these views a presenter. It has these limits:
+The app scope gives the presenters of the scene views. `UnityHost` makes this scope at its start, makes it live, and disposes it at its end, before the services of the app.
 
-| Limit | Result |
+```text
+UnityHost.Start ── app scope: live ── inject each loaded scene ── App.OnStart
+SceneManager.sceneLoaded ── inject that scene          (after Awake, before Start)
+App.Stop ── views release their presenters ── app scope disposed ── services disposed
+```
+
+| Case | Result |
 |---|---|
-| Each scene view makes its own scope | Two views of one presenter type get two presenters. They do not share state. |
-| The scope of a view is a live `PresenterScope` | A scope that does not resolve `PresenterScope` gets no events. A factory that calls `Bind` must resolve it in its own scope. |
-| The view reads the static `Shell.Services` | A service locator: an exception to the composition rule |
-| No app runs at `Start` | The view gets no presenter and shows no error |
+| Two views of one presenter type | One presenter. All views of the app share it. |
+| Scene change | The presenter and its state stay |
+| Destroy of a view | The presenter stays and gets its events |
+| View with a presenter at the injection | It keeps that presenter |
+| Inactive view | It gets its presenter |
+| View that `Instantiate` makes after the scene load | No presenter. A factory must call `Bind`. |
+| App stop | The views release their presenters. A new start injects them again. |
+| No app runs | The view gets no presenter and shows no error |
 
-If a consumer needs shared presenters or injection into scene objects, use [VContainer](#vcontainer). A view that has a presenter before `Start` does not use the fallback.
+- A view has its presenter in `Start`, because Unity raises `sceneLoaded` before `Start`.
+- To get a second presenter scope, start a second app.
+- In an app that a VContainer root scope starts, an `[Inject]` that calls `Bind` replaces the presenter of the app scope.
 
 ## VContainer
 
@@ -222,28 +232,21 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 
 `Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries.
 
-The analyzers are version 0.2.0-preview.3 (`UmpireAnalyzerVersion` in `Vendor/UmpireVendor.csproj`). The analyzers of preview.4 and later need `System.Collections.Immutable` 9.0, and the compiler of Unity 6000.6 (.NET SDK 8.0) has 8.0. So they do not load: the compiler gives `CS8032`, and Unity does not show it. The analyzers read source code only, so their version does not need to match the runtime DLLs.
+The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private load context. So the analyzers load in the compiler of Unity 6000.6, which has `System.Collections.Immutable` 8.0. If the config reader does not load, the compiler gives `UMP010003`.
 
 | Assembly | Umpire rules | Rule values from |
 |---|---|---|
-| A consumer asmdef that references `Umpire.Unity` | Yes | `Assets/Default.globalconfig` |
-| `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | `Assets/Default.globalconfig` |
+| A consumer asmdef that references `Umpire.Unity` | Yes | The defaults, or `Assets/Default.globalconfig` |
+| `Assembly-CSharp`, `Assembly-CSharp-Editor` | Yes | The defaults, or `Assets/Default.globalconfig` |
 | A consumer asmdef with no `Umpire.Unity` reference | No | None |
 | The package asmdefs | Off | `<AsmdefName>.globalconfig` |
 
 - The analyzer folder sets the scope: Unity runs the analyzers on `Umpire.Unity` and on each assembly that references it.
 - Module asmdefs often do not reference `Umpire.Unity`. The .NET test build checks the module code.
+- To change a severity, write `dotnet_diagnostic.<rule ID>.severity = <value>` in `Assets/Default.globalconfig`. Unity reads this file for all assemblies.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
+- The analyzers read other rule values from `.umpireconfig` only. Unity does not give that file to the compiler yet (#57), so these values stay at their defaults.
 - The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
-
-## Editor scripts
-
-| Script | Does |
-|---|---|
-| `CompilerFiles` | Updates `Assets/Default.globalconfig` |
-
-- `Assets/Default.globalconfig` gets the block of `Documentation~/Default.globalconfig` between the `# BEGIN com.vsa.core` and `# END com.vsa.core` lines. The block holds the text of `build/Umpire.Kernels.Analyzers.globalconfig` and `build/Umpire.Vsa.Analyzers.globalconfig` of the NuGet package. Unity reads only this name for all assemblies.
-- The script changes only its own lines. The menu item **Tools > Umpire > Write Compiler Files** runs `CompilerFiles` again.
 - The package code is C# 9, the default language version of Unity 6000.6.
 
 ## IL2CPP
@@ -253,7 +256,7 @@ The package supports managed stripping Minimal. It has no `link.xml`. Umpire mar
 | Stripping | Result (probe, IL2CPP, no `link.xml`) |
 |---|---|
 | Minimal | Pass |
-| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails. |
+| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails (MgCohen/vsa-template#223). |
 
 | Player of the sample check | Stripping | Result |
 |---|---|---|
@@ -262,5 +265,4 @@ The package supports managed stripping Minimal. It has no `link.xml`. Umpire mar
 
 ## Open questions
 
-- Package name: the package id is `com.vsa.core`, and the assemblies are `Umpire.Unity.*`. Does the package get an Umpire id?
-- Arguments: does `UnityHost` give the shell arguments to the app configuration?
+The open questions are GitHub issues: https://github.com/MgCohen/vsa-unity/issues. For example, the package id is #26.

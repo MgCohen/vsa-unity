@@ -1,7 +1,6 @@
-using Umpire.Vsa.Contracts.Requests;
 using VSA.TestSuite.Spike.Plugins.Session;
 
 namespace VSA.TestSuite.Spike.Features.Touch
 {
-    public sealed record HoldObject(string Path, float Seconds) : TestRequest, IRequest<HoldObjectResult>;
+    public sealed record HoldObject(string Path, float Seconds) : TestRequest<HoldObjectResult>;
 }

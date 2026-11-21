@@ -11,8 +11,8 @@ namespace Umpire.Factories {
     public static class FactoryRegistrationExtensions {
         // Registers IFactory<T> and T. If T has no registration, T is transient. Create resolves T.
         public static IServiceCollection AddFactory<T>(this IServiceCollection services) where T : class {
-            var registry = AddBinder(services);
-            EnsureNoDisposableTransient(AddIfAbsent(services, ServiceDescriptor.Transient<T, T>()));
+            var registry = FactoryRegistrations.AddBinder(services);
+            FactoryRegistrations.AddProduct(services, typeof(T));
             AddFactory(services, registry, provider => provider.GetRequiredService<T>());
             return services;
         }
@@ -23,7 +23,7 @@ namespace Umpire.Factories {
             if (create == null) {
                 throw new ArgumentNullException(nameof(create));
             }
-            AddFactory(services, AddBinder(services), create);
+            AddFactory(services, FactoryRegistrations.AddBinder(services), create);
             return services;
         }
 
@@ -33,9 +33,10 @@ namespace Umpire.Factories {
             if (create == null) {
                 throw new ArgumentNullException(nameof(create));
             }
-            AddBinder(services);
-            AddIfAbsent(services, ServiceDescriptor.Transient<IFactory<TArg, T>>(provider =>
+            var registry = FactoryRegistrations.AddBinder(services);
+            FactoryRegistrations.AddIfAbsent(services, ServiceDescriptor.Transient<IFactory<TArg, T>>(provider =>
                 new DelegateFactory<TArg, T>(provider, create, provider.GetRequiredService<IBinder>())));
+            registry.Add(typeof(T), (provider, arg) => provider.GetRequiredService<IFactory<TArg, T>>().Create((TArg)arg));
             return services;
         }
 
@@ -43,62 +44,17 @@ namespace Umpire.Factories {
         // for example a pool, register TFactory as a singleton or scoped before this call.
         public static IServiceCollection AddFactory<T, TFactory>(this IServiceCollection services)
             where T : class where TFactory : class, IFactory<T> {
-            var registry = AddBinder(services);
-            EnsureNoDisposableTransient(AddIfAbsent(services, ServiceDescriptor.Transient<TFactory, TFactory>()));
+            var registry = FactoryRegistrations.AddBinder(services);
+            FactoryRegistrations.AddProduct(services, typeof(TFactory));
             AddFactory(services, registry, provider => provider.GetRequiredService<TFactory>().Create());
             return services;
         }
 
         static void AddFactory<T>(IServiceCollection services, FactoryRegistry registry, Func<IServiceProvider, T> create)
             where T : class {
-            AddIfAbsent(services, ServiceDescriptor.Transient<IFactory<T>>(provider =>
+            FactoryRegistrations.AddIfAbsent(services, ServiceDescriptor.Transient<IFactory<T>>(provider =>
                 new DelegateFactory<T>(provider, create, provider.GetRequiredService<IBinder>())));
             registry.Add(typeof(T), provider => provider.GetRequiredService<IFactory<T>>().Create());
-        }
-
-        // Adds the registry of the factories and the binder, one time for each service collection.
-        static FactoryRegistry AddBinder(IServiceCollection services) {
-            if (services == null) {
-                throw new ArgumentNullException(nameof(services));
-            }
-            foreach (var registered in services) {
-                if (registered.ServiceType == typeof(FactoryRegistry) && registered.ImplementationInstance is FactoryRegistry found) {
-                    return found;
-                }
-            }
-            var registry = new FactoryRegistry();
-            services.Add(ServiceDescriptor.Singleton(registry));
-            services.Add(ServiceDescriptor.Transient<IBinder, Binder>());
-            return registry;
-        }
-
-        // Adds the descriptor if its service type has no registration. Returns the registration that the container uses.
-        static ServiceDescriptor AddIfAbsent(IServiceCollection services, ServiceDescriptor descriptor) {
-            ServiceDescriptor used = null;
-            foreach (var registered in services) {
-                if (registered.ServiceType == descriptor.ServiceType && !registered.IsKeyedService) {
-                    used = registered;
-                }
-            }
-            if (used != null) {
-                return used;
-            }
-            services.Add(descriptor);
-            return descriptor;
-        }
-
-        // The container keeps each disposable transient until its scope ends, so each Create would keep one more object.
-        static void EnsureNoDisposableTransient(ServiceDescriptor descriptor) {
-            if (descriptor.Lifetime != ServiceLifetime.Transient) {
-                return;
-            }
-            var type = descriptor.ImplementationType ?? descriptor.ImplementationInstance?.GetType() ?? descriptor.ServiceType;
-            if (typeof(IDisposable).IsAssignableFrom(type) || typeof(IAsyncDisposable).IsAssignableFrom(type)) {
-                throw new InvalidOperationException(
-                    $"{type.FullName} is a transient that is IDisposable. The scope keeps each disposable transient until " +
-                    "it ends, so each Create keeps one more object. Register it as scoped or singleton before AddFactory, " +
-                    "or make it not IDisposable.");
-            }
         }
 
         sealed class DelegateFactory<T> : IFactory<T> {
@@ -134,6 +90,58 @@ namespace Umpire.Factories {
                 var product = create(provider, arg);
                 binder.Bind(product);
                 return product;
+            }
+        }
+    }
+
+    // The registration steps that the Unity factories (Umpire.Unity.Factories) also use.
+    static class FactoryRegistrations {
+        // Adds the registry of the factories and the binder, one time for each service collection.
+        public static FactoryRegistry AddBinder(IServiceCollection services) {
+            if (services == null) {
+                throw new ArgumentNullException(nameof(services));
+            }
+            foreach (var registered in services) {
+                if (registered.ServiceType == typeof(FactoryRegistry) && registered.ImplementationInstance is FactoryRegistry found) {
+                    return found;
+                }
+            }
+            var registry = new FactoryRegistry();
+            services.Add(ServiceDescriptor.Singleton(registry));
+            services.Add(ServiceDescriptor.Transient<IBinder, Binder>());
+            return registry;
+        }
+
+        // Registers the type as a transient of itself if it has no registration. A disposable transient stops the start.
+        public static void AddProduct(IServiceCollection services, Type type) =>
+            EnsureNoDisposableTransient(AddIfAbsent(services, ServiceDescriptor.Transient(type, type)));
+
+        // Adds the descriptor if its service type has no registration. Returns the registration that the container uses.
+        public static ServiceDescriptor AddIfAbsent(IServiceCollection services, ServiceDescriptor descriptor) {
+            ServiceDescriptor used = null;
+            foreach (var registered in services) {
+                if (registered.ServiceType == descriptor.ServiceType && !registered.IsKeyedService) {
+                    used = registered;
+                }
+            }
+            if (used != null) {
+                return used;
+            }
+            services.Add(descriptor);
+            return descriptor;
+        }
+
+        // The container keeps each disposable transient until its scope ends, so each Create would keep one more object.
+        static void EnsureNoDisposableTransient(ServiceDescriptor descriptor) {
+            if (descriptor.Lifetime != ServiceLifetime.Transient) {
+                return;
+            }
+            var type = descriptor.ImplementationType ?? descriptor.ImplementationInstance?.GetType() ?? descriptor.ServiceType;
+            if (typeof(IDisposable).IsAssignableFrom(type) || typeof(IAsyncDisposable).IsAssignableFrom(type)) {
+                throw new InvalidOperationException(
+                    $"{type.FullName} is a transient that is IDisposable. The scope keeps each disposable transient until " +
+                    "it ends, so each Create keeps one more object. Register it as scoped or singleton before AddFactory, " +
+                    "or make it not IDisposable.");
             }
         }
     }

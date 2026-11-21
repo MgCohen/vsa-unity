@@ -1,0 +1,6 @@
+{
+  "name": "Umpire.Unity.Factories",
+  "rootNamespace": "Umpire.Unity.Factories",
+  "references": ["Umpire.Factories"],
+  "autoReferenced": true
+}

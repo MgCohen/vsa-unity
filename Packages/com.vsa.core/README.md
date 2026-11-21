@@ -23,6 +23,7 @@ Each rule has its default values and its default severity on its class, so the p
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
 | `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<TArg, T>`, `IBindable<T>`. No engine references. |
+| `Runtime/UnityFactories/` | `Umpire.Unity.Factories`: `Bound<T>`, `IPrefabFactory<T>`, `AddPrefabFactory` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
 | `Tests/` | EditMode and PlayMode tests |
 
@@ -167,7 +168,45 @@ public sealed class Label : IBindable<CounterModel> {
 | Neither | An error that names T |
 
 - `IBinder.Bind(object)` binds an object that no factory made. If the object is not `IBindable<T>`, it does nothing.
+- `IBinder.Bind(object, arg)` gets the T from `AddFactory<TArg, T>` with that argument.
 - A product binds to one type only.
+- Do not let T bind back to the type of the product. Each `Bind` then makes the other object again, with no end. No check stops it.
+
+### Prefab factories
+
+`Umpire.Unity.Factories` makes copies of prefabs and binds their behaviours. A behaviour derives from `Bound<T>`. It can be a view, a character or any other object.
+
+```csharp
+public sealed class Character : Bound<CharacterModel> {
+    protected override void OnBind() => transform.position = Target.Spawn;
+    protected override void OnRelease() { }
+}
+
+services.AddPrefabFactory<Character>();                                         // also registers CharacterModel
+services.AddFactory<ItemData, ItemModel>((provider, data) => new ItemModel(data));
+services.AddPrefabFactory<ItemData, ItemView>();                                // ItemView : Bound<ItemModel>
+
+public Wave(IPrefabFactory<Character> characters) { ... }
+var copy = characters.Create(prefab, parent);
+```
+
+```text
+IPrefabFactory<Character>.Create(prefab, parent)
+├─ Object.Instantiate          Awake of the copy runs
+├─ IBinder.Bind(behaviour)     each MonoBehaviour of the copy, also inactive ones
+└─ return the copy             Start runs later, so Target is set in Start
+```
+
+| Item | Behavior |
+|---|---|
+| `AddPrefabFactory<TComponent>()` | Registers the T of `Bound<T>` as transient if T has no registration. A scanned presenter stays scoped. |
+| `AddPrefabFactory<TArg, TComponent>()` | The component of the prefab type binds with the argument. The other behaviours bind with no argument. |
+| `Bound<T>.Bind` | Same target: nothing. Other target: `OnRelease`, then `OnBind`. |
+| Destroy of the copy | `OnRelease`. The target is not disposed. |
+| Prefab with no `Bound<T>` | A plain copy |
+
+- The caller gives the prefab at each call.
+- An override of `OnDestroy` calls the base method.
 
 ## Views
 

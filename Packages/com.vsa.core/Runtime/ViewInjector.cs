@@ -1,21 +1,24 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Umpire.Factories;
+using Umpire.Unity.Factories;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Umpire.Vsa.Presenters;
 
 namespace Umpire.Unity {
-    // Binds the views of the loaded scenes to the presenters of the app scope. It injects each loaded scene at the
-    // app start, and each scene that loads after that. Unity raises sceneLoaded after Awake and before Start, so a
-    // view has its presenter in Start. A view that has a presenter already (Bind, VContainer) keeps it.
-    // A view that Instantiate makes after the scene load gets no presenter: a factory must call Bind.
-    // At the app stop, the views that it bound release their presenters, because the app scope disposes them.
+    // Binds the bound behaviours of the loaded scenes (View<T>, PresenterComponent<T>, Bound<T>) through the binder of
+    // the app scope. A target comes from its factory, else from the app scope: one presenter or controller for each
+    // app. It injects each loaded scene at the app start, and each scene that loads after that. Unity raises
+    // sceneLoaded after Awake and before Start, so a behaviour has its target in Start. A behaviour that has a target
+    // already (Bind, VContainer, a prefab factory) keeps it.
+    // At the app stop, the behaviours that it bound release their targets, because the app scope disposes them.
     sealed class ViewInjector : IDisposable {
-        readonly IServiceProvider presenters;
-        readonly List<(IPresenterView View, Presenter Presenter)> bound = new();
+        readonly IBinder binder;
+        readonly List<(IBoundBehaviour View, object Target)> bound = new();
 
-        public ViewInjector(IServiceProvider presenters) {
-            this.presenters = presenters;
+        public ViewInjector(IServiceProvider services) {
+            binder = services.GetRequiredService<IBinder>();
             SceneManager.sceneLoaded += OnSceneLoaded;
             for (var i = 0; i < SceneManager.sceneCount; i++) {
                 var scene = SceneManager.GetSceneAt(i);
@@ -30,9 +33,9 @@ namespace Umpire.Unity {
 
         public void Dispose() {
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            foreach (var (view, presenter) in bound) {
+            foreach (var (view, target) in bound) {
                 if (view as UnityEngine.Object != null) {
-                    view.Release(presenter);
+                    view.ReleaseTarget(target);
                 }
             }
             bound.Clear();
@@ -40,19 +43,19 @@ namespace Umpire.Unity {
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode) => Inject(scene);
 
-        // Also inactive views: they have their presenter when they become active.
+        // Also inactive behaviours: they have their target when they become active.
         void Inject(Scene scene) {
             if (!scene.IsValid()) {
                 return;
             }
             foreach (var root in scene.GetRootGameObjects()) {
-                foreach (var view in root.GetComponentsInChildren<IPresenterView>(true)) {
-                    if (view.Presenter != null) {
+                foreach (var view in root.GetComponentsInChildren<IBoundBehaviour>(true)) {
+                    if (view.BoundTarget != null) {
                         continue;
                     }
                     try {
-                        view.Bind(presenters);
-                        bound.Add((view, view.Presenter));
+                        binder.Bind(view);
+                        bound.Add((view, view.BoundTarget));
                     } catch (Exception e) {
                         Debug.LogException(e, view as UnityEngine.Object);
                     }

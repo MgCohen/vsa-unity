@@ -19,8 +19,17 @@ namespace Umpire.Unity.Tests {
     public sealed class ProbeModule : Module<ProbeSettings> {
         public static ProbeSettings Bound { get; private set; }
 
-        public override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) =>
+        public override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) {
             Bound = settings;
+            Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<PingController>(services);
+        }
+    }
+
+    // A view controller: a plain class that the app scope makes, with the presenter of the app scope.
+    public sealed class PingController {
+        public PingController(PingPresenter presenter) => Presenter = presenter;
+
+        public PingPresenter Presenter { get; }
     }
 
     public sealed class ProbeSettings {

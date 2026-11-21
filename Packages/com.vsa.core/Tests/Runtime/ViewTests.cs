@@ -18,12 +18,22 @@ namespace Umpire.Unity.Tests {
         }
     }
 
+    // A view of a controller, not of a presenter.
+    public sealed class PingPanel : View<PingController> {
+        public int Releases;
+
+        protected override void OnRelease() => Releases++;
+    }
+
     public sealed class ViewTests {
         [TearDown]
         public void StopTheApp() {
             Shells.DestroyAll();
             foreach (var canvas in Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include)) {
                 Object.DestroyImmediate(canvas.gameObject);
+            }
+            foreach (var panel in Object.FindObjectsByType<PingPanel>(FindObjectsInactive.Include)) {
+                Object.DestroyImmediate(panel.gameObject);
             }
         }
 
@@ -35,6 +45,39 @@ namespace Umpire.Unity.Tests {
 
             Assert.That(view.Presenter, Is.Not.Null);
             Assert.That(view.Renders, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void A_view_of_a_controller_gets_its_controller_from_the_app_scope() {
+            var label = Label();
+            var panel = new GameObject("Panel").AddComponent<PingPanel>();
+
+            Shells.Start();
+
+            Assert.That(panel.Target, Is.Not.Null);
+            Assert.That(panel.Target.Presenter, Is.SameAs(label.Presenter));
+        }
+
+        [Test]
+        public void The_app_stop_releases_a_view_of_a_controller() {
+            var panel = new GameObject("Panel").AddComponent<PingPanel>();
+            var shell = Shells.Start();
+
+            shell.Stop();
+
+            Assert.That(panel.Target, Is.Null);
+            Assert.That(panel.Releases, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void A_view_of_a_controller_that_has_a_target_keeps_it() {
+            var panel = new GameObject("Panel").AddComponent<PingPanel>();
+            var given = new PingController(null);
+            panel.Bind(given);
+
+            Shells.Start();
+
+            Assert.That(panel.Target, Is.SameAs(given));
         }
 
         [Test]

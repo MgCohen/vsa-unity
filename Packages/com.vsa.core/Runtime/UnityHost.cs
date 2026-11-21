@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Umpire.Architecture;
+using Umpire.Factories;
 using Umpire.Kernels;
 using Umpire.Vsa.Presenters;
 using UnityEngine;
@@ -37,6 +38,8 @@ namespace Umpire.Unity {
 
         protected sealed override void Configure(IServiceCollection services, AppTypes types) {
             services.AddLogging(logging => logging.AddProvider(new UnityLogProvider()));
+            // The scene injection binds each bound behaviour through the binder of the factories.
+            FactoryRegistrations.AddBinder(services);
             foreach (var (type, instance) in HostImports.Take()) {
                 services.AddSingleton(type, instance);
             }

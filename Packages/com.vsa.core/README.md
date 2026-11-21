@@ -22,7 +22,7 @@ Each rule has its default values and its default severity on its class, so the p
 | `Runtime/Plugins/` | `Umpire.dll` and its third-party dependencies (11 DLLs) |
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
 | `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
-| `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<T>`, `IBindable<T>`. No engine references. |
+| `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<TArg, T>`, `IBindable<T>`. No engine references. |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
 | `Tests/` | EditMode and PlayMode tests |
 
@@ -125,6 +125,8 @@ public sealed class GameSettings : UnitySettings {
 
 A module registers each factory. Code injects the typed factory, not the container.
 
+`IFactory<T>` is the template interface `Umpire.Kernels.IFactory<T>`. `Umpire.Factories` adds `IFactory<TArg, T>`, the `AddFactory` forms below and the bind step. A module file can use both namespaces.
+
 ```csharp
 public override void Configure(IServiceCollection services) {
     services.AddFactory<CounterModel>();                                       // also registers CounterModel
@@ -136,12 +138,14 @@ public Board(IFactory<CounterModel> models, IFactory<int, Label> labels) { ... }
 
 | Form | Registers | `Create` |
 |---|---|---|
-| `AddFactory<T>()` | `IFactory<T>`, and T as transient if T has no registration | Resolves T |
+| `AddFactory<T>()` | `IFactory<T>`, and T as transient if T has no registration | Resolves T. If T is scoped, each `Create` in one scope gives the same T. |
 | `AddFactory<T>(create)` | `IFactory<T>` | Calls `create(provider)` |
 | `AddFactory<TArg, T>(create)` | `IFactory<TArg, T>` | Calls `create(provider, arg)` |
 | `AddFactory<T, TFactory>()` | `IFactory<T>`, and TFactory as transient if it has no registration | Calls `TFactory.Create()` |
+| `AddFactory<T, TService>(service => ...)` | Template form (`Umpire.Kernels`): `IFactory<T>` | Calls the function with a TService |
 
 - The first registration of a type wins. A call does not replace a factory or a product that exists.
+- The two forms with two type arguments differ by the function: one parameter is the template form, two parameters (`provider, arg`) is the form with an argument.
 - A factory resolves from the scope that resolves it. A scoped product is one for each scope.
 - A transient product or factory class that is `IDisposable` stops the start: the scope keeps each disposable transient until it ends. Register it as scoped or singleton first.
 - A product of `AddFactory<T>(create)` or `AddFactory<TArg, T>(create)` is not in the container. The caller owns it.

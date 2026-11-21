@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Umpire.Kernels;
 
 namespace Umpire.Factories.Tests {
     public sealed class Store {

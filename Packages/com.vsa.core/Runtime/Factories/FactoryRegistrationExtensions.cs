@@ -1,12 +1,14 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Umpire.Kernels;
 
 namespace Umpire.Factories {
-    // Registers factories. Each factory is transient, so it resolves from the scope that resolves it.
+    // Registers factories: Umpire.Kernels.IFactory<T> (the template interface) and IFactory<TArg, T>.
+    // Each factory is transient, so it resolves from the scope that resolves it.
     // The first registration of a type wins: a call does not replace a factory or a product that exists.
     // Each factory binds its product if the product is IBindable<T> (see IBindable).
     // Each registration is a closed type, so IL2CPP closes no open generic at run time.
-    public static class FactoryServiceCollectionExtensions {
+    public static class FactoryRegistrationExtensions {
         // Registers IFactory<T> and T. If T has no registration, T is transient. Create resolves T.
         public static IServiceCollection AddFactory<T>(this IServiceCollection services) where T : class {
             var registry = AddBinder(services);

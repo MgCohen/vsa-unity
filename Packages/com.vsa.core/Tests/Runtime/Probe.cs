@@ -44,7 +44,7 @@ namespace Umpire.Unity.Tests {
 
         public PingHandler(IIntegrationEventPublisher events) => this.events = events;
 
-        public override async Task<Result<PongResponse>> HandleAsync(Envelope<PingRequest> envelope) {
+        public override async Task<Result<PongResponse>> HandleAsync(IEnvelope<PingRequest> envelope) {
             await events.PublishAsync(new Ponged(envelope.Message.Text), envelope.Cancellation);
             return new PongResponse("pong " + envelope.Message.Text);
         }
@@ -63,7 +63,7 @@ namespace Umpire.Unity.Tests {
         // A change of this presenter only: Run raises Changed two times, and no event goes to the other presenters.
         public Task TouchAsync() => Run(new OpState(), () => Task.FromResult<Error>(null));
 
-        public Task<Result<Unit>> HandleAsync(Envelope<Ponged> envelope) {
+        public Task<Result<Unit>> HandleAsync(IEnvelope<Ponged> envelope) {
             Last = envelope.Message.Text;
             EventThread = Thread.CurrentThread.ManagedThreadId;
             return Task.FromResult<Result<Unit>>(Unit.Value);

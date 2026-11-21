@@ -83,7 +83,7 @@ namespace Spike {
             this.commands = commands;
         }
 
-        public override async Task<Result<int>> HandleAsync(Envelope<Put<T>> envelope) {
+        public override async Task<Result<int>> HandleAsync(IEnvelope<Put<T>> envelope) {
             var next = new T();
             next.Value = envelope.Message.Delta;
             var stored = await commands.SendAsync(new Store<T>(next), envelope.Cancellation);
@@ -92,7 +92,7 @@ namespace Spike {
     }
 
     public sealed class StoreHandler<T> : CommandHandler<Store<T>, T> where T : struct, IScore {
-        public override Task<Result<T>> HandleAsync(Envelope<Store<T>> envelope) =>
+        public override Task<Result<T>> HandleAsync(IEnvelope<Store<T>> envelope) =>
             Task.FromResult<Result<T>>(envelope.Message.Value);
     }
 
@@ -106,7 +106,7 @@ namespace Spike {
             this.hits = hits;
         }
 
-        public override Task<Result<Unit>> HandleAsync(Envelope<AddTag<T>> envelope) {
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<AddTag<T>> envelope) {
             hits.Add("tag " + typeof(T).Name);
             return Task.FromResult<Result<Unit>>(Unit.Value);
         }
@@ -150,7 +150,7 @@ namespace Spike {
             this.hits = hits;
         }
 
-        public override Task<Result<Unit>> HandleAsync(Envelope<Changed<T>> envelope) {
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<Changed<T>> envelope) {
             hits.Add("log " + typeof(T).Name);
             return Done;
         }
@@ -163,7 +163,7 @@ namespace Spike {
             this.hits = hits;
         }
 
-        public override Task<Result<Unit>> HandleAsync(Envelope<Changed<Score>> envelope) {
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<Changed<Score>> envelope) {
             hits.Add("check");
             return Done;
         }
@@ -176,7 +176,7 @@ namespace Spike {
     public sealed record Rename(string Name) : ICommand<string>, IAuditable;
 
     public sealed class RenameHandler : CommandHandler<Rename, string> {
-        public override Task<Result<string>> HandleAsync(Envelope<Rename> envelope) =>
+        public override Task<Result<string>> HandleAsync(IEnvelope<Rename> envelope) =>
             Task.FromResult<Result<string>>(envelope.Message.Name);
     }
 

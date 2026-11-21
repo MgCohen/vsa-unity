@@ -44,7 +44,7 @@ namespace Probe.Lab {
     public sealed record Changed<T>(T Value) : IntegrationEvent;
 
     public sealed class ChangedHandler<T> : IntegrationEventHandler<Changed<T>> {
-        public override Task<Result<Unit>> HandleAsync(Envelope<Changed<T>> envelope) {
+        public override Task<Result<Unit>> HandleAsync(IEnvelope<Changed<T>> envelope) {
             lock (Hits) {
                 Hits.Add(typeof(T).Name + "=" + envelope.Message.Value);
             }

@@ -18,7 +18,7 @@ namespace DiceGame.Features.Counter.Slices.Roll {
             this.logs = logs;
         }
 
-        public override async Task<Result<RollResponse>> HandleAsync(Envelope<RollRequest> envelope) {
+        public override async Task<Result<RollResponse>> HandleAsync(IEnvelope<RollRequest> envelope) {
             var roll = await commands.SendAsync(new RollDice(Sides), envelope.Cancellation);
             if (!roll.IsSuccess) {
                 return roll.Error;

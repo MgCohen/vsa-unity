@@ -1,7 +1,7 @@
 {
   "name": "Umpire.Unity.Factories.Tests",
   "rootNamespace": "Umpire.Unity.Factories.Tests",
-  "references": ["Umpire.Factories", "Umpire.Unity.Factories", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "references": ["Umpire.Unity", "Umpire.Factories", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "overrideReferences": true,
   "precompiledReferences": [
     "nunit.framework.dll",

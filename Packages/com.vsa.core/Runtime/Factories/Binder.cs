@@ -25,6 +25,9 @@ namespace Umpire.Factories {
             }
         }
 
+        // True if the type has a factory, with or without an argument.
+        public bool Has(Type product) => creators.ContainsKey(product) || argumentCreators.ContainsKey(product);
+
         public bool TryGet(Type product, out Func<IServiceProvider, object> create) => creators.TryGetValue(product, out create);
 
         public bool TryGet(Type product, out Func<IServiceProvider, object, object> create) =>

@@ -1,5 +1,5 @@
 {
   "name": "VContainerSample",
   "rootNamespace": "VContainerSample",
-  "references": ["Greeter", "Umpire.Unity", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI"]
+  "references": ["Greeter", "Umpire.Unity", "Umpire.Factories", "Umpire.Unity.Factories", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI"]
 }

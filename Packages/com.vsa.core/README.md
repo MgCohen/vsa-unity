@@ -21,7 +21,7 @@ Each rule has its default values and its default severity on its class, so the p
 |---|---|
 | `Runtime/Plugins/` | `Umpire.dll` and its third-party dependencies (11 DLLs) |
 | `Runtime/*.Analyzers.dll` | `Umpire.Kernels.Analyzers`, `Umpire.Vsa.Analyzers` (Roslyn 4.10), the same version as `Umpire.dll` |
-| `Runtime/` | Shells, `UnityHost`, settings sources, `PresenterComponent<T>` |
+| `Runtime/` | Shells, `UnityHost`, settings sources, `View<T>`, `PresenterComponent<T>` |
 | `Runtime/Factories/` | `Umpire.Factories`: `AddFactory`, `IFactory<TArg, T>`, `IBindable<T>`. No engine references. |
 | `Runtime/UnityFactories/` | `Umpire.Unity.Factories`: `Bound<T>`, `IPrefabFactory<T>`, `AddPrefabFactory` |
 | `Runtime/VContainer/` | `VsaLifetimeScope<TPack>`, `RegisterVsa`, if VContainer is installed |
@@ -208,6 +208,19 @@ IPrefabFactory<Character>.Create(prefab, parent)
 - The caller gives the prefab at each call.
 - An override of `OnDestroy` calls the base method.
 
+### Factories in the dice sample
+
+Each roll adds one line to the roll list of the `DiceGame` scene.
+
+```text
+Roll button ── CounterPresenter.Changed ── RollListView (View<RollListController>)
+   └─ RollListController.ShowNewRolls ── IPrefabFactory<int, RollEntryView>.Create(prefab, number, list)
+        └─ IFactory<int, RollEntry>: new RollEntry(number, CounterPresenter.Last) ── RollEntryView.Bind
+```
+
+- `DiceViewsModule` (`Assets/DiceGame/App`) registers the controller and the two factories.
+- The Play Mode test `DiceGame.PlayTests` presses Start and Roll two times, then checks the two bound lines.
+
 ## Views
 
 ```csharp
@@ -228,9 +241,23 @@ public sealed class CounterLabel : PresenterComponent<CounterPresenter> {
 - The app injects the scene views. A factory or VContainer can call `Bind` before that.
 - An override of `OnDestroy` calls the base method.
 
+A view can also show a view controller: a plain class that the container makes. `View<T>` is the base, and `PresenterComponent<T>` is a `View<T>` of a presenter. Both derive from `Bound<T>` (see "Prefab factories").
+
+```csharp
+public sealed class RollListView : View<RollListController> {
+    protected override void OnBind() => Target.Changed += OnChanged;
+    protected override void OnRelease() => Target.Changed -= OnChanged;
+}
+
+services.AddScoped<RollListController>();   // in a module: one controller for each app
+```
+
+- A controller can take presenters and factories in its constructor. The view gets them through its controller.
+- An assembly definition that uses `View<T>` or `PresenterComponent<T>` references `Umpire.Unity`, `Umpire.Unity.Factories` and `Umpire.Factories`. Unity does not give the base assemblies to it.
+
 ### Scene views
 
-The app scope gives the presenters of the scene views. `UnityHost` makes this scope at its start, makes it live, and disposes it at its end, before the services of the app.
+The app scope gives the targets of the scene views: presenters and controllers. `UnityHost` makes this scope at its start, makes it live, and disposes it at its end, before the services of the app. Each `Bound<T>` of a scene binds through the binder of the factories: T comes from its factory, else from the app scope.
 
 ```text
 UnityHost.Start ── app scope: live ── inject each loaded scene ── App.OnStart
@@ -245,7 +272,8 @@ App.Stop ── views release their presenters ── app scope disposed ── 
 | Destroy of a view | The presenter stays and gets its events |
 | View with a presenter at the injection | It keeps that presenter |
 | Inactive view | It gets its presenter |
-| View that `Instantiate` makes after the scene load | No presenter. A factory must call `Bind`. |
+| View that `Instantiate` makes after the scene load | No target. Use a prefab factory (`IPrefabFactory<T>`). |
+| View of a controller with no registration | No target. The Console shows the error. |
 | App stop | The views release their presenters. A new start injects them again. |
 | No app runs | The view gets no presenter and shows no error |
 
@@ -378,22 +406,30 @@ project_checks = false
 
 - Give one block for each app. Without `--block`, the engine sees each shell of the project and stops (`UMP030503`).
 - Each finding is one line: `file(line,col): error CODE: text`.
-- The dice sample gives 2 known errors: a view uses `PresenterComponent` and `IPresenterView` (MgCohen/vsa-template#232).
+- The dice sample gives 20 known errors (MgCohen/vsa-template#232). A package architecture definition can permit them (#71):
+  - 11: the views use the framework base types (`View`, `Bound`, `PresenterComponent`, `IBindable`).
+  - 8: the module of the views (`DiceViewsModule`) is in `App/`, and the definition has no place for it.
+  - 1: a view controller uses `IPrefabFactory`.
 - A .NET project of the same app (code outside `Assets`) sets `UmpireExcludedFolders` to `Assets;Library;Temp;Logs;UserSettings;node_modules`.
 
 ## IL2CPP
 
-The package supports managed stripping Minimal and Low. It has no `link.xml`, and Umpire has no linker markers. At Minimal and Low, the linker strips no user type. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
+The package supports managed stripping Minimal only. At Low, the linker removes the constructor of `Umpire.Messages.Handlers.InlineRunner` (Umpire preview.20), so each send fails (MgCohen/vsa-template#223). The package has no `link.xml`, and Umpire has no linker markers. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
 
 | Stripping | Result (probe, IL2CPP, no `link.xml`) |
 |---|---|
-| Minimal, Low | Pass |
+| Minimal | Pass |
+| Low | The probe passes. The sample fails each send: the linker removes the constructor of `InlineRunner`. |
 | Medium, High | Not supported. The `[AutoRegister]` and `[AutoClose]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails (MgCohen/vsa-template#223). |
 
 | Player of the sample check | Stripping | Result |
 |---|---|---|
 | Mono | Minimal | Pass |
 | IL2CPP | Minimal | Pass |
+| Mono, IL2CPP | Low | The factory and view checks pass. The 3 send checks fail (`InlineRunner`). |
+
+- `./il2cpp-check.ps1 -Backend Mono2x -Stripping Low` is a fast linker check: the Unity linker also runs for Mono.
+- The binder calls `IBindable<T>.Bind` through reflection. A static call keeps the method for the linker.
 
 ## Open questions
 

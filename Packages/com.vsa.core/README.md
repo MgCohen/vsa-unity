@@ -71,6 +71,25 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 - A second shell disables itself and does nothing. A scene change does not stop the app.
 - `AppHost` reads `--Key=Value` and `--Key value` of the arguments into `IConfiguration`. It ignores other arguments, for example `-batchmode`.
 
+### Limitation: no recompile during Play Mode
+
+The app does not survive a domain reload during Play Mode. If a script changes while the game runs, exit Play Mode and enter again. Use "Recompile After Finished Playing".
+
+| Preferences > General > Script Changes While Playing | Result |
+|---|---|
+| Recompile And Continue Playing | Play Mode continues, but the app is lost. Nothing responds. |
+| Recompile After Finished Playing | The app keeps running. Unity compiles after the exit. |
+| Stop Playing And Recompile | Play Mode stops. The next entry starts a new app. |
+
+With "Recompile And Continue Playing", Unity unloads all C# objects and keeps only the serializable fields of components. The app is not serializable, and `Owner` and `Services` are static. After the reload:
+
+- `AppIsRunning` is false, and `Services` and `Owner` are null.
+- `App.Stop`, `OnStop` and `Dispose` do not run, because Unity does not call `OnDestroy`.
+- Views have no presenter, and listeners added with `AddListener` are lost.
+- The Console shows no error.
+
+Enter Play Mode Options with domain reload off are supported: each entry starts a new app with clean static fields. The work to limit the damage of a reload is MgCohen/vsa-unity#74.
+
 ## The Unity host
 
 | Item | Behavior |

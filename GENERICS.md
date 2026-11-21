@@ -1,5 +1,7 @@
 # Open generics in Umpire: limits and requirements
 
+
+> Since Umpire 0.2.0-preview.12, `[TypeArgument]` is named `[AutoClose]`. The sections below keep the old name where they describe older results.
 Umpire uses open generic classes for handlers, hooks, validators and services. It does not register open presenters (`PresenterServiceCollectionExtensions.cs:26`). Microsoft DI has two limits for them, and the Unity linker adds a third. The Umpire scan closes the generics itself to avoid the DI limits. This document lists the limits, the uses, the current solution, the other solutions, and the requirements for a final solution.
 
 Test data: [Probe/RESULTS.md](Probe/RESULTS.md) (Umpire `0.2.0-preview.2`, Unity 6000.6.6f1, Microsoft DI 8.0.1).
@@ -342,6 +344,30 @@ The stripping, list and NativeAOT rows are decided. The other rows are a draft.
 | A consumer open registration over a struct fails on IL2CPP | The compose check shows it in the Editor |
 | Stripping Medium and High are not supported | The docs state the limit |
 
+## 7. Decisions
+
+### Close at compose
+
+After the modules run `Configure`, Umpire replaces each open descriptor with closed descriptors. The container never gets an open type. Umpire 0.2.0-preview.12 ships it (MgCohen/vsa-template#266). The rules and the results are in the open generics guide (see `AGENTS.md`).
+
+| Fact | Source |
+|---|---|
+| The closing prototype passes C1 to C3 on Mono, IL2CPP Minimal and IL2CPP High | `Probe/Assets/Spike/OpenClosing.cs`, checks `spike:C*:closing` |
+| No source generator is necessary. A generator is a later option | Plan step 8 |
+
+### Attributes
+
+| Attribute | Decision | Reason |
+|---|---|---|
+| `[AutoRegister]` | Keep in the core | The core scan registers handlers, hooks, validators and services on each host |
+| `[TypeArgument]` | Keep in the core, rename to `[AutoClose]` | The core scan closes open types over it on each host. The name pairs with `[AutoRegister]` |
+| `[Preserve]` | Remove | No effect on Low and Minimal (spike S1 to S9). On High it keeps only the marked type |
+| `[RequireDerived]`, `[RequireImplementors]` | Remove until the High review | No effect on Low and Minimal |
+
+- One attribute is not used. It would also register each argument type, for example `Score`, as a service.
+- Both attributes work on the type itself, on a base class at any depth, and on an interface (`MarkedTypes.Marker`).
+- High stripping is out of scope until a review. Issue #223 tracks it.
+
 ## Non-goals
 
 - No .NET NativeAOT support. Reason: no user needs it now.
@@ -349,7 +375,6 @@ The stripping, list and NativeAOT rows are decided. The other rows are a draft.
 ## Open questions
 
 - Are the draft rows correct: no marker, two type parameters, used combinations, no `link.xml`?
-- Is stripping Low a requirement?
 - Does Unity run a Roslyn generator for code in `Assets/` and in asmdefs, and on IL2CPP?
 - Is a generic class with two type parameters necessary?
 - Is solution A useful as a fallback to B for message dispatch?

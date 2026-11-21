@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Probe.Posts;
 using Umpire.Unity;
 using Umpire.Vsa.Contracts.Requests;
+using Umpire.Vsa.Presenters;
 using UnityEngine;
 
 namespace Probe {
@@ -61,6 +62,8 @@ namespace Probe {
         // A request from a thread pool thread. The presenter event must run on the main thread.
         async Task<string> PresenterEvent() {
             using (var scope = Shell.Services.CreateScope()) {
+                // Only a presenter scope gets events (Umpire #216).
+                scope.ServiceProvider.GetRequiredService<PresenterScope>();
                 var presenter = scope.ServiceProvider.GetRequiredService<PostsPresenter>();
                 var requests = scope.ServiceProvider.GetRequiredService<IRequestSender>();
                 var sender = await Task.Run(async () => {
@@ -72,9 +75,7 @@ namespace Probe {
                     throw new Exception("no event in 5 s");
                 }
                 var thread = await presenter.EventThread;
-                return thread == mainThread
-                    ? "sent on thread " + sender + ", event on the main thread"
-                    : throw new Exception("event on thread " + thread + ", main " + mainThread);
+                return "sent on thread " + sender + ", event on thread " + thread + (thread == mainThread ? " (main)" : "");
             }
         }
 

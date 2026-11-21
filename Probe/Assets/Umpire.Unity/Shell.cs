@@ -54,7 +54,7 @@ namespace Umpire.Unity {
         // The module settings assets of this shell.
         public IReadOnlyList<ModuleSettingsAsset> SettingsAssets => settings;
 
-        public bool IsRunning => app != null && app.IsRunning;
+        public bool IsRunning => app != null && app.State == AppState.Running;
 
         protected abstract App CreateApp();
 

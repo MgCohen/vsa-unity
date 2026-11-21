@@ -37,12 +37,12 @@ namespace Sample {
         string Name { get; }
     }
 
-    [TypeArgument]
+    [AutoClose]
     public readonly struct Hand : IZone {
         public string Name => "Hand";
     }
 
-    [TypeArgument]
+    [AutoClose]
     public readonly struct Deck : IZone {
         public string Name => "Deck";
     }

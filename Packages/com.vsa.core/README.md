@@ -251,12 +251,12 @@ The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private 
 
 ## IL2CPP
 
-The package supports managed stripping Minimal. It has no `link.xml`. Umpire marks the bases that it makes from a `Type` with `[RequireImplementors]` or `[RequireDerived]`, so the linker keeps them.
+The package supports managed stripping Minimal and Low. It has no `link.xml`, and Umpire has no linker markers. At Minimal and Low, the linker strips no user type. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
 
 | Stripping | Result (probe, IL2CPP, no `link.xml`) |
 |---|---|
-| Minimal | Pass |
-| Medium, High | The `[AutoRegister]` and `[TypeArgument]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails (MgCohen/vsa-template#223). |
+| Minimal, Low | Pass |
+| Medium, High | Not supported. The `[AutoRegister]` and `[AutoClose]` markers stay. The linker removes the constructor of each `[AutoRegister]` class that only DI calls, so its resolve fails (MgCohen/vsa-template#223). |
 
 | Player of the sample check | Stripping | Result |
 |---|---|---|

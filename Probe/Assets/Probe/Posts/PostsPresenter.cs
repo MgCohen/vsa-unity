@@ -1,10 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Umpire.Messages.Contracts;
 using Umpire.Vsa.Contracts.Requests;
 using Umpire.Vsa.Presenters;
 
 namespace Probe.Posts {
-    public sealed class PostsPresenter : Presenter, IPresenterEvent<PostAdded> {
+    public sealed class PostsPresenter : Presenter, IPresenterHandler<PostAdded> {
         readonly TaskCompletionSource<int> eventThread =
             new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -25,10 +26,10 @@ namespace Probe.Posts {
             return posts.Error;
         });
 
-        public Task OnEventAsync(PostAdded integrationEvent, CancellationToken ct) {
+        public Task<Result<Unit>> HandleAsync(IEnvelope<PostAdded> envelope) {
             Count++;
             eventThread.TrySetResult(Thread.CurrentThread.ManagedThreadId);
-            return Task.CompletedTask;
+            return Task.FromResult<Result<Unit>>(Unit.Value);
         }
     }
 }

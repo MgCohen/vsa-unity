@@ -5,21 +5,21 @@ using Umpire.Messages.Contracts;
 using Umpire.Vsa.Contracts.Events;
 using Umpire.Vsa.Handlers.Events;
 
-[assembly: TypeArgument(typeof(int))]
+[assembly: AutoClose(typeof(int))]
 
 namespace Probe.Lab {
     // The type arguments. Umpire closes each open [AutoRegister] class over each of them (MakeGenericType).
-    [TypeArgument]
+    [AutoClose]
     public sealed class Article {
     }
 
-    [TypeArgument]
+    [AutoClose]
     public struct Score {
         public int Value;
     }
 
     // The control: a struct like Score, but Mention() below names Store<Mentioned> in code.
-    [TypeArgument]
+    [AutoClose]
     public struct Mentioned {
         public int Value;
     }
@@ -76,7 +76,7 @@ namespace Probe.Lab {
         public string Name => typeof(T).Name;
     }
 
-    // A class with no [TypeArgument]. Umpire does not close Shelf<T> over it.
+    // A class with no [AutoClose]. Umpire does not close Shelf<T> over it.
     public sealed class FooBar {
     }
 

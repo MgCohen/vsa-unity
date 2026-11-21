@@ -42,7 +42,7 @@ namespace Probe.Lab {
             // An [AutoRegister] open interface, resolved through the interface.
             yield return ("auto-interface:Score", () => Task.FromResult(scoped.GetRequiredService<IShelf<Score>>().Name));
             yield return ("auto-interface:Int32", () => Task.FromResult(scoped.GetRequiredService<IShelf<int>>().Name));
-            // The same interface over a class with no [TypeArgument]. The expected result is "not registered".
+            // The same interface over a class with no [AutoClose]. The expected result is "not registered".
             yield return ("auto-unlisted:FooBar", () => Task.FromResult(scoped.GetService<IShelf<FooBar>>() == null
                 ? "not registered"
                 : throw new Exception("IShelf<FooBar> resolved")));

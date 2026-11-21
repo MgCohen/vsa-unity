@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.11) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.20) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
@@ -33,9 +33,11 @@ Put one shell on one GameObject of the first scene.
 
 | App | Shell |
 |---|---|
-| VSA, Unity host, no hooks | `VsaShell` on the GameObject |
+| VSA, Unity host, no hooks | `class GameShell : VsaShell { }` |
 | VSA, Unity host, hooks or own architecture | `class GameShell : VsaShell<VsaArchitecture>` |
 | Other pack or other host | `class GameShell : Shell<Vsa<GameHost>>` |
+
+Always put your own shell class in `Assets`. Each shell implements `IAppEntry<TPack>`, and the rule engine finds the app from the most derived shell class in the app code. A package from a git URL is in `Library/PackageCache`, which is not app code. So `VsaShell` itself on a GameObject runs, but the engine does not find the app (`UMP030502`).
 
 ```csharp
 public sealed class GameShell : VsaShell<VsaArchitecture> {
@@ -75,7 +77,7 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 | Presenter scope | One app is one presenter scope. It is live from the host start to the host end. |
 | Presenter events | A presenter (`IPresenterHandler<T>`) gets each event on the thread of the publish. `PresenterComponent` moves each `Render` to the main thread. |
 | Settings | Assets on the shell, then `UnitySettings` classes |
-| Modules | The module scan, or the list of a derived host |
+| Modules | `ScannedModules` (the module scan), or `FixedModules` (the list of a derived host) |
 
 Without a module list, Umpire finds the modules in each loaded assembly that references `Umpire.Kernels`, apart from test assemblies. The Editor loads each assembly of the project, so two apps in one project see the modules of both. To give the modules of one app, derive a host:
 
@@ -87,7 +89,7 @@ public sealed class GameHost : UnityHost {
 public sealed class GameShell : Shell<Vsa<GameHost>> { }
 ```
 
-The module name is the last part of the namespace of the module class.
+The module name is the last part of the namespace of the module class. `FixedModules` refuses two modules with the same type or the same name.
 
 ## Module settings
 
@@ -224,13 +226,14 @@ public sealed class ScoreLabel : PresenterComponent<ScorePresenter> {
 | Scope destroyed | The `VsaScope` disposes its presenters |
 | No app runs | The resolve fails with "No VSA app runs" |
 
+- Why no copy of the registrations: VContainer refuses two registrations of one implementation type, and VSA registers several instances of one type and reads them as a list (`AddPipeline`). So the VSA services stay in the Microsoft container. A singleton comes from the root, and a scoped or transient service comes from the `VsaScope` of the VContainer scope.
 - `RegisterVsa` works in each scope, also with an app that a shell started. Only the In direction needs `VsaLifetimeScope`.
 - VContainer does not keep or dispose a VSA service. The `VsaScope` does both.
 - `Assets/VContainerSample/` of the repository is a sample scene of the two directions.
 
 ## Analyzers
 
-`Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries.
+`Runtime/Umpire.Kernels.Analyzers.dll` and `Runtime/Umpire.Vsa.Analyzers.dll` have the label `RoslynAnalyzer` and no platform. Unity uses them as analyzers, not as libraries. The two DLLs must be in one folder, with no other DLL in that folder.
 
 The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private load context. So the analyzers load in the compiler of Unity 6000.6, which has `System.Collections.Immutable` 8.0. If the config reader does not load, the compiler gives `UMP010003`.
 
@@ -249,6 +252,47 @@ The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private 
 - The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
 - The package code is C# 9, the default language version of Unity 6000.6.
 
+## Code rules in Unity
+
+- A `MonoBehaviour` uses a block namespace (`namespace X { }`), not a file-scoped namespace.
+- An assembly definition (`.asmdef`) is one layer. Its references give the layers and the Umpire DLLs that the layer can use.
+- Unity compiles app code as C# 9. A record needs `IsExternalInit` in the assembly (#31).
+
+## Rule engine
+
+The Umpire rule engine checks the places and the uses of the architecture after a Unity compile. Unity does not run it yet (#8). A manual run on the dice sample of this repository works:
+
+```bash
+dotnet umpire-engine.dll --project <Unity project> --block Assets/<App> --bin Library/ScriptAssemblies --stage Check
+```
+
+`umpire-engine.dll` is in the `Umpire.Sdk` NuGet package, folder `tools/net10.0`. It needs .NET 10. The Unity 6000.6 Editor has .NET 8 only (MgCohen/vsa-template#292).
+
+Write `.umpireconfig` in the block folder (`Assets/<App>`). A relative path starts at the folder of the file.
+
+```toml
+[umpire.check]
+references = "<project>/Library/ScriptAssemblies, <project>/Packages/com.vsa.core/Runtime/Plugins, <Editor>/Data/Managed/UnityEngine"
+source_root = "<project>"
+project_checks = false
+
+[umpire.check.folder_aliases]
+"" = ["", "App"]
+```
+
+| Key | Why |
+|---|---|
+| `references` | The DLLs that the app uses: the Unity compile output, the Umpire DLLs and UnityEngine |
+| `source_root` | Unity writes relative source paths in the PDB of package code |
+| `ignored_folders` | Set it when the block holds `Library`, `Temp`, `Logs` or `UserSettings`. The engine has no default. |
+| `project_checks = false` | Unity writes the `.csproj` files, so the engine does not check them |
+| `folder_aliases` | Only from the `.umpireconfig` in the block folder. The key `""` is the block root. |
+
+- Give one block for each app. Without `--block`, the engine sees each shell of the project and stops (`UMP030503`).
+- Each finding is one line: `file(line,col): error CODE: text`.
+- The dice sample gives 2 known errors: a view uses `PresenterComponent` and `IPresenterView` (MgCohen/vsa-template#232).
+- A .NET project of the same app (code outside `Assets`) sets `UmpireExcludedFolders` to `Assets;Library;Temp;Logs;UserSettings;node_modules`.
+
 ## IL2CPP
 
 The package supports managed stripping Minimal and Low. It has no `link.xml`, and Umpire has no linker markers. At Minimal and Low, the linker strips no user type. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
@@ -266,3 +310,6 @@ The package supports managed stripping Minimal and Low. It has no `link.xml`, an
 ## Open questions
 
 The open questions are GitHub issues: https://github.com/MgCohen/vsa-unity/issues. For example, the package id is #26.
+
+- Unity CI: a Unity license in GitHub Actions needs a license secret. The Unity checks run on a dev computer only.
+- The package keeps the Umpire DLLs in git, because Unity cannot restore NuGet packages (`vendor.cs`).

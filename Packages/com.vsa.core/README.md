@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.22) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.23) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install

@@ -10,10 +10,6 @@
 /*.csproj
 TestResults*.xml
 
-# vendor.cs
-/Vendor/bin/
-/Vendor/obj/
-
 # il2cpp-check.ps1
 /Il2cppCheck/
 

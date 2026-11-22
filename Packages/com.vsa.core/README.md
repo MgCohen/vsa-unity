@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.20) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.22) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
@@ -434,7 +434,7 @@ project_checks = false
 
 ## IL2CPP
 
-The package supports managed stripping Minimal only. At Low, the linker removes the constructor of `Umpire.Messages.Handlers.InlineRunner` (Umpire preview.20), so each send fails (MgCohen/vsa-template#223). The package has no `link.xml`, and Umpire has no linker markers. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
+The package supports managed stripping Minimal only. At Low, the linker removes the constructor of `Umpire.Messages.Handlers.InlineRunner` (since Umpire preview.12, which has no linker markers), so each send fails (MgCohen/vsa-template#223). The package has no `link.xml`, and Umpire has no linker markers. Open generics over structs work on IL2CPP: Umpire closes each open type before the container gets it. The rules are in the open generics guide (see `AGENTS.md`).
 
 | Stripping | Result (probe, IL2CPP, no `link.xml`) |
 |---|---|
@@ -456,4 +456,4 @@ The package supports managed stripping Minimal only. At Low, the linker removes 
 The open questions are GitHub issues: https://github.com/MgCohen/vsa-unity/issues. For example, the package id is #26.
 
 - Unity CI: a Unity license in GitHub Actions needs a license secret. The Unity checks run on a dev computer only.
-- The package keeps the Umpire DLLs in git, because Unity cannot restore NuGet packages (`vendor.cs`).
+- The package keeps the Umpire DLLs in git, because Unity cannot restore NuGet packages. `update-umpire.ps1` copies them from the template release archive (#68).

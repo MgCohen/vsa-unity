@@ -24,35 +24,32 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | `Assets/SampleApp/` | `SampleShell`, `SampleHost` and the `Check` view of the IL2CPP check |
 | `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
-| `Vendor/UmpireVendor.csproj` | The Umpire version of the package |
-| `vendor.cs` | Copies the Umpire DLLs and analyzers into the package |
+| `update-umpire.ps1` | Copies the Umpire DLLs and analyzers of a template release into the package |
 
 ## Commands
 
 | Command | Does |
 |---|---|
-| `dotnet run --file vendor.cs` | Copies the DLLs of `UmpireVersion` to the package |
+| `./update-umpire.ps1 [-Version <version>]` | Copies the DLLs of a template release to the package (default: the newest release) |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
 
-`vendor.cs` reads GitHub Packages, so set `GITHUB_TOKEN` first, for example `$env:GITHUB_TOKEN = gh auth token`.
+`update-umpire.ps1` downloads `umpire-<version>.zip` from the vsa-template release. It needs no token and no .NET SDK. It checks the SHA-256 value of each file in `manifest.json`.
 
 ## Release
 
 ```mermaid
 flowchart LR
-    T[vsa-template tag] --> V[Change UmpireVersion]
-    V --> D[vendor.cs]
-    D --> C[Tests and IL2CPP check]
+    T[vsa-template release] --> S[update-umpire.ps1]
+    S --> C[Tests and IL2CPP check]
     C --> M[Merge to main]
     M --> L[Action moves latest]
     L --> U[vsa-consumer-unity]
 ```
 
-1. Write the Umpire version in `Vendor/UmpireVendor.csproj` (`UmpireVersion`).
-2. Run `dotnet run --file vendor.cs`. It also writes the version to `package.json`.
-3. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
-4. Merge the change to `main`.
+1. On a new branch, run `./update-umpire.ps1`. It also writes the version to `package.json`.
+2. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
+3. Open a PR and merge it to `main`.
 
 The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each commit of `main`. No other step adds a tag.
 

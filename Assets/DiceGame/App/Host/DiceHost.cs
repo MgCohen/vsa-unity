@@ -1,3 +1,4 @@
+using DiceGame.App.Views;
 using DiceGame.Features.Counter;
 using DiceGame.Plugins.Dice;
 using Umpire.Unity;

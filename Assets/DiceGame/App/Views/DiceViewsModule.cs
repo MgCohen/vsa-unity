@@ -1,11 +1,10 @@
-using DiceGame.App.Views;
 using DiceGame.Features.Counter.Presenters;
 using Microsoft.Extensions.DependencyInjection;
 using Umpire.Factories;
 using Umpire.Kernels;
 using Umpire.Unity.Factories;
 
-namespace DiceGame.App {
+namespace DiceGame.App.Views {
     // The registrations of the Unity views of the app. Features do not know the views, so they are here.
     // RollListController needs no registration: the host registers the target of each scene view as scoped.
     public sealed class DiceViewsModule : Module {

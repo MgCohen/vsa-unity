@@ -1,6 +1,5 @@
 # Updates the Umpire DLLs of the package from the release archive of vsa-template (umpire-<version>.zip).
-# Unity cannot restore NuGet packages, so git keeps the DLLs. The workflow .github/workflows/umpire-update.yml runs
-# this script for each new template release and opens the update PR. You can also run it on a dev computer.
+# Unity cannot restore NuGet packages, so git keeps the DLLs. Run this script on a dev computer for each new release.
 #
 #   ./update-umpire.ps1 [-Version <version>] [-Archive <path of umpire-<version>.zip>]
 #

@@ -25,7 +25,6 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 | `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
 | `Assets/Editor/Il2cppCheck.cs` | Builds the IL2CPP player of the check |
 | `update-umpire.ps1` | Copies the Umpire DLLs and analyzers of a template release into the package |
-| `.github/workflows/umpire-update.yml` | Opens the update PR for each new template release |
 
 ## Commands
 
@@ -41,17 +40,16 @@ For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` f
 
 ```mermaid
 flowchart LR
-    T[vsa-template release] --> W[umpire-update.yml]
-    W --> P[Update PR]
-    P --> C[Tests and IL2CPP check]
+    T[vsa-template release] --> S[update-umpire.ps1]
+    S --> C[Tests and IL2CPP check]
     C --> M[Merge to main]
     M --> L[Action moves latest]
     L --> U[vsa-consumer-unity]
 ```
 
-1. The workflow `umpire-update.yml` runs each day. For a new template release, it runs `update-umpire.ps1` and opens a PR. To start it now, use "Run workflow" on the Actions page.
-2. Check out the PR branch. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
-3. Merge the PR to `main`.
+1. On a new branch, run `./update-umpire.ps1`. It also writes the version to `package.json`.
+2. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
+3. Open a PR and merge it to `main`.
 
 The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each commit of `main`. No other step adds a tag.
 

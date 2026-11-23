@@ -1,0 +1,86 @@
+/* Design tokens in three layers.
+   A component token refers to a semantic token.
+   A semantic token refers to a primitive token.
+   Change a primitive, and each layer above it changes. */
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 600;
+  src: url("fonts/Inter-SemiBold.ttf") format("truetype");
+}
+
+:root {
+  /* ---------- Layer 1: primitives (raw values) ---------- */
+  --prim-gold-200: #fff0b8;
+  --prim-gold-300: #ffd760;
+  --prim-gold-500: #f5a300;
+  --prim-gold-800: #8f4f00;
+  --prim-ink-900: #3a1d00;
+
+  --prim-gray-200: #e4e4e4;
+  --prim-gray-400: #a7a7a7;
+  --prim-gray-600: #6b6b6b;
+  --prim-gray-700: #545454;
+
+  --prim-sky-300: #7fe0ff;
+
+  --prim-night-950: #0d0b24;
+  --prim-night-800: #2a2166;
+  --prim-violet-600: #5b3cc4;
+
+  --prim-radius-lg: 22px;
+  --prim-size-1: 4px;
+  --prim-size-3: 12px;
+  --prim-size-16: 64px;
+  --prim-font-ui: "Inter", sans-serif;
+  --prim-font-weight-strong: 600;
+
+  /* ---------- Layer 2: semantic (meaning) ---------- */
+  --sem-action-top: var(--prim-gold-300);
+  --sem-action-bottom: var(--prim-gold-500);
+  --sem-action-depth: var(--prim-gold-800);
+  --sem-action-shine: var(--prim-gold-200);
+  --sem-on-action: var(--prim-ink-900);
+
+  --sem-disabled-top: var(--prim-gray-200);
+  --sem-disabled-bottom: var(--prim-gray-400);
+  --sem-disabled-depth: var(--prim-gray-700);
+  --sem-on-disabled: var(--prim-gray-600);
+
+  --sem-focus: var(--prim-sky-300);
+
+  --sem-backdrop-center: var(--prim-violet-600);
+  --sem-backdrop-mid: var(--prim-night-800);
+  --sem-backdrop-edge: var(--prim-night-950);
+
+  --sem-radius-control: var(--prim-radius-lg);
+  --sem-screen-margin: var(--prim-size-16);
+  --sem-font-ui: var(--prim-font-ui);
+
+  /* ---------- Layer 3: component (button) ---------- */
+  --button-width: 320px;
+  --button-face-height: 96px;
+  --button-depth: var(--prim-size-3);          /* lip under the face */
+  --button-depth-pressed: var(--prim-size-1);  /* lip when pressed */
+  --button-radius: var(--sem-radius-control);
+  --button-shine-height: 6px;
+  --button-focus-width: 5px;
+
+  --button-top: var(--sem-action-top);
+  --button-bottom: var(--sem-action-bottom);
+  --button-lip: var(--sem-action-depth);
+  --button-shine: var(--sem-action-shine);
+  --button-label: var(--sem-on-action);
+  --button-hover-brightness: 1.08;
+  --button-focus: var(--sem-focus);
+
+  --button-disabled-top: var(--sem-disabled-top);
+  --button-disabled-bottom: var(--sem-disabled-bottom);
+  --button-disabled-lip: var(--sem-disabled-depth);
+  --button-disabled-label: var(--sem-on-disabled);
+
+  --button-font: var(--sem-font-ui);
+  --button-font-weight: var(--prim-font-weight-strong);
+  --button-font-size: 40px;
+  --button-letter-spacing: 2px;
+}

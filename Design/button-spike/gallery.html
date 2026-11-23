@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Button gallery</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="button.css">
+<style>
+  body { margin: 0; background: #f4f3f8; color: #1d1b29; font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 32px 0 8px; }
+  p.lead { margin: 0 0 16px; color: #555; }
+  .stage { background: radial-gradient(circle at 50% 40%, var(--sem-backdrop-center), var(--sem-backdrop-mid) 55%, var(--sem-backdrop-edge)); border-radius: 12px; padding: 32px 16px; overflow-x: auto; }
+  .states { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+  .state { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #fff; font-size: 13px; }
+  .tbl { overflow-x: auto; background: #fff; border-radius: 10px; border: 1px solid #ddd; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #eee; white-space: nowrap; }
+  th { background: #faf9fd; }
+  td code { font: 12px ui-monospace, monospace; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid #0003; vertical-align: -2px; margin-right: 6px; }
+  .layer { font-size: 11px; padding: 2px 6px; border-radius: 99px; background: #ece9f7; }
+  .play { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 12px; }
+  .play label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+  .play code { font-size: 12px; }
+  button.reset { margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Design system: button</h1>
+  <p class="lead">One component, its states and its tokens. Change a primitive token below, and the semantic and component layers follow.</p>
+
+  <h2>States</h2>
+  <div class="stage">
+    <div class="states">
+      <div class="state"><button class="ds-button" tabindex="-1"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Normal</div>
+      <div class="state"><button class="ds-button is-hover" tabindex="-1"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Hover</div>
+      <div class="state"><button class="ds-button is-pressed" tabindex="-1"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Pressed</div>
+      <div class="state"><button class="ds-button is-focus" tabindex="-1"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Focus</div>
+      <div class="state"><button class="ds-button is-disabled" tabindex="-1"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Disabled</div>
+    </div>
+  </div>
+
+  <h2>Live button</h2>
+  <div class="stage">
+    <div class="states">
+      <div class="state"><button class="ds-button"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>Hover, press or Tab to it</div>
+    </div>
+  </div>
+
+  <h2>Change a primitive</h2>
+  <div class="play" id="play"></div>
+  <button class="reset" id="reset">Reset</button>
+
+  <h2>Tokens</h2>
+  <div class="tbl"><table id="tokens"><thead><tr><th>Layer</th><th>Token</th><th>Refers to</th><th>Value</th></tr></thead><tbody></tbody></table></div>
+</main>
+
+<script>
+  // Read the token declarations from tokens.css, so the gallery never repeats them.
+  function readTokens() {
+    const out = [];
+    for (const sheet of document.styleSheets) {
+      const isTokens = (sheet.href && sheet.href.endsWith('tokens.css')) || (sheet.ownerNode && sheet.ownerNode.id === 'tokens');
+      if (!isTokens) continue;
+      for (const rule of sheet.cssRules) {
+        if (rule.selectorText !== ':root') continue;
+        for (const name of rule.style) {
+          if (!name.startsWith('--')) continue;
+          out.push({ name, raw: rule.style.getPropertyValue(name).trim() });
+        }
+      }
+    }
+    return out;
+  }
+  const layerOf = n => n.startsWith('--prim-') ? 'primitive' : n.startsWith('--sem-') ? 'semantic' : 'component';
+  const isColor = v => /^#|^rgb/.test(v);
+
+  const tokens = readTokens();
+  const tbody = document.querySelector('#tokens tbody');
+  function renderTable() {
+    const cs = getComputedStyle(document.documentElement);
+    tbody.innerHTML = '';
+    for (const t of tokens) {
+      const value = cs.getPropertyValue(t.name).trim();
+      const ref = (t.raw.match(/var\((--[\w-]+)\)/g) || []).map(s => s.slice(4, -1)).join(', ');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><span class="layer">${layerOf(t.name)}</span></td><td><code>${t.name}</code></td><td><code>${ref || '—'}</code></td>` +
+        `<td>${isColor(value) ? `<span class="sw" style="background:${value}"></span>` : ''}<code>${value}</code></td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Controls for a few primitives. A change sets the primitive on :root.
+  const play = document.getElementById('play');
+  const controls = [
+    ['--prim-gold-300', 'color'], ['--prim-gold-500', 'color'], ['--prim-gold-800', 'color'],
+    ['--prim-ink-900', 'color'], ['--prim-sky-300', 'color'],
+    ['--prim-radius-lg', 'range', 0, 48], ['--prim-size-3', 'range', 0, 24],
+  ];
+  const root = document.documentElement;
+  for (const [name, type, min, max] of controls) {
+    const cur = getComputedStyle(root).getPropertyValue(name).trim();
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = type;
+    if (type === 'range') { input.min = min; input.max = max; input.value = parseInt(cur); }
+    else input.value = cur;
+    input.addEventListener('input', () => {
+      root.style.setProperty(name, type === 'range' ? input.value + 'px' : input.value);
+      renderTable();
+    });
+    label.innerHTML = `<code>${name}</code>`;
+    label.appendChild(input);
+    play.appendChild(label);
+  }
+  document.getElementById('reset').onclick = () => { root.removeAttribute('style'); location.reload(); };
+
+  renderTable();
+</script>
+</body>
+</html>

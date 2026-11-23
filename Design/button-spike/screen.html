@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spike screen</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="button.css">
+<style>
+  /* The screen is 1920 x 1080 px, the same as the Unity reference resolution.
+     For a view in a smaller window, the stage scales down to fit.
+     ?export=1 keeps scale 1 and hides parts for asset export. */
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  .stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    transform-origin: 0 0;
+    background: radial-gradient(circle at 50% 40%, var(--sem-backdrop-center), var(--sem-backdrop-mid) 55%, var(--sem-backdrop-edge));
+  }
+  .corner {
+    position: absolute;
+    right: var(--sem-screen-margin);
+    bottom: var(--sem-screen-margin);
+    line-height: 0; /* no line descent under the inline-block button */
+  }
+  /* export modes */
+  .export-bg .corner { display: none; }
+  .export-button html, .export-button body { background: transparent; }
+  .export-button .stage { background: transparent; width: auto; height: auto; }
+  .export-button .corner { position: static; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="corner">
+    <button class="ds-button" id="play"><span class="ds-button__face"><span class="ds-button__label">Play</span></span></button>
+  </div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const stage = document.getElementById('stage');
+  const btn = document.getElementById('play');
+  // ?export=bg          -> background only, 1920 x 1080
+  // ?export=button&state=hover|pressed|focus|disabled -> one button sprite, no label, transparent
+  const mode = q.get('export');
+  if (mode === 'bg') document.body.classList.add('export-bg');
+  if (mode === 'button') {
+    document.documentElement.classList.add('export-button');
+    document.body.classList.add('export-button');
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    btn.classList.add('no-label');
+    const s = q.get('state');
+    if (s) btn.classList.add('is-' + s);
+  }
+  // ?state=<state> also works on the full screen (for comparison captures)
+  if (mode !== 'button' && q.get('state')) btn.classList.add('is-' + q.get('state'));
+  function fit() {
+    if (mode) return;
+    const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `scale(${k})`;
+  }
+  addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

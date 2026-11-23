@@ -1,0 +1,92 @@
+/* ds-button: a chunky game button.
+   The box is the face plus the lip under it:
+   height = face height + depth.
+   The face moves down when pressed, so the lip gets thinner.
+   All visuals stay inside the box, so one sprite per state holds them. */
+
+.ds-button {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  width: var(--button-width);
+  height: calc(var(--button-face-height) + var(--button-depth));
+  padding: 0;
+  border: 0;
+  border-radius: var(--button-radius);
+  background: transparent;
+  font-family: var(--button-font);
+  font-weight: var(--button-font-weight);
+  font-size: var(--button-font-size);
+  letter-spacing: var(--button-letter-spacing);
+  text-transform: uppercase;
+  color: var(--button-label);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* the lip: a face-shaped block, offset down by the depth */
+.ds-button::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--button-face-height);
+  border-radius: var(--button-radius);
+  background: var(--button-lip);
+}
+
+.ds-button__face {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--button-face-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--button-radius);
+  background: linear-gradient(to bottom, var(--button-top), var(--button-bottom));
+  box-shadow: inset 0 var(--button-shine-height) 0 0 var(--button-shine);
+}
+
+/* hover */
+.ds-button:hover:not(:disabled) .ds-button__face,
+.ds-button.is-hover .ds-button__face {
+  filter: brightness(var(--button-hover-brightness));
+}
+
+/* pressed: the face moves down, the lip shows less */
+.ds-button:active:not(:disabled) .ds-button__face,
+.ds-button.is-pressed .ds-button__face {
+  top: calc(var(--button-depth) - var(--button-depth-pressed));
+  box-shadow: none;
+}
+
+/* focus: a ring inside the face */
+.ds-button:focus-visible .ds-button__face,
+.ds-button.is-focus .ds-button__face {
+  box-shadow:
+    inset 0 0 0 var(--button-focus-width) var(--button-focus),
+    inset 0 calc(var(--button-shine-height) + var(--button-focus-width)) 0 0 var(--button-shine);
+}
+
+/* disabled */
+.ds-button:disabled,
+.ds-button.is-disabled {
+  color: var(--button-disabled-label);
+  cursor: default;
+}
+.ds-button:disabled .ds-button__face,
+.ds-button.is-disabled .ds-button__face {
+  background: linear-gradient(to bottom, var(--button-disabled-top), var(--button-disabled-bottom));
+  box-shadow: inset 0 var(--button-shine-height) 0 0 rgba(255, 255, 255, 0.5);
+  filter: none;
+}
+
+.ds-button:disabled::before,
+.ds-button.is-disabled::before { background: var(--button-disabled-lip); }
+
+/* export only: hide the label, so the sprite has no text */
+.ds-button.no-label .ds-button__label { visibility: hidden; }

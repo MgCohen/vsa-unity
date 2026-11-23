@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "a8-pages",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "C:/Users/matheus.cohen/AppData/Local/Temp/claude/8f09323590fca162/d61533f2-210b-494a-9953-5b137835c459/scratchpad/a8"],
+      "port": 8765
+    }
+  ]
+}

@@ -1,0 +1,809 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>VSA.TestSuite.Client</name>
+    </assembly>
+    <members>
+        <member name="T:VSA.TestSuite.Client.ActionFailedException">
+            <summary>A failed action. It has the code, the reason and the step folder with the evidence.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.CommandFailedException">
+            <summary>A command that the Pipeline refused or could not run, for example an unknown command.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.RecordingHandle">
+            <summary>A running recording. Dispose stops it. A second stop does nothing.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.RecordingHandle.Started">
+            <summary>The result of record.start: the file and the start time.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.RecordingHandle.File">
+            <summary>The video file.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.RecordingHandle.Stop">
+            <summary>Stops the recording and returns the result of record.stop.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Game">
+            <summary>
+            The client DSL: one method for each action. Each method sends the CLI command of the action,
+            so the call goes through the same commands, actions, systems and hooks as the CLI.
+            </summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Game.Status">
+            <summary>The state of the instance, from the status checker. It reads only.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Game.CommandTimeoutMs">
+            <summary>The time limit of one command in the Editor, in milliseconds.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.AttachEditor(System.String,System.Int32)">
+            <summary>Attaches to the Editor of a project with direct HTTP, and waits until it is ready.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Game.OwnedProcess">
+            <summary>The player process that this client started. Null for an Editor or an attached player.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.AttachPlayer(System.String,System.Int32)">
+            <summary>Attaches to a running player that writes its descriptor to <paramref name="playerFolder"/>.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.LaunchPlayer(System.String,System.String,System.Int32)">
+            <summary>
+            Starts a development player and waits until it is ready. Give each player its own folder:
+            two players in one folder write the same descriptor file.
+            </summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.StopPlayer(System.Int32)">
+            <summary>Stops the player that this client started. It never stops other processes.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.ShowTouches(System.Boolean)">
+            <summary>Shows or hides the touch overlay: a burst at each press and a trail for each drag.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.Reset(System.String,System.Nullable{System.Int32})">
+            <summary>Runs the reset steps, sets the seed, and loads <paramref name="scene"/> (null: reload the active scene).</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.RunScript(System.String)">
+            <summary>Runs a C# test script inside Unity. Fails with the code of the first failed step.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.StartRecording(System.String,System.Int32)">
+            <summary>Starts a video recording in the step folder of the command. A running recording stops first.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.StopRecording">
+            <summary>Stops the video recording. With no recording, it returns the last one. It is safe to call at all times.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.RecordingStatus">
+            <summary>The recorder, the current recording and the last recording.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.Record(System.String,System.Int32)">
+            <summary>
+            Starts a recording and returns a handle. Use it with <c>await using</c>: the dispose stops
+            the recording, also when the test throws.
+            </summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.EnterPlayMode(System.Int32)">
+            <summary>Enters Play Mode and waits until the player loop runs frames.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.Command(System.String[])">
+            <summary>Runs any Pipeline command and returns its result. Fails if the command fails.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Game.Act(System.String[])">
+            <summary>Runs one of our actions. Returns its "result" value, or throws ActionFailedException.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.ExecResult">
+            <summary>The answer of one command.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.ExecResult.Result">
+            <summary>The "result" value of the response. For our actions it has ok, action, step, ms and result.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.ExecResult.Error">
+            <summary>The Pipeline error, for example "Not Found" or "Unknown command".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.ITransport">
+            <summary>The way to send commands to an instance. One interface for all transports.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.HttpTransport">
+            <summary>
+            Direct HTTP to the Pipeline server, about 20 ms for each call. It reads the descriptor
+            again when the connection fails, because a domain reload or a restart changes the port and token.
+            </summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.HttpTransport.ReconnectMs">
+            <summary>How long to wait for the server after a lost connection, for example during a domain reload.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.HttpTransport.NotReadyMs">
+            <summary>How long to retry when the server answers 503 (not ready).</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Instance">
+            <summary>The address of one running Unity instance, read from its Pipeline descriptor file.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Instance.DescriptorPath">
+            <summary>The descriptor file. Unity writes it again after each domain reload.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Instance.IsPlayer">
+            <summary>True for a player, false for an Editor.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Instance.ForEditor(System.String)">
+            <summary>An Editor: the descriptor is in the Library folder of the project.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Instance.ForPlayer(System.String)">
+            <summary>A player: the descriptor is beside the executable. Start each player from its own folder.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Instance.TryLoad">
+            <summary>Reads the descriptor. Returns false if the file is missing or not complete.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Instance.ProcessAlive">
+            <summary>True if the process of the descriptor runs.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.InstanceStatus">
+            <summary>
+            The state of an instance that the client attached to, from the status checker of Status/.
+            It keeps one status tracker, so the clocks and the memory grow over the calls.
+            It reads only: it never starts, stops or answers anything.
+            </summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.InstanceStatus.Last">
+            <summary>The last result. Null before the first call.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.InstanceStatus.Check(System.Threading.CancellationToken)">
+            <summary>Takes one sample and returns the state.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.InstanceStatus.WaitReady(System.Int32,System.Threading.CancellationToken)">
+            <summary>Waits until the instance is ready (ready-idle, play-running or play-paused).
+            Throws InstanceException at once for a dialog, a stall, a crash or a failed state, and at the time limit.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.InstanceStatus.WaitFor(System.Collections.Generic.IEnumerable{System.String},System.Int32,System.String,System.Threading.CancellationToken)">
+            <summary>Waits until the state is one of <paramref name="states"/>. Throws InstanceException if the wait stops.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.ProjectPaths">
+            <summary>Finds the Unity project for the samples, so they run with no arguments inside the repo.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.ProjectPaths.FindProjectRoot(System.String)">
+            <summary>
+            Returns the first folder at or above <paramref name="start"/> (default: the current folder)
+            that has <c>ProjectSettings/ProjectVersion.txt</c>. Returns null if there is none.
+            </summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.ProjectPaths.ProjectFromArgs(System.String[])">
+            <summary>The project from the first argument, else the project above the current folder.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.IClock">
+            <summary>Milliseconds since the start of the recording. Wall time live, recorded time in replay.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.IEditorControl">
+            <summary>The only way to change the Editor. A fake implementation tests the supervisor without Unity.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.IEditorState">
+            <summary>One Editor state. Add a state: one file in States/ and one entry in States.All.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.IEditorState.Name">
+            <summary>The state name, for example "frozen". Keys limits.json.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.IEditorState.Matches(VSA.TestSuite.Client.Status.Snapshot,VSA.TestSuite.Client.Status.Memory)">
+            <summary>True if this state fits the snapshot. Earlier states in States.All win.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ISignalSource">
+            <summary>One signal. Add a source: one file in Sources/ and one entry in Sampler.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.ISignalSource.Read(VSA.TestSuite.Client.Status.Snapshot,VSA.TestSuite.Client.Status.Target,System.Threading.CancellationToken)">
+            <summary>Reads the signal into the snapshot. Never throws for a missing Editor.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StateAction">
+            <summary>What the supervisor does for a state.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.EditorControl">
+            <summary>The real control. It acts only on the own PID of the target.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorControl.Start(VSA.TestSuite.Client.Status.Target,System.Threading.CancellationToken)">
+            <summary>Runs the batch-mode compile check, then starts the Editor with -automated.
+            Throws StartRefusedException if the check fails: a start would enter Safe Mode or exit.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorControl.QuitWith(VSA.TestSuite.Client.Status.Target,System.String,System.Threading.CancellationToken)">
+            <summary>Sends "editor quit" with "--save", "--discard" or no flag (null). With no flag and unsaved changes,
+            the Editor refuses. Returns the exit code of the unity CLI and its output.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.EditorLauncher">
+            <summary>Starts the own Editor with "unity open", then finds its Unity.exe by the unique -logFile path
+            in the command line, and opens a process handle at once so the exit code stays readable.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.EditorLauncher.KeepRuns">
+            <summary>The number of run folders to keep in the log root, with the new one.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.StartChecked(VSA.TestSuite.Client.Status.Target,System.Threading.CancellationToken)">
+            <summary>Runs the batch-mode compile check, then starts the Editor. Throws StartRefusedException if the check
+            fails, because in -automated a start with compile errors enters Safe Mode and a bad package exits.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.Precheck(VSA.TestSuite.Client.Status.Target,System.Threading.CancellationToken)">
+            <summary>Compiles the project in batch mode before a start. Batch mode has no Safe Mode: with compile errors
+            it exits with a non-zero code. Runs only when no Editor has the project open.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.FindUnity(System.String)">
+            <summary>Unity Editor processes whose command line names this project. The unity CLI is also named
+            unity.exe, and asset import workers are Unity.exe with -projectPath: both are left out.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.SaveOwn(VSA.TestSuite.Client.Status.Target)">
+            <summary>own-editor.json in the status folder: lets a later command find the own Editor.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.TryLoadOwn(VSA.TestSuite.Client.Status.Target)">
+            <summary>Loads the own Editor from own-editor.json. Returns false if it does not run.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorLauncher.TryAttach(VSA.TestSuite.Client.Status.Target,System.Int32)">
+            <summary>Uses a running Editor that the caller names by PID, for read-only commands.
+            Returns false if the PID is not a Unity Editor of this project.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StartRefusedException">
+            <summary>The control did not start the Editor: the batch-mode compile check failed,
+            or an Editor already runs on the project.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.StartRefusedException.Errors">
+            <summary>The compile or package error lines of the check log.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.StartRefusedException.LogPath">
+            <summary>The log of the batch-mode compile check. Null if the check did not run.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ActionLog">
+            <summary>What the supervisor and the playbook did. The tracker reads it; the recorder writes each entry as one line.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.ActionLog.Add(VSA.TestSuite.Client.Status.ActionEntry)">
+            <summary>Adds a recorded entry as it is. Replay uses this.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.JsonFind">
+            <summary>Finds a property by name anywhere in a JSON document. Pipeline answers nest values in different places.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Limits">
+            <summary>The limits of the waiting states, from limits.json. Each state in "states" is a waiting state.
+            "capS": the maximum time in the state; 0 means no cap. "stallS": the maximum time with no progress;
+            a state with no "stallS" uses "defaultStallS". A state that is not in the file does not wait.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Limits.ResourceName">
+            <summary>The name of the embedded default limits.json.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Limits.Load(System.String)">
+            <summary>Loads the limits from a file, or the embedded default limits.json if path is null.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Limits.ReadDefault">
+            <summary>The text of the embedded default limits.json.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.LiveSession">
+            <summary>One live recording: samples every 500 ms, classifies, records, and lets the supervisor act.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.LiveSession.WaitFor(System.Func{VSA.TestSuite.Client.Status.StateResult,System.Boolean},System.Int32,System.Threading.CancellationToken)">
+            <summary>Waits until the last result is one of the states, or the time ends. Returns the last result.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.PipelineHttp">
+            <summary>Direct HTTP to the Pipeline server. Returns the HTTP status and the body. Never throws for a lost server.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.PipelineHttp.Get(VSA.TestSuite.Client.Status.Target,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>HTTP status 0: no connection. -1: no answer in time.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Recorder">
+            <summary>Writes one NDJSON file: samples with their result, truth windows and actions, in time order.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ReplayClock">
+            <summary>Replay time: the recorded time of the current sample.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Sampler">
+            <summary>Runs all signal sources, one after another, so only one request to the Editor is in flight.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusChecker">
+            <summary>Pure classification: the first state in States.All that matches. It changes nothing.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusTracker">
+            <summary>The only writer of Memory. Moves the clocks, classifies each snapshot,
+            and adds the results stalled, stuck and loop.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.StatusTracker.Consume(System.Int64)">
+            <summary>Applies the actions that happened before the sample time. A later action belongs to a later sample.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusWaiter">
+            <summary>Samples the own Editor, classifies each sample, and waits for a state. It reads only:
+            it has no supervisor. Each wait has a time limit.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.StatusWaiter.IntervalMs">
+            <summary>The time between two samples.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.StatusWaiter.AdoptDescriptorPid">
+            <summary>Attach mode: while no own PID is known, use the live PID of the descriptor.
+            For an Editor or a player that another tool started. Read-only use only.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.StatusWaiter.Observed">
+            <summary>Called after each sample.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.StatusWaiter.Sample(System.Threading.CancellationToken)">
+            <summary>Takes one sample and classifies it.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.StatusWaiter.Wait(System.Collections.Generic.ISet{System.String},System.Int64,System.Threading.CancellationToken)">
+            <summary>Waits until the state is one of <paramref name="until"/>, or a stop rule of WaitRules ends the wait,
+            or the time limit ends it with the code "Timeout".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Supervisor">
+            <summary>Acts on each result through IEditorControl: answers dialogs and escalates stalled or stuck states.
+            Each escalation step runs only if the step before it did not work in 15 s.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Supervisor.Failed">
+            <summary>True after the supervisor gave up: the caller must end the run.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Supervisor.Reset">
+            <summary>Starts a new case: clears Failed and the escalation stage.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Supervisor.RestartOnCrash">
+            <summary>True: after a crash, when the process is gone, start the Editor again (one recovery only).
+            The lab playbooks leave it false, because they start the Editor themselves.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Supervisor.BeforeRestart">
+            <summary>Runs before a recovery start, for example to delete hang.flag.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.SupervisorMode">
+            <summary>Off: no action. DryRun: log what it would do. Observe: answer dialogs only; never close, stop or start.
+            Live: act.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.WaitRules">
+            <summary>When a wait stops before its state is met. Pure functions: no Editor, no clock.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.WaitRules.Ready">
+            <summary>The states of "ready": the main thread answers and nothing waits.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WaitRules.ParseUntil(System.String)">
+            <summary>Parses "ready" or a comma list of state names. Throws ArgumentException for an unknown name.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WaitRules.StopCode(VSA.TestSuite.Client.Status.StateResult,System.Boolean)">
+            <summary>The error code that stops a wait, or null to wait more. A wait has no supervisor:
+            nothing answers a dialog, restarts a crash or ends a stall.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WaitRules.DaemonStopCode(VSA.TestSuite.Client.Status.StateResult,System.Boolean,System.Boolean)">
+            <summary>The error code that stops a wait on the daemon, or null to wait more. The daemon answers dialogs,
+            so a dialog does not stop the wait. In adopt mode the daemon also restarts after a crash.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WaitRules.Pascal(System.String)">
+            <summary>"compile-failed" to "CompileFailed".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.WallClock">
+            <summary>Live time: milliseconds since the recording started.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Win32">
+            <summary>Win32 calls for the window source and the dialog answer. Text reads use SendMessageTimeout,
+            because GetWindowText can block for seconds on a hung window. No call gives a window the focus.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Win32.AllTopWindows(System.Int32)">
+            <summary>All top windows of the process, also hidden ones, with their visible flag.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Win32.Children(System.IntPtr)">
+            <summary>All child windows, at every depth.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Win32.Progress(System.IntPtr)">
+            <summary>Position and upper limit of a Win32 progress control (msctls_progress32). Null if it gives no answer.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Win32.Click(System.IntPtr)">
+            <summary>Presses a button with BM_CLICK. The window does not get the focus.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DaemonClient">
+            <summary>The client side of the daemon pipe: one request line, one reply line.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonClient.Send(System.String,VSA.TestSuite.Client.Status.DaemonRequest,System.Int32,System.Threading.CancellationToken)">
+            <summary>Sends a request to the daemon of the project. Returns null if no daemon answers in
+            <paramref name="connectTimeoutMs"/>.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonClient.Running(System.String,System.Threading.CancellationToken)">
+            <summary>True if a daemon answers on the pipe of the project.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonClient.Ensure(System.String,System.Diagnostics.ProcessStartInfo,System.Threading.CancellationToken)">
+            <summary>Starts the daemon process if none answers, then waits until it answers (up to 15 s).
+            The daemon runs on after the caller exits. It gets no console handles of the caller.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DaemonPaths">
+            <summary>The names of the daemon of one project: its pipe, its lock file and its log.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonPaths.PipeName(System.String)">
+            <summary>The pipe name. The same project path always gives the same name.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonPaths.Lock(VSA.TestSuite.Client.Status.Target)">
+            <summary>The lock file. The daemon holds it open with no sharing, so a second daemon cannot start.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.DaemonPaths.Log(VSA.TestSuite.Client.Status.Target)">
+            <summary>The text log of the daemon process.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DaemonReply">
+            <summary>The answer of the daemon to one request. One JSON line on the pipe.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Code">
+            <summary>Null on success. Else the error code, for example "Stalled", "SafeMode" or "UnsavedChanges".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Phase">
+            <summary>"starting", "running", "closing", "ended" or "failed".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Mode">
+            <summary>"adopt" (the daemon can stop and restart the Editor) or "observe" (it only answers dialogs).</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Attached">
+            <summary>True if the daemon found the Editor running and did not start it.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Warnings">
+            <summary>Warning codes, for example "not-automated" or "no-beacon".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.DirtyScenes">
+            <summary>close: the paths of the scenes with unsaved changes.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.Errors">
+            <summary>The compile or package errors of a refused start.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonReply.ExitCode">
+            <summary>close: the exit code of the Editor process.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DaemonRequest">
+            <summary>One request from a CLI client to the daemon. One JSON line on the pipe.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonRequest.Command">
+            <summary>"open", "status", "wait" or "close".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonRequest.Until">
+            <summary>wait and open: the states to wait for.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonRequest.TimeoutMs">
+            <summary>wait and open: the time limit.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.DaemonRequest.Changes">
+            <summary>close: "save", "discard" or null. Null refuses to close with unsaved changes.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.EditorDaemon">
+            <summary>
+            The background process of one project. It finds the Editor (own, attached, or started after the batch-mode
+            compile check), samples it, records each sample to status.ndjson, lets the supervisor act, and answers
+            clients on a named pipe. It ends when the Editor exits, after a close, or after a failed start.
+            </summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.EditorDaemon.EndAfterGoneMs">
+            <summary>The daemon ends when the Editor process is gone this long and no restart runs.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.EditorDaemon.BeaconGraceMs">
+            <summary>The time with a good probe and no fresh beacon before the daemon turns the beacon on.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.EditorDaemon.BeaconRetryMs">
+            <summary>The time between two tries to turn the beacon on.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorDaemon.#ctor(VSA.TestSuite.Client.Status.Target,System.Boolean,VSA.TestSuite.Client.Status.IEditorControl)">
+            <summary>Makes the daemon of a project. adopt true: the supervisor can escalate, stop and restart the Editor.
+            adopt false (observe): it only answers dialogs.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.EditorDaemon.Log">
+            <summary>Called with each line of the daemon log.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorDaemon.Run(System.Threading.CancellationToken)">
+            <summary>Runs the daemon. Returns 1 if another daemon holds the lock of the project or the start failed.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.EditorDaemon.Restarting">
+            <summary>True while the supervisor runs a recovery start.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorDaemon.CheckBeacon(VSA.TestSuite.Client.Status.Snapshot,System.Threading.CancellationToken)">
+            <summary>If the probe answers but the beacon is not fresh, turn the beacon on (once in each minute).
+            If the package is missing, keep the native signals and warn "no-beacon".</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.EditorDaemon.Handle(VSA.TestSuite.Client.Status.DaemonRequest,System.Threading.CancellationToken)">
+            <summary>Answers one request.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ActionEntry">
+            <summary>One thing that the supervisor or the playbook did.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Memory">
+            <summary>What the status tracker keeps between samples. Only StatusTracker writes it.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Memory.StopSent">
+            <summary>The supervisor or the playbook stopped the own Editor: its exit is not a start failure.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Memory.Attached">
+            <summary>The client attached to an instance that another tool started: the start flags are not ours to check.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Memory.ForgetEditor">
+            <summary>Forget the own Editor after its exit is recorded.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.RunInfo">
+            <summary>One run folder in the log root: one Editor start, or one batch-mode compile check.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.RunInfo.Kind">
+            <summary>"editor" or "precheck".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.RunInfo.Running">
+            <summary>True if the PID of the run is still a running Unity Editor.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.RunInfo.StatusLog">
+            <summary>The status recording of the daemon. Null if no daemon ran.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.RunLines">
+            <summary>The last lines of the logs of one run.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Snapshot">
+            <summary>One sample of all signals. Fields are null or 0 when a source could not read them.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Snapshot.ProbeFallback">
+            <summary>The probe used GET /api/editor_status, because the Editor has no "suite ping".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Snapshot.ProbeDirtyScenePaths">
+            <summary>The paths of the dirty scenes, separated by "|". An unsaved new scene has the name "(untitled)".</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Snapshot.ServerUp(VSA.TestSuite.Client.Status.Memory)">
+            <summary>The server answers, and it is the server of the own Editor.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Snapshot.BeaconFresh">
+            <summary>The beacon file belongs to the own Editor and was written in the last 3 s.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StateResult">
+            <summary>The answer of the status tracker for one sample.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.StateResult.Result">
+            <summary>Null, "stalled", "stuck" or "loop".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusReport">
+            <summary>The answer of "status": the state now, from the running watch or from one sample.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.StatusReport.Result">
+            <summary>Null, "stalled", "stuck" or "loop".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.StatusReport.History">
+            <summary>True if the state comes from a running watch, which has the history of the Editor.
+            False for one sample: then "cold-start" can also be a domain reload, and no clock has run.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Target">
+            <summary>The own Editor: project, PID, log file and server address.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.EditorProbe">
+            <summary>The Pipeline command of the main-thread probe in an Editor (Editor assembly of the package).</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.BeaconOn">
+            <summary>The Pipeline command that turns the status beacon on.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.PlayerProbe">
+            <summary>The Pipeline command of the main-thread probe in a player.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.Process">
+            <summary>Opened at once after the start, so the exit code stays readable.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.ExtraArgs">
+            <summary>More Editor arguments, for example "-ignoreCompilerErrors".</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.LogRoot">
+            <summary>The root folder of the run folders. Null: Logs/vsa-unity in the project.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.DescriptorFile">
+            <summary>The descriptor file. Null: Library/Pipeline/.unity-pipeline-port in the project.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.Probe">
+            <summary>The probe command. Null: EditorProbe.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.ProbeMissing">
+            <summary>True after the Editor answered that it has no probe command: the package is missing.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Target.Port">
+            <summary>Read from the descriptor by DescriptorSource. The token never leaves memory.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Target.StatusFolder">
+            <summary>Library/VSA.TestSuite/Status: the beacon file, own-editor.json and watch.json.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Target.RunRoot">
+            <summary>The folder of the run folders, one for each Editor start.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Target.RunFolder">
+            <summary>The folder of this Editor run: unity.log and watch.ndjson.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Target.ServerPort">
+            <summary>The Pipeline port of the own Editor, from the last descriptor read. 0: none.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.TruthWindow">
+            <summary>What the playbook knows: inside [T0, T1] the results must follow Allowed in order.
+            An entry "a|b" allows either state. Entries can be skipped.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.TruthWindow.Key">
+            <summary>The state that must show within DetectMs. Null: the first change counts.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.TruthWindow.ExpectResult">
+            <summary>A result that must show in the window, for example "stalled". Null: none.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.TruthWindow.Scored">
+            <summary>False for a cleanup window: recorded, not scored.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.WaitOutcome">
+            <summary>The end of a wait: the state was met, or the wait stopped with an error code.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.WaitOutcome.Met">
+            <summary>True if the state is one of the states that the caller waits for.</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.WaitOutcome.Code">
+            <summary>Null if met. Else the error code, for example "Timeout", "Stalled", "Dialog" or "CompileFailed".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.CaseReport">
+            <summary>The V3 result of one truth window.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Replayer">
+            <summary>Replays one recording through a fresh status tracker with the recorded time and actions,
+            then checks each truth window (V3) and collects the signal values seen in each state (V2).</summary>
+        </member>
+        <member name="F:VSA.TestSuite.Client.Status.Replayer.Matrix">
+            <summary>state -> signal -> values seen. Filled by Replay.</summary>
+        </member>
+        <member name="P:VSA.TestSuite.Client.Status.Replayer.Overrides">
+            <summary>Corrected truth for a case id (for example "T20"), from truth-overrides.json. Recordings keep the
+            truth of their run; a correction found later is written here with its reason.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Replayer.LoadOverrides(System.String)">
+            <summary>Reads truth-overrides.json: case id to corrected truth. The key "_reason" is a comment.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Replayer.ReplayFolder(System.String)">
+            <summary>Replays each recording (*.ndjson, *.ndjson.gz) in a folder, in name order.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Replayer.ReadLines(System.String)">
+            <summary>Lines of a recording, plain or gzip (.ndjson.gz).</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Replayer.Fits(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>Null if the observed states follow the allowed list in order (entries can be skipped).</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.Replayer.Normalize(VSA.TestSuite.Client.Status.Snapshot)">
+            <summary>Recordings made before the busy-window rule hold Unity's busy window in DialogTitle.
+            They have no window structure, so this rule reads the English text of that time.
+            Live samples use WindowSource.IsBusyWindow, which reads the structure.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.RunLog">
+            <summary>The run folders in the log root: list, read, mark and prune. Each Editor start has its own folder
+            &lt;root&gt;/&lt;editorId&gt;/ with unity.log, run.json and, if a daemon ran, status.ndjson.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.RunLog.Sessions(System.String)">
+            <summary>All run folders, newest first.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.RunLog.Show(System.String,System.String,System.Int32)">
+            <summary>The last <paramref name="tail"/> lines of unity.log and status.ndjson of one run.
+            A null id means the newest Editor run.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.RunLog.Mark(System.String,System.String,System.String)">
+            <summary>Appends a mark line to status.ndjson of a run. A null id means the newest Editor run.
+            Returns the file path.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.RunLog.Prune(System.String,System.Int32)">
+            <summary>Deletes the oldest run folders until <paramref name="keep"/> are left.
+            The folder of a running Editor stays.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.RunLog.IsEditor(System.Int32)">
+            <summary>True if the PID is a running Unity Editor.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusReader">
+            <summary>Reads the state now with one sample, when no daemon runs. The result has no history:
+            "cold-start" can also be a domain reload, and no clock has run.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.BeaconSource">
+            <summary>beacon: beacon.json in the status folder, written by the StatusBeacon of the package. Accepted only if its pid is the own PID.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.CliPoller">
+            <summary>Runs one slow "unity" CLI call in the background and keeps its last output. One call at a time.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.CliPoller.Kick(VSA.TestSuite.Client.Status.Target)">
+            <summary>Starts a new call if none runs and the last one is older than 6 s.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.CrashSource">
+            <summary>crash: a new folder in the Unity crash folder after the own Editor started.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DescriptorSource">
+            <summary>desc: the Pipeline descriptor file. Stores the port and token in the target only; the snapshot never holds the token.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.EditorsSource">
+            <summary>editors: "unity pipeline editors --format json", the row of the own PID. The row has no phase
+            field in CLI 1.0.1, so the source writes "safe mode", "reachable" or "unreachable".
+            It takes about 5 s, so it runs on its own task about every 6 s.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.LogSource">
+            <summary>log: size of the own unity.log, marker lines since the last sample, and the automation start line.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ProbeSource">
+            <summary>probe: "suite ping" through /api/exec with timeout 2000 ms. A queued probe that does not start
+            gets HTTP 504 and never runs, so a freeze never fills the queue. If the Editor has no "suite ping"
+            (the package is missing), the probe uses GET /api/editor_status, which also needs the main thread.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.ProbeSource.UnknownCommand(System.Int32,System.String)">
+            <summary>True if the server says that the probe command does not exist.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ProcessSource">
+            <summary>proc: the own PID is alive, its CPU use, and its exit code after the exit.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ProgressSource">
+            <summary>progress: GET /api/progress. Served off the main thread.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StatusSource">
+            <summary>status: GET /api/status. Served off the main thread.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.TruthSource">
+            <summary>truth: "console status" groundTruth. Runs only after a good probe, and at most every 2 s.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.UnityStatusSource">
+            <summary>u-status: "unity status --format json", the row of the own PID. It takes about 5 s,
+            so it runs on its own task about every 6 s.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.UnityStatusSource.OwnRow(System.Nullable{System.Text.Json.JsonElement},System.Int32)">
+            <summary>The row of data.items whose pid is the own PID.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.WindowSource">
+            <summary>win: visible dialog windows (#32770) of the own PID, the main window title, and the hung flag.
+            Unity's busy window is also a #32770 window. The source finds it by its structure, not by its text:
+            it has a progress control child (msctls_progress32). So the rule works in all Editor languages.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WindowSource.IsBusyWindow(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>True for Unity's busy window: a #32770 window with a progress control child.
+            A message box or another native dialog has no progress control.</summary>
+        </member>
+        <member name="M:VSA.TestSuite.Client.Status.WindowSource.BusySeconds(System.String)">
+            <summary>The busy time in the title, for example "(busy for 31s)" or "(busy for 01:01)". Null if none.
+            The number format does not depend on the Editor language; the words around it do.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.BackupPrompt">
+            <summary>The scene backup dialog. The supervisor presses "Delete".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ColdStart">
+            <summary>Fallback of the server group: the own Editor runs, but its server does not answer yet.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.CompileFailed">
+            <summary>The last compile failed.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Compiling">
+            <summary>A compile runs.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Crash">
+            <summary>The own PID is gone with no sign of a clean quit, or the log has "Crash!!!" (the process lives about 30 s more).</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DescriptorMismatch">
+            <summary>The own Editor runs, but the descriptor names another live Editor. The own Editor writes it again at its next heartbeat (15 s).</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.DomainReload">
+            <summary>No server after a ready, or a reload event.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Exited">
+            <summary>The own PID is gone after a clean quit: exit code 0, a quit event, or exit lines in the log.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ForeignEditor">
+            <summary>No own Editor, but a live Editor owns the descriptor of this project.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Frozen">
+            <summary>Fallback of all states: the server answers, the main thread does not, and nothing moves.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Importing">
+            <summary>An asset import or refresh runs.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.LongCommand">
+            <summary>The probe gets no answer, but work moves: progress, an own job, or the beacon. Unity's busy window does not count: it also shows during a freeze.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.NativeDialog">
+            <summary>Fallback of the dialog group: any other dialog window of the own PID.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.NoEditor">
+            <summary>No own Editor and no live descriptor.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.NotAutomated">
+            <summary>The Editor did not start with -automated. Its state is not trusted.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.PlayPaused">
+            <summary>Play Mode, paused.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.PlayRunning">
+            <summary>Play Mode, frames run.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.PlayTransition">
+            <summary>No server for less than 30 s after a Play Mode command.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.QueueFull">
+            <summary>The command queue is full: the probe gets HTTP 429.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ReadyIdle">
+            <summary>Fallback of the probe group: the main thread answers and no flag is set.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.SafeMode">
+            <summary>The Editor runs in Safe Mode: in -automated, a start with compile errors enters it with no dialog. Close it, never restart.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.SafeModePrompt">
+            <summary>The "Enter Safe Mode?" dialog. The supervisor presses "Ignore".</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.ServerDown">
+            <summary>No server, but the main thread runs (the beacon moves) and Unity had no event (load, compile, reload, play) in the last 10 s, or 30 s at a start.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.Settling">
+            <summary>The server answers "settling": imports and compiles of the start.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StaleDescriptor">
+            <summary>No own Editor, and the descriptor names a dead PID.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.StartFailed">
+            <summary>The own Editor exited with a non-zero code before any ready, with no crash: for example a package that cannot resolve. A restart gives the same result.</summary>
+        </member>
+        <member name="T:VSA.TestSuite.Client.Status.States">
+            <summary>All states in check order. The first match wins. Add a new state before the fallback of its group:
+            NativeDialog (dialogs), ColdStart (no server), ReadyIdle (probe answers), Frozen (all).</summary>
+        </member>
+    </members>
+</doc>

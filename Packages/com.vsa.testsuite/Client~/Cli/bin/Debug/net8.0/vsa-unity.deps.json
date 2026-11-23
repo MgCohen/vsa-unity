@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "vsa-unity/1.0.0": {
+        "dependencies": {
+          "VSA.TestSuite.Client": "1.0.0"
+        },
+        "runtime": {
+          "vsa-unity.dll": {}
+        }
+      },
+      "VSA.TestSuite.Client/1.0.0": {
+        "runtime": {
+          "VSA.TestSuite.Client.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "vsa-unity/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VSA.TestSuite.Client/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

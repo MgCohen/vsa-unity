@@ -1,25 +1,25 @@
 # vsa-unity
 
-This repository is the Unity project of the UPM package `com.vsa.core`: the Umpire framework (VSA pack) for Unity 6000.6.
-The package is embedded in `Packages/com.vsa.core/`. The project runs the Unity tests of the package and an IL2CPP player check of a sample module.
+This repository is the Unity project of the UPM package `com.umpire.unity`: the Umpire framework (VSA pack) for Unity 6000.6.
+The package is embedded in `Packages/com.umpire.unity/`. The project runs the Unity tests of the package and an IL2CPP player check of a sample module.
 
 ## Install the package
 
-Add the git URL to `Packages/manifest.json`. The tag `latest` is the last commit of `main`.
+Add the git URL to `Packages/manifest.json`, with the tag of a release:
 
 ```json
-"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
+"com.umpire.unity": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.umpire.unity#v0.1.0-preview.27"
 ```
 
-Unity writes the commit hash of the package to `packages-lock.json`. To get the last commit, click **Update** in the Package Manager, or delete the `com.vsa.core` entry of `packages-lock.json`.
+Each release has a tag `v<version>`, the version in `package.json`. To use a later release, change the tag in the URL.
 
-For offline or patched use, copy `Packages/com.vsa.core/` into the `Packages/` folder of the consumer project. The package documentation is in [`Packages/com.vsa.core/README.md`](Packages/com.vsa.core/README.md).
+For offline or patched use, copy `Packages/com.umpire.unity/` into the `Packages/` folder of the consumer project. The package documentation is in [`Packages/com.umpire.unity/README.md`](Packages/com.umpire.unity/README.md).
 
 ## Repository layout
 
 | Path | Contains |
 |---|---|
-| `Packages/com.vsa.core/` | The package: runtime, editor scripts, tests |
+| `Packages/com.umpire.unity/` | The package: runtime, editor scripts, tests |
 | `Assets/Sample/` | A small module in one asmdef |
 | `Assets/SampleApp/` | `SampleShell`, `SampleHost` and the `Check` view of the IL2CPP check |
 | `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
@@ -43,15 +43,18 @@ flowchart LR
     T[vsa-template release] --> S[update-umpire.ps1]
     S --> C[Tests and IL2CPP check]
     C --> M[Merge to main]
-    M --> L[Action moves latest]
-    L --> U[vsa-consumer-unity]
+    M --> G[Git URL check in vsa-consumer-unity]
+    G --> V[Tag v-version]
 ```
 
-1. On a new branch, run `./update-umpire.ps1`. It also writes the version to `package.json`.
-2. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
-3. Open a PR and merge it to `main`.
+1. On a new branch, run `./update-umpire.ps1`. It writes the Umpire version to the first line of the package README.
+2. Change `version` in `Packages/com.umpire.unity/package.json`, for example `0.1.0-preview.28`.
+3. Run `./run-tests.ps1` and `./il2cpp-check.ps1`.
+4. Open a PR and merge it to `main`.
+5. In vsa-consumer-unity, install the package from the git URL at the merge commit. Compile, run the engine and play the dice sample (#1).
+6. Tag the merge commit `v<version>` and push the tag.
 
-The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each commit of `main`. No other step adds a tag.
+The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each commit of `main`, but GitHub Actions are off for this repository. Use the version tags.
 
 ## The IL2CPP check
 

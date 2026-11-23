@@ -1,6 +1,6 @@
 is_global = true
 
-# com.vsa.core is framework code: the Umpire rules are for the consumer code.
+# com.umpire.unity is framework code: the Umpire rules are for the consumer code.
 # Unity uses this file in place of Assets/Default.globalconfig for this asmdef. The analyzers read the severity of each rule ID.
 dotnet_diagnostic.UMP010001.severity = none
 dotnet_diagnostic.UMP010101.severity = none

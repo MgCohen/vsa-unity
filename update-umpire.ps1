@@ -5,7 +5,8 @@
 #
 # With no -Version and no -Archive, the script takes the newest template release (a preview release too).
 # The script needs no token and no .NET SDK: the template repository is public.
-# The script writes the version to package.json, and prints "version=<version>" as its last line.
+# The script writes the Umpire version to the first line of the package README, and prints "version=<version>" as its
+# last line. The package has its own version in package.json: the script does not change it.
 param(
     [string]$Version,
     [string]$Archive
@@ -13,7 +14,7 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 $repository = "MgCohen/vsa-template"
-$package = Join-Path $PSScriptRoot "Packages/com.vsa.core"
+$package = Join-Path $PSScriptRoot "Packages/com.umpire.unity"
 $runtime = Join-Path $package "Runtime"
 $plugins = Join-Path $runtime "Plugins"
 
@@ -126,11 +127,11 @@ try {
         }
     }
 
-    $json = Join-Path $package "package.json"
-    $text = [IO.File]::ReadAllText($json) -replace '"version": "[^"]*"', ('"version": "' + $Version + '"')
-    [IO.File]::WriteAllText($json, $text)
+    $readme = Join-Path $package "README.md"
+    $text = [IO.File]::ReadAllText($readme) -replace 'The Umpire framework \([^)]*\)', ('The Umpire framework (' + $Version + ')')
+    [IO.File]::WriteAllText($readme, $text)
 
-    "Packages/com.vsa.core: $($dlls.Count) runtime DLLs and $($analyzers.Count) analyzers of Umpire $Version (commit $($manifest.commit))."
+    "Packages/com.umpire.unity: $($dlls.Count) runtime DLLs and $($analyzers.Count) analyzers of Umpire $Version (commit $($manifest.commit))."
     "version=$Version"
 }
 finally {

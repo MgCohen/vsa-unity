@@ -1,4 +1,4 @@
-# com.vsa.core
+# com.umpire.unity
 
 The Umpire framework (0.2.0-preview.24) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
@@ -8,10 +8,10 @@ A Unity app starts with one shell component on a GameObject of the first scene. 
 Add the package to `Packages/manifest.json`:
 
 ```json
-"com.vsa.core": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.core#latest"
+"com.umpire.unity": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.umpire.unity#v0.1.0-preview.27"
 ```
 
-The tag `latest` is the last commit of `main`. To get a later commit, click **Update** in the Package Manager.
+Each release has a tag `v<version>`, the version in `package.json`. To use a later release, change the tag in the URL.
 
 Each rule has its default values and its default severity on its class, so the package ships no rule values.
 
@@ -392,7 +392,7 @@ The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private 
 
 - A `MonoBehaviour` uses a block namespace (`namespace X { }`), not a file-scoped namespace.
 - An assembly definition (`.asmdef`) is one layer. Its references give the layers and the Umpire DLLs that the layer can use.
-- Unity compiles app code as C# 9. A record needs `IsExternalInit` in the assembly (#31).
+- Unity compiles app code as C# 9. A positional record or an `init` accessor needs an internal `IsExternalInit` class in the assembly (#31). The package does not ship it. Add `namespace System.Runtime.CompilerServices { static class IsExternalInit { } }` in one file of the assembly, not at the top of a module folder (the top of a module folder holds only the module class and its settings class). The dice sample has it in `App/Host/IsExternalInit.cs`. A record with no positional parameters and no `init` needs no file.
 
 ## Rule engine
 
@@ -408,7 +408,7 @@ Write `.umpireconfig` in the block folder (`Assets/<App>`). A relative path star
 
 ```toml
 [umpire.check]
-references = "<project>/Library/ScriptAssemblies, <project>/Packages/com.vsa.core/Runtime/Plugins, <Editor>/Data/Managed/UnityEngine"
+references = "<project>/Library/ScriptAssemblies, <project>/Packages/com.umpire.unity/Runtime/Plugins, <Editor>/Data/Managed/UnityEngine"
 source_root = "<project>"
 project_checks = false
 

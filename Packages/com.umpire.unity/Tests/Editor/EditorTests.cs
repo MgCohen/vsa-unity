@@ -47,8 +47,8 @@ namespace Umpire.Unity.Editor.Tests {
 
     public sealed class AnalyzerTests {
         static readonly string[] Analyzers = {
-            "Packages/com.vsa.core/Runtime/Umpire.Kernels.Analyzers.dll",
-            "Packages/com.vsa.core/Runtime/Umpire.Vsa.Analyzers.dll",
+            "Packages/com.umpire.unity/Runtime/Umpire.Kernels.Analyzers.dll",
+            "Packages/com.umpire.unity/Runtime/Umpire.Vsa.Analyzers.dll",
         };
 
         [TestCaseSource(nameof(Analyzers))]
@@ -69,7 +69,7 @@ namespace Umpire.Unity.Editor.Tests {
             var name = Path.GetFileName(analyzer).Replace(".", "\\.");
 
             Assert.That(rsp, Is.Not.Empty);
-            Assert.That(File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.vsa\\.core[^\"]*/Runtime/" + name + "\""));
+            Assert.That(File.ReadAllText(rsp[0]), Does.Match("-analyzer:\"[^\"]*com\\.umpire\\.unity[^\"]*/Runtime/" + name + "\""));
         }
     }
 }

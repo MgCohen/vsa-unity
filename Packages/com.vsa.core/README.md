@@ -1,6 +1,6 @@
 # com.vsa.core
 
-The Umpire framework (0.2.0-preview.23) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
+The Umpire framework (0.2.0-preview.24) for Unity 6000.6: the portable Umpire DLLs of the VSA pack, the Umpire analyzers, the Unity host and the uGUI view bases.
 A Unity app starts with one shell component on a GameObject of the first scene. Views inherit `PresenterComponent<T>`.
 
 ## Install
@@ -148,7 +148,7 @@ A module registers each factory. Code injects the typed factory, not the contain
 `IFactory<T>` is the template interface `Umpire.Kernels.IFactory<T>`. `Umpire.Factories` adds `IFactory<TArg, T>`, the `AddFactory` forms below and the bind step. A module file can use both namespaces.
 
 ```csharp
-public override void Configure(IServiceCollection services) {
+protected override void Configure(IServiceCollection services) {
     services.AddFactory<CounterModel>();                                       // also registers CounterModel
     services.AddFactory<int, Label>((provider, size) => new Label(size));      // with an argument
 }

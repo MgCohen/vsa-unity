@@ -27,7 +27,7 @@ namespace Spike {
     public abstract class Key {
     }
 
-    [TypeArgument]
+    [AutoClose]
     public sealed class Article : Key {
     }
 
@@ -44,12 +44,12 @@ namespace Spike {
     public interface IFlag {
     }
 
-    [TypeArgument]
+    [AutoClose]
     public struct Score : IScore {
         public int Value { get; set; }
     }
 
-    [TypeArgument]
+    [AutoClose]
     public struct Flag : IFlag {
     }
 

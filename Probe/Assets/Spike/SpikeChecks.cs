@@ -175,7 +175,126 @@ namespace Spike {
             }
             // In Umpire only Article has the second registration (SpikeModule.Configure).
             yield return ("spike:Edge:umpire:Article", () => spike.Run(p => Task.FromResult(Report(p.GetRequiredService<IShelf<Article>>(), p.GetServices<IShelf<Article>>()))));
+
+            // API variants for the nested shapes (R1, T1, T3).
+            // "as-open": VContainer As(typeof(IHandler<>)) in place of AsImplementedInterfaces().
+            yield return ("spike:R1:vc-as-open", () => Vc(b => {
+                b.Register<ICommandSender, NoSender>(VcLifetime.Singleton);
+                b.Register(typeof(PutHandler<>), VcLifetime.Singleton).As(typeof(IHandler<>));
+            }, r => One<IHandler<Put<Score>>>(r, "PutHandler<Score>")));
+            // "self": the open class is registered as itself. The caller computes the closed type
+            // (PutHandler<Score> for Put<Score>), and the container only creates it.
+            yield return ("spike:R1:di-self", () => Di(s => {
+                s.AddSingleton<ICommandSender, NoSender>();
+                s.AddSingleton(typeof(PutHandler<>));
+            }, p => OneOf(p.GetRequiredService(typeof(PutHandler<>).MakeGenericType(typeof(Score))), "PutHandler<Score>")));
+            yield return ("spike:R1:vc-self", () => Vc(b => {
+                b.Register<ICommandSender, NoSender>(VcLifetime.Singleton);
+                b.Register(typeof(PutHandler<>), VcLifetime.Singleton).AsSelf();
+            }, r => OneOf(r.Resolve(typeof(PutHandler<>).MakeGenericType(typeof(Score))), "PutHandler<Score>")));
+            yield return ("spike:T1:di-self", () => Di(s => {
+                s.AddSingleton(new Hits());
+                s.AddSingleton(typeof(LogChanged<>));
+            }, p => OneOf(p.GetRequiredService(typeof(LogChanged<>).MakeGenericType(typeof(Score))), "LogChanged<Score>")));
+            yield return ("spike:T1:vc-self", () => Vc(b => {
+                b.RegisterInstance(new Hits());
+                b.Register(typeof(LogChanged<>), VcLifetime.Singleton).AsSelf();
+            }, r => OneOf(r.Resolve(typeof(LogChanged<>).MakeGenericType(typeof(Score))), "LogChanged<Score>")));
+            yield return ("spike:T1:di-self:Article", () => Di(s => {
+                s.AddSingleton(new Hits());
+                s.AddSingleton(typeof(LogChanged<>));
+            }, p => OneOf(p.GetRequiredService(typeof(LogChanged<>).MakeGenericType(typeof(Article))), "LogChanged<Article>")));
+            yield return ("spike:T3:di-self", () => Di(s => s.AddSingleton(typeof(RangeValidator<>)),
+                p => OneOf(p.GetRequiredService(typeof(RangeValidator<>).MakeGenericType(typeof(Score))), "RangeValidator<Score>")));
+            yield return ("spike:T3:vc-self", () => Vc(b => b.Register(typeof(RangeValidator<>), VcLifetime.Singleton).AsSelf(),
+                r => OneOf(r.Resolve(typeof(RangeValidator<>).MakeGenericType(typeof(Score))), "RangeValidator<Score>")));
+
+            // C1 to C3: a consumer module registers open types by hand (Stocks). "closing" is the Umpire compose
+            // followed by the prototype of the closing step (OpenClosing.Close).
+            foreach (var (container, run) in new (string, Func<Func<IServiceProvider, string>, Task<string>>)[] {
+                ("di", body => Di(Stocks, body)),
+                ("umpire", body => spike.Run(p => Task.FromResult(body(p)), module: new StockModule())),
+                ("closing", body => spike.Run(p => Task.FromResult(body(p)), Stocks, close: true)),
+            }) {
+                yield return ("spike:C1:" + container, () => run(p => TillResult(p.GetRequiredService<Till>())));
+                yield return ("spike:C2:" + container, () => run(p => OneOf(p.GetRequiredService<Ledger>().Entry, "Entry<Coin>")));
+                yield return ("spike:C3:" + container, () => run(p => ShelfCount(p.GetRequiredService<Shelves>())));
+            }
+
+            // D1 to D5: open handlers that dispatch closes. Coin has no [AutoClose].
+            yield return ("spike:D1:umpire", () => spike.Run(async p => {
+                var result = await p.GetRequiredService<ICommandSender>().SendAsync(new Put<Coin>(5), CancellationToken.None);
+                return result.IsSuccess && result.Value == 5 ? "Put<Coin>(5) gives 5" : throw Failed(result.IsSuccess ? "gives " + result.Value : result.Error.Code + " " + result.Error.Message);
+            }));
+            yield return ("spike:D2:umpire", () => spike.Run(async p => {
+                var result = await p.GetRequiredService<ICommandSender>().SendAsync(new Put<Coin>(500), CancellationToken.None);
+                return !result.IsSuccess && result.Error.Code == "spike.range" ? "Put<Coin>(500) refused spike.range" : throw Failed(result.IsSuccess ? "not refused" : result.Error.Code + " " + result.Error.Message);
+            }));
+            yield return ("spike:D3:umpire", () => spike.Run(async p => {
+                var atStart = p.GetRequiredService<AppTypes>().Registered().Any(t => t == typeof(RelayHandler<Coin>))
+                    || p.GetService(typeof(RelayHandler<Coin>)) != null;
+                var result = await p.GetRequiredService<ICommandSender>().SendAsync(new CoinRelay(new Coin()), CancellationToken.None);
+                var text = (atStart ? "closed at start" : "not closed at start") + "; ";
+                return result.IsSuccess && result.Value == "relay Coin" ? text + "CoinRelay gives relay Coin" : throw Failed(text + (result.IsSuccess ? result.Value : result.Error.Code + " " + result.Error.Message));
+            }));
+            yield return ("spike:D4:umpire", () => spike.Run(async p => {
+                var result = await p.GetRequiredService<ICommandSender>().SendAsync(new Swap<Coin, Score>(1), CancellationToken.None);
+                return result.IsSuccess && result.Value == "Coin->Score" ? "Swap<Coin, Score> gives Coin->Score" : throw Failed(result.IsSuccess ? result.Value : result.Error.Code + " " + result.Error.Message);
+            }));
+            yield return ("spike:D5:umpire", () => spike.Run(async p => {
+                var result = await p.GetRequiredService<IIntegrationEventPublisher>().PublishAsync(new Changed<Coin>(new Coin()), CancellationToken.None);
+                if (!result.IsSuccess) {
+                    throw Failed(result.Error.Code + " " + result.Error.Message);
+                }
+                return HitsAre(p, "log Coin");
+            }));
+
+            // S1 to S6: which types UnityLinker keeps. The result is a report, not a pass or fail.
+            foreach (var (id, tree) in new[] { ("S1", "None"), ("S2", "Real"), ("S3", "Keep"), ("S4", "Same"), ("S5", "Copy"), ("S6", "Derived"), ("S7", "Used"), ("S8", "Own"), ("S9", "UsedPreserve") }) {
+                yield return ("spike:" + id + ":" + tree, () => Task.FromResult(Kept(tree)));
+            }
         }
+
+        static string Kept(string tree) {
+            GC.KeepAlive(typeof(Strip.UsedBase));
+            GC.KeepAlive(typeof(Strip.UsedPreserveChild));
+            var types = typeof(SpikeChecks).Assembly.GetTypes();
+            string State(string role) {
+                var type = types.FirstOrDefault(t => t.Name == tree + role);
+                if (type == null) {
+                    return role + " stripped";
+                }
+                try {
+                    Activator.CreateInstance(type);
+                    return role + " kept";
+                } catch (Exception e) {
+                    return role + " kept, no constructor (" + e.GetType().Name + ")";
+                }
+            }
+            return State("Base") + "; " + State("Child") + "; " + State("Grandchild");
+        }
+
+        // The consumer registrations of C1 to C3 in a real module, so that the Umpire compose sees them.
+        internal sealed class StockModule : Module {
+            public override void Configure(IServiceCollection services) => Stocks(services);
+        }
+
+        static void Stocks(IServiceCollection services) {
+            services.AddSingleton(typeof(IStock<>), typeof(Stock<>));
+            services.AddSingleton(typeof(IEntry<>), typeof(Entry<>));
+            services.AddSingleton<IStock<Article>, Stock<Article>>();
+            services.AddSingleton<Till>();
+            services.AddSingleton<Ledger>();
+            services.AddSingleton<Shelves>();
+        }
+
+        static string TillResult(Till till) {
+            var text = Name(till.Coins.GetType()) + ", " + Name(till.Articles.GetType());
+            return text == "Stock<Coin>, Stock<Article>" ? text : throw Failed(text + ", expected Stock<Coin>, Stock<Article>");
+        }
+
+        static string ShelfCount(Shelves shelves) =>
+            shelves.Count == 1 ? "list of 1 IStock<Article>" : throw Failed("list of " + shelves.Count + " IStock<Article>, expected 1");
 
         // The Umpire compose of the spike module only, with a new container for each check.
         sealed class UmpireCompose {
@@ -185,10 +304,13 @@ namespace Spike {
                 this.compose = compose;
             }
 
-            public async Task<string> Run(Func<IServiceProvider, Task<string>> body, Action<IServiceCollection> more = null) {
+            public async Task<string> Run(Func<IServiceProvider, Task<string>> body, Action<IServiceCollection> more = null, bool close = false, Module module = null) {
                 var services = new ServiceCollection();
-                compose(services, new AppTypes(new Module[] { new SpikeModule() }));
+                compose(services, new AppTypes(module == null ? new Module[] { new SpikeModule() } : new Module[] { new SpikeModule(), module }));
                 more?.Invoke(services);
+                if (close) {
+                    OpenClosing.Close(services, typeof(Coin).Assembly.GetTypes().Where(MarkedTypes.IsAutoClose));
+                }
                 using (var provider = services.BuildServiceProvider())
                 using (var scope = provider.CreateScope()) {
                     return await body(scope.ServiceProvider);

@@ -1,0 +1,19 @@
+{
+  "name": "com.umpire.unity",
+  "version": "0.1.0-preview.27",
+  "displayName": "Umpire for Unity",
+  "description": "The Umpire framework and its VSA pack for Unity: the portable Umpire DLLs, the analyzers, the shells and the Unity host (Shell, VsaShell, UnityHost), and the uGUI view base (PresenterComponent<T>).",
+  "unity": "6000.6",
+  "unityRelease": "6f1",
+  "author": {
+    "name": "MgCohen",
+    "url": "https://github.com/MgCohen"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MgCohen/vsa-unity.git"
+  },
+  "dependencies": {
+    "com.unity.ugui": "2.6.0"
+  }
+}

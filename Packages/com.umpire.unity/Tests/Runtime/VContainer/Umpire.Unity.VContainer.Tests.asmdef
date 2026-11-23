@@ -1,0 +1,20 @@
+{
+  "name": "Umpire.Unity.VContainer.Tests",
+  "rootNamespace": "Umpire.Unity.VContainer.Tests",
+  "references": ["Umpire.Unity", "Umpire.Factories", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "Umpire.dll",
+    "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS", "UMPIRE_VCONTAINER"],
+  "versionDefines": [
+    {
+      "name": "jp.hadashikick.vcontainer",
+      "expression": "1.16.0",
+      "define": "UMPIRE_VCONTAINER"
+    }
+  ]
+}

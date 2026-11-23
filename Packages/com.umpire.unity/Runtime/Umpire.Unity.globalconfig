@@ -1,0 +1,20 @@
+is_global = true
+
+# com.umpire.unity is framework code: the Umpire rules are for the consumer code.
+# Unity uses this file in place of Assets/Default.globalconfig for this asmdef. The analyzers read the severity of each rule ID.
+dotnet_diagnostic.UMP010001.severity = none
+dotnet_diagnostic.UMP010101.severity = none
+dotnet_diagnostic.UMP010102.severity = none
+dotnet_diagnostic.UMP010103.severity = none
+dotnet_diagnostic.UMP010104.severity = none
+dotnet_diagnostic.UMP010105.severity = none
+dotnet_diagnostic.UMP010106.severity = none
+dotnet_diagnostic.UMP010201.severity = none
+dotnet_diagnostic.UMP010202.severity = none
+dotnet_diagnostic.UMP010203.severity = none
+dotnet_diagnostic.UMP010204.severity = none
+dotnet_diagnostic.UMP010205.severity = none
+dotnet_diagnostic.UMP010206.severity = none
+dotnet_diagnostic.UMP010207.severity = none
+dotnet_diagnostic.UMP010208.severity = none
+dotnet_diagnostic.UMP010209.severity = none

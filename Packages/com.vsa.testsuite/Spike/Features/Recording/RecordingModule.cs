@@ -5,7 +5,7 @@ namespace VSA.TestSuite.Spike.Features.Recording
 {
     public sealed class RecordingModule : Module<RecordingSettings>
     {
-        public override void Configure(IServiceCollection services, RecordingSettings settings)
+        protected override void Configure(IServiceCollection services, RecordingSettings settings)
         {
             services.AddSingleton(settings);
             services.AddSingleton(_ => VideoRecorders.Create());

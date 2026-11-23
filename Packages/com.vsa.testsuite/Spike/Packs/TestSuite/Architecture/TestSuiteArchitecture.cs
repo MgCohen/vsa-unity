@@ -1,25 +1,18 @@
 using Umpire.Architecture;
+using Umpire.Kernels.Blocks;
 using Umpire.Vsa.Definition;
 
 namespace VSA.TestSuite.Spike.Packs.TestSuite
 {
     public sealed class TestSuiteArchitecture : VsaArchitecture
     {
-        protected override void DefinePlugin(PartGroup plugin)
+        protected override void Define(Part root, Part kernel)
         {
-            base.DefinePlugin(plugin);
-            plugin.Add<CliCommand>();
-        }
-
-        protected override void DefineFeature(PartGroup feature)
-        {
-            base.DefineFeature(feature);
-            feature.Add<CliCommand>();
+            root.For<Module>().Add<CliCommand>();
         }
 
         protected override void Rules(RuleBook rules)
         {
-            base.Rules(rules);
             rules.For<CliCommand>().Uses<Contracts>().And<Contracts.Requests>().And<Infrastructure>()
                 .And<Domain.Shared>();
         }

@@ -5,6 +5,6 @@ namespace VSA.TestSuite.Spike.Features.Evidence
 {
     public sealed class EvidenceModule : Module
     {
-        public override void Configure(IServiceCollection services) => services.AddSingleton<ScreenshotSystem>();
+        protected override void Configure(IServiceCollection services) => services.AddSingleton<ScreenshotSystem>();
     }
 }

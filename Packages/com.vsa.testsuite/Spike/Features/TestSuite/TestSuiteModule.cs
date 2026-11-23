@@ -5,6 +5,6 @@ namespace VSA.TestSuite.Spike.Features.TestSuite
 {
     public sealed class TestSuiteModule : Module
     {
-        public override void Configure(IServiceCollection services) => services.AddSingleton<ScriptCatalog>();
+        protected override void Configure(IServiceCollection services) => services.AddSingleton<ScriptCatalog>();
     }
 }

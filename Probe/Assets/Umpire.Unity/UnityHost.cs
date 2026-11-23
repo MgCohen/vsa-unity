@@ -21,10 +21,6 @@ namespace Umpire.Unity {
 
         protected override void Configure(IServiceCollection services, AppTypes types) {
             services.AddLogging(logging => logging.AddProvider(new UnityLogProvider()));
-            services.AddSingleton<LivePresenters.Dispatch>(async work => {
-                await Awaitable.MainThreadAsync();
-                await work();
-            });
         }
     }
 }

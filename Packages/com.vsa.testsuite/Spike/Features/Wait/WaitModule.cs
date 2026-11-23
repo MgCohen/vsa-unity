@@ -5,7 +5,7 @@ namespace VSA.TestSuite.Spike.Features.Wait
 {
     public sealed class WaitModule : Module
     {
-        public override void Configure(IServiceCollection services)
+        protected override void Configure(IServiceCollection services)
         {
         }
     }

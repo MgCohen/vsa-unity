@@ -1,0 +1,14 @@
+{
+  "name": "Umpire.Unity.Tests",
+  "rootNamespace": "Umpire.Unity.Tests",
+  "references": ["Umpire.Unity", "Umpire.Factories", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "Umpire.dll",
+    "Microsoft.Extensions.Configuration.Abstractions.dll",
+    "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

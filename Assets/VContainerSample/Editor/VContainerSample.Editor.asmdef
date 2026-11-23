@@ -1,6 +1,6 @@
 {
   "name": "VContainerSample.Editor",
   "rootNamespace": "VContainerSample.Editor",
-  "references": ["VContainerSample", "Umpire.Unity", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI"],
+  "references": ["VContainerSample", "Umpire.Unity", "Umpire.Factories", "Umpire.Unity.VContainer", "VContainer", "UnityEngine.UI"],
   "includePlatforms": ["Editor"]
 }

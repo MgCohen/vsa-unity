@@ -1,0 +1,9 @@
+{
+  "name": "DiceGame.PlayTests",
+  "rootNamespace": "DiceGame.PlayTests",
+  "references": ["Umpire.Unity", "Umpire.Factories", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll", "Umpire.dll"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

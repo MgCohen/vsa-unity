@@ -44,5 +44,5 @@
     "com.unity.recorder": "5.1.8",
     "jp.hadashikick.vcontainer": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer#1.19.0"
   },
-  "testables": ["com.vsa.core", "com.vsa.testsuite"]
+  "testables": ["com.umpire.unity", "com.vsa.testsuite"]
 }

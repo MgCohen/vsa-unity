@@ -7,7 +7,7 @@ namespace VSA.TestSuite.Spike.Plugins.Session
 {
     public sealed class SessionPlugin : Plugin<SessionSettings>
     {
-        public override void Configure(IServiceCollection services, SessionSettings settings)
+        protected override void Configure(IServiceCollection services, SessionSettings settings)
         {
             services.AddSingleton(settings);
             services.AddSingleton<TestSession>();

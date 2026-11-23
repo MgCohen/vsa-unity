@@ -5,6 +5,6 @@ namespace VSA.TestSuite.Spike.Features.Scenes
 {
     public sealed class ScenesModule : Module
     {
-        public override void Configure(IServiceCollection services) => services.AddSingleton<SceneSystem>();
+        protected override void Configure(IServiceCollection services) => services.AddSingleton<SceneSystem>();
     }
 }

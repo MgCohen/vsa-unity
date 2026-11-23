@@ -15,6 +15,7 @@ namespace VSA.TestSuite.Spike.Packs.TestSuite
         {
             rules.For<CliCommand>().Uses<Contracts>().And<Contracts.Requests>().And<Infrastructure>()
                 .And<Domain.Shared>();
+            rules.For<Module>().Uses<Module>(Depth.Self).InSame<Module>();
         }
     }
 }

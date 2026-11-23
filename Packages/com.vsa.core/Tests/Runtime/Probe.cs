@@ -19,7 +19,7 @@ namespace Umpire.Unity.Tests {
     public sealed class ProbeModule : Module<ProbeSettings> {
         public static ProbeSettings Bound { get; private set; }
 
-        public override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) {
+        protected override void Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ProbeSettings settings) {
             Bound = settings;
             Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<PingController>(services);
             // One FreshController for each view: the module registration wins over the scan of the scene targets.

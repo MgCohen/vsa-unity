@@ -6,7 +6,7 @@ using Umpire.Vsa.Infrastructure;
 
 namespace DiceGame.Features.Counter {
     public sealed class CounterModule : Module {
-        public override void Configure(IServiceCollection services) {
+        protected override void Configure(IServiceCollection services) {
             services.AddSingleton<RollLogStore>();
             services.AddScoped<IRepository<RollLog, int>, RollLogRepository>();
         }

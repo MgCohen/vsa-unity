@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sample;
 using Umpire.Kernels;
@@ -41,6 +42,7 @@ namespace SampleApp {
         IEnumerator Run() {
             Line("backend", Application.isEditor ? "editor" : "player");
             Line("shell", Shell.Owner.GetType().FullName, "SampleApp.SampleShell");
+            CheckArguments();
             var types = Shell.Services.GetRequiredService<AppTypes>();
             Line("modules", string.Join(",", types.Modules.Select(m => m.Name)), "Sample");
             var moves = types.Registered()
@@ -57,6 +59,15 @@ namespace SampleApp {
             if (!Application.isEditor) {
                 Application.Quit(failures == 0 ? 0 : 1);
             }
+        }
+
+        void CheckArguments() {
+            if (Application.isEditor) {
+                return;
+            }
+            var configuration = Shell.Services.GetRequiredService<IConfiguration>();
+            Line("argument", configuration["Probe:Value"] ?? "null", "42");
+            Line("unity-argument", configuration["batchmode"] ?? "null", "null");
         }
 
         IEnumerator SendFromAnotherThread() {

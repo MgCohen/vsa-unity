@@ -384,9 +384,33 @@ The kernel analyzer embeds its config reader (Tomlyn) and loads it in a private 
 - Module asmdefs often do not reference `Umpire.Unity`. The .NET test build checks the module code.
 - To change a severity, write `dotnet_diagnostic.<rule ID>.severity = <value>` in `Assets/Default.globalconfig`. Unity reads this file for all assemblies.
 - A `<AsmdefName>.globalconfig` next to an asmdef replaces `Assets/Default.globalconfig` for that asmdef.
-- The analyzers read other rule values from `.umpireconfig` only. Unity does not give that file to the compiler yet (#57), so these values stay at their defaults.
+- The analyzers read other rule values from `.umpireconfig` only. See the next section.
 - The package code is framework code, so each package asmdef sets the `UMP` rules to `none`.
 - The package code is C# 9, the default language version of Unity 6000.6.
+
+### Rule values from `.umpireconfig`
+
+Unity does not give `.umpireconfig` to the compiler. A project gives it with `Assets/csc.rsp`:
+
+1. Write `ProjectSettings/.umpireconfig`. Example line: `umpire.UMP010101.max = 140`.
+2. Write one line in `Assets/csc.rsp`: `-additionalfile:ProjectSettings/.umpireconfig`. The path starts at the project root.
+3. Let Unity compile.
+4. After each value change, make a clean compile:
+
+```csharp
+using UnityEditor.Compilation;
+
+CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
+```
+
+| Limit | Effect |
+|---|---|
+| A value change does not start a compile | The old findings stay until the clean compile |
+| The file is missing | `CS2001` in each assembly. Keep the file and `csc.rsp` together in version control. |
+| A value is wrong | `UMP010001` in each consumer assembly that gets the analyzers |
+| A comment in `csc.rsp` | `CS2001`: `csc.rsp` does not accept comments |
+
+Unity gives the line to all assemblies. The analyzers use the values only in the assemblies that get the Umpire rules.
 
 ## Code rules in Unity
 

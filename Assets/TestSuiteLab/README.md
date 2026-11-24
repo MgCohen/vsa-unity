@@ -1,6 +1,6 @@
 # Test suite lab
 
-Fixtures for the end-to-end checks of `com.vsa.testsuite` (`Packages/com.vsa.testsuite/Client~/Samples`).
+Fixtures for the end-to-end checks of `com.vsa.testsuite` (`Assets/TestSuite/Client~/Samples`).
 
 | File | Content |
 |---|---|

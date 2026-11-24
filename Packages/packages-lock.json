@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.umpire.unity": {
+      "version": "file:com.umpire.unity",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.ugui": "2.6.0"
+      }
+    },
     "com.unity.bindings.openimageio": {
       "version": "1.0.2",
       "depth": 1,
@@ -129,25 +137,6 @@
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.physics2d": "1.0.0",
         "com.unity.modules.physics": "1.0.0"
-      }
-    },
-    "com.umpire.unity": {
-      "version": "file:com.umpire.unity",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.ugui": "2.6.0"
-      }
-    },
-    "com.vsa.testsuite": {
-      "version": "file:com.vsa.testsuite",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.pipeline": "1.0.0",
-        "com.unity.ugui": "2.6.0",
-        "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.modules.screencapture": "1.0.0"
       }
     },
     "jp.hadashikick.vcontainer": {

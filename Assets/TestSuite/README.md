@@ -1,15 +1,11 @@
-# com.vsa.testsuite
+# VSA Test Suite
 
 Drives a running game from the `unity` CLI and from C# scripts. Commands call actions, actions call systems, and hooks record evidence for each step.
-The package needs `com.unity.pipeline` 1.0.0 and Unity 6000.6 or later. It has no VSA reference.
+It needs `com.unity.pipeline` 1.0.0 and Unity 6000.6 or later. The spike (`Spike/`) also needs `com.umpire.unity`.
 
 ## Install
 
-Add the package to `Packages/manifest.json`:
-
-```json
-"com.vsa.testsuite": "https://github.com/MgCohen/vsa-unity.git?path=/Packages/com.vsa.testsuite#latest"
-```
+The test suite is a folder of this project (`Assets/TestSuite`) for now, not a package. Its package dependencies are in `Packages/manifest.json`.
 
 The Pipeline server must run: in the Editor it runs by default. In a player, it runs only in a development build with the runtime pipeline on.
 
@@ -263,11 +259,11 @@ flowchart LR
 - The daemon ends when the Editor exits or after `close`. A lock file allows one daemon for each project.
 
 ```bash
-dotnet build Packages/com.vsa.testsuite/Client~/Cli
-dotnet Packages/com.vsa.testsuite/Client~/Cli/bin/Debug/net8.0/vsa-unity.dll open --timeout 600
+dotnet build Assets/TestSuite/Client~/Cli
+dotnet Assets/TestSuite/Client~/Cli/bin/Debug/net8.0/vsa-unity.dll open --timeout 600
 ```
 
-Tests: `dotnet test Packages/com.vsa.testsuite/Client~/Tests`. They include the supervisor with a fake control, one test for each CLI command, and the replay of `Tools/StatusLab/results/final` (115 of 117 or better).
+Tests: `dotnet test Assets/TestSuite/Client~/Tests`. They include the supervisor with a fake control, one test for each CLI command, and the replay of `Tools/StatusLab/results/final` (115 of 117 or better).
 
 The samples test the lab fixtures in `Assets/TestSuiteLab` of vsa-unity. Run them from `Client~/Samples`. With no arguments, they use the Unity project above the current folder.
 

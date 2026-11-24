@@ -8,8 +8,8 @@ description: Open, close and check a Unity Editor with the vsa-unity CLI (open, 
 `vsa-unity` opens, closes and checks the Unity Editor of one project. A daemon of the project keeps the history of the Editor, answers dialogs and escalates hangs. Do not read `/api/status`, the descriptor or `unity status` to decide a state: they say `ready` during a freeze.
 
 ```bash
-dotnet build Packages/com.vsa.testsuite/Client~/Cli
-dotnet Packages/com.vsa.testsuite/Client~/Cli/bin/Debug/net8.0/vsa-unity.dll <command>
+dotnet build Assets/TestSuite/Client~/Cli
+dotnet Assets/TestSuite/Client~/Cli/bin/Debug/net8.0/vsa-unity.dll <command>
 ```
 
 Run it from the Unity project folder, or pass `--project-path <path>`.

@@ -18,8 +18,8 @@ TestResults*.xml
 /Assets/Check.unity.meta
 
 # com.vsa.testsuite client
-/Packages/com.vsa.testsuite/Client~/bin/
-/Packages/com.vsa.testsuite/Client~/obj/
+/Assets/TestSuite/Client~/bin/
+/Assets/TestSuite/Client~/obj/
 
 # com.vsa.testsuite run folders
 /Runs/

@@ -10,6 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="results/**" />
-    <ProjectReference Include="../../Packages/com.vsa.testsuite/Client~/VSA.TestSuite.Client.csproj" />
+    <ProjectReference Include="../../Assets/TestSuite/Client~/VSA.TestSuite.Client.csproj" />
   </ItemGroup>
 </Project>

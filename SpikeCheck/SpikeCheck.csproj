@@ -15,7 +15,7 @@
     <ScriptAssemblies>$(MSBuildThisFileDirectory)..\Library\ScriptAssemblies</ScriptAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Packages\com.vsa.testsuite\Spike\**\*.cs" />
+    <Compile Include="..\Assets\TestSuite\Spike\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(NoRefs)' != 'true'">
     <!-- Unity engine modules -->

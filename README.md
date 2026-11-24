@@ -63,6 +63,7 @@ The workflow `.github/workflows/latest-tag.yml` moves the tag `latest` to each c
 | Line | Shows |
 |---|---|
 | `shell`, `presenter-dispatch` | `SampleShell` owns the app, and `UnityHost` adds the dispatch |
+| `argument`, `unity-argument` | `--Probe:Value=42` is in `IConfiguration`, and `-batchmode` is not |
 | `modules`, `typeArguments` | `SampleHost` gives the one-asmdef module |
 | `request`, `presenter-event` | A request from a thread pool thread; the event runs on the main thread |
 | `struct-argument` | Handlers closed over struct type arguments |

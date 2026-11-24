@@ -1,23 +1,23 @@
 using System.Threading.Tasks;
 using Umpire.Messages.Contracts;
+using Umpire.Vsa.Contracts.Commands;
 using Umpire.Vsa.Handlers.Requests;
-using Umpire.Vsa.Contracts.Requests;
 using VSA.TestSuite.Spike.Features.Objects;
 
 namespace VSA.TestSuite.Spike.Features.Touch
 {
     internal sealed class HoldObjectHandler : RequestHandler<HoldObject, HoldObjectResult>
     {
-        readonly IRequestSender requests;
+        readonly ICommandSender commands;
 
-        public HoldObjectHandler(IRequestSender requests) => this.requests = requests;
+        public HoldObjectHandler(ICommandSender commands) => this.commands = commands;
 
         public override async Task<Result<HoldObjectResult>> HandleAsync(IEnvelope<HoldObject> envelope)
         {
-            var found = await requests.SendAsync(new FindObject(envelope.Message.Path), envelope.Cancellation);
+            var found = await commands.SendAsync(new LocateObject(envelope.Message.Path), envelope.Cancellation);
             if (!found.IsSuccess) return found.Error;
-            var screen = new HoldScreen(found.Value.Point, envelope.Message.Seconds);
-            var held = await requests.SendAsync(screen, envelope.Cancellation);
+            var pointer = new HoldPointer(found.Value.Point, envelope.Message.Seconds);
+            var held = await commands.SendAsync(pointer, envelope.Cancellation);
             if (!held.IsSuccess) return held.Error;
             var value = found.Value;
             return new HoldObjectResult(

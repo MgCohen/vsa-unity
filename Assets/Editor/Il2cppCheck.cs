@@ -40,7 +40,8 @@ public static class Il2cppCheck {
 
     static void MakeSceneWithShellAndCheck() {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        new GameObject("Shell").AddComponent<SampleApp.SampleShell>();
+        var shell = new GameObject("Shell").AddComponent<SampleApp.SampleShell>();
+        shell.Arguments = new[] { "--Probe:Order=inspector" };
         new GameObject("Check").AddComponent<SampleApp.Check>();
         EditorSceneManager.SaveScene(scene, Scene);
     }

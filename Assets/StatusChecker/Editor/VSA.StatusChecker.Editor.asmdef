@@ -1,0 +1,9 @@
+{
+  "name": "VSA.StatusChecker.Editor",
+  "rootNamespace": "VSA.StatusChecker.Editor",
+  "references": [
+    "Unity.Pipeline.Attributes"
+  ],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

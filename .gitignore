@@ -16,3 +16,10 @@ TestResults*.xml
 # Il2cppCheck.cs writes the scene of the check
 /Assets/Check.unity
 /Assets/Check.unity.meta
+
+# Test suite client
+/Assets/StatusChecker/Client~/bin/
+/Assets/StatusChecker/Client~/obj/
+
+# Run folders of the test suite
+/TestRuns/

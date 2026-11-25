@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Umpire.Architecture;
@@ -29,6 +30,13 @@ namespace Umpire.Unity {
         protected UnityHost(params Module[] modules) {
             ModuleProvider = new FixedModules(modules);
         }
+
+        // A player adds the arguments of its process after the given ones, so the process arguments win.
+        // The Editor does not: its process arguments belong to the Editor, not to the app.
+        protected override IConfiguration Configuration(string[] args) =>
+            base.Configuration(Application.isEditor
+                ? args
+                : args.Concat(Environment.GetCommandLineArgs().Skip(1)).ToArray());
 
         // Unity has no .umpireconfig in its base folder. The host asks the assets on the shell first,
         // then the UnitySettings classes of the app, in name order.

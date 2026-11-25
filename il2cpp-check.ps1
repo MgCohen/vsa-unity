@@ -28,7 +28,7 @@ if ($built -ne 0) {
 }
 
 $log = Join-Path $out "player.log"
-$run = Start-Process -FilePath (Join-Path $player "VsaCheck.exe") -ArgumentList "-batchmode", "-nographics", "-logFile", "`"$log`"", "--Probe:Value=42" -PassThru
+$run = Start-Process -FilePath (Join-Path $player "VsaCheck.exe") -ArgumentList "-batchmode", "-nographics", "-logFile", "`"$log`"", "--Probe:Value=42", "--Probe:Order=process" -PassThru
 # The player quits by itself. If it does not stop in 2 minutes, the check fails.
 if (-not $run.WaitForExit(120000)) {
     Stop-Process -Id $run.Id -Force

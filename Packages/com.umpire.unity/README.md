@@ -60,7 +60,7 @@ Shell.OnDestroy               Play Mode exit, player quit: App.Stop()
 
 | `Shell` member | Use |
 |---|---|
-| `Arguments` | The `args` of `App.Start` |
+| `Arguments` | The `args` of `App.Start`. A player adds its process arguments, and they win. |
 | `Settings` (Inspector) | The `ModuleSettingsAsset` assets of the app |
 | `Services` (static) | The services of the running app, else null |
 | `AppIsRunning` (static) | True while the app runs |

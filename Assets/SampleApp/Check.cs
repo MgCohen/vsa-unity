@@ -67,6 +67,7 @@ namespace SampleApp {
             }
             var configuration = Shell.Services.GetRequiredService<IConfiguration>();
             Line("argument", configuration["Probe:Value"] ?? "null", "42");
+            Line("argument-order", configuration["Probe:Order"] ?? "null", "process");
             Line("unity-argument", configuration["batchmode"] ?? "null", "null");
         }
 

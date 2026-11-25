@@ -1,8 +1,8 @@
 using System.Text.Json;
 using StatusLab;
-using VSA.TestSuite.Client.Status;
+using VSA.StatusChecker;
 
-// Spike CLI of the status lab. Output: one JSON envelope on stdout; progress on stderr.
+// CLI of the status lab. Output: one JSON envelope on stdout; progress on stderr.
 //   statuslab start | stop
 //   statuslab sample [--seconds N]
 //   statuslab playbook A|B [--runs N] [--steps A1,A3] [--full-import]

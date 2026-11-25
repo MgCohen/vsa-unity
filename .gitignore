@@ -18,8 +18,8 @@ TestResults*.xml
 /Assets/Check.unity.meta
 
 # Test suite client
-/Assets/TestSuite/Client~/bin/
-/Assets/TestSuite/Client~/obj/
+/Assets/StatusChecker/Client~/bin/
+/Assets/StatusChecker/Client~/obj/
 
-# Run folders of the test suite spike
+# Run folders of the test suite
 /TestRuns/

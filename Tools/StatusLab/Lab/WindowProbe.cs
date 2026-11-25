@@ -1,4 +1,4 @@
-using VSA.TestSuite.Client.Status;
+using VSA.StatusChecker;
 namespace StatusLab
 {
     /// <summary>Records every top window of one process: class, title, visible flag, child controls, and the

@@ -2,8 +2,19 @@
   "name": "VSA.TestSuite.Editor",
   "rootNamespace": "VSA.TestSuite.Editor",
   "references": [
-    "Unity.Pipeline.Attributes"
+    "VSA.TestSuite",
+    "Umpire.Unity",
+    "Unity.Recorder",
+    "Unity.Recorder.Editor"
   ],
   "includePlatforms": ["Editor"],
-  "autoReferenced": true
+  "autoReferenced": false,
+  "defineConstraints": ["VSA_TESTSUITE_RECORDER"],
+  "versionDefines": [
+    {
+      "name": "com.unity.recorder",
+      "expression": "5.0.0",
+      "define": "VSA_TESTSUITE_RECORDER"
+    }
+  ]
 }

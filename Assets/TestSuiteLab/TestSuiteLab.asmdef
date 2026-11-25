@@ -1,0 +1,10 @@
+{
+  "name": "TestSuiteLab",
+  "rootNamespace": "TestSuiteLab",
+  "references": [
+    "Unity.Pipeline.Attributes",
+    "UnityEngine.UI",
+    "VSA.TestSuite"
+  ],
+  "autoReferenced": false
+}

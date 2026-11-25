@@ -21,6 +21,8 @@ For offline or patched use, copy `Packages/com.umpire.unity/` into the `Packages
 |---|---|
 | `Packages/com.umpire.unity/` | The package: runtime, editor scripts, tests |
 | `Assets/TestSuite/` | The test suite: drives a running game from the `unity` CLI. It is a project folder for now, not a package. See its [README](Assets/TestSuite/README.md). |
+| `Assets/TestSuiteLab/` | The lab scenes and lab scripts of the test suite |
+| `Assets/StatusChecker/` | The status checker and the CLI `vsa-unity`. See its [README](Assets/StatusChecker/README.md). |
 | `Assets/Sample/` | A small module in one asmdef |
 | `Assets/SampleApp/` | `SampleShell`, `SampleHost` and the `Check` view of the IL2CPP check |
 | `Assets/VContainerSample/` | A VContainer scene that uses the two directions of `Umpire.Unity.VContainer` |
@@ -34,7 +36,7 @@ For offline or patched use, copy `Packages/com.umpire.unity/` into the `Packages
 | `./update-umpire.ps1 [-Version <version>]` | Copies the DLLs of a template release to the package (default: the newest release) |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
-| `dotnet test Assets/TestSuite/Client~/Tests` | Runs the tests of the status checker |
+| `dotnet test Assets/StatusChecker/Client~/Tests` | Runs the tests of the status checker |
 
 `update-umpire.ps1` downloads `umpire-<version>.zip` from the vsa-template release. It needs no token and no .NET SDK. It checks the SHA-256 value of each file in `manifest.json`.
 

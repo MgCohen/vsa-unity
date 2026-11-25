@@ -1,4 +1,4 @@
-using VSA.TestSuite.Client.Status;
+using VSA.StatusChecker;
 using System.Net;
 using System.Net.Sockets;
 

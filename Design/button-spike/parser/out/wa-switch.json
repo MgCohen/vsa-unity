@@ -1,0 +1,1181 @@
+{
+  "tag": "wa-switch",
+  "properties": [
+    {
+      "name": "title",
+      "attribute": "title",
+      "type": "String",
+      "reflect": false,
+      "default": "\"\""
+    },
+    {
+      "name": "name",
+      "attribute": "name",
+      "type": "String",
+      "reflect": true,
+      "default": "null"
+    },
+    {
+      "name": "size",
+      "attribute": "size",
+      "type": "String",
+      "reflect": true,
+      "default": "\"m\""
+    },
+    {
+      "name": "disabled",
+      "attribute": "disabled",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    },
+    {
+      "name": "defaultChecked",
+      "attribute": "checked",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "this.hasAttribute(\"checked\")"
+    },
+    {
+      "name": "required",
+      "attribute": "required",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "false"
+    },
+    {
+      "name": "hint",
+      "attribute": "hint",
+      "type": "String",
+      "reflect": false,
+      "default": "\"\""
+    },
+    {
+      "name": "withHint",
+      "attribute": "with-hint",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    }
+  ],
+  "events": [
+    {
+      "name": "change",
+      "source": "new Event(\"change\", { bubbles: true, composed: true })"
+    },
+    {
+      "name": "input",
+      "source": "new InputEvent(\"input\", { bubbles: true, composed: true })"
+    }
+  ],
+  "anatomy": [
+    {
+      "tag": "label",
+      "attrs": {
+        "part": "base switch"
+      },
+      "children": [
+        {
+          "tag": "input",
+          "attrs": {
+            "class": "input",
+            "type": "checkbox",
+            "title": "${this.title}",
+            "name": "${ifDefined(this.name)}",
+            "value": "${ifDefined(this.value)}",
+            ".checked": "${ifDefined(checkedProperty)}",
+            "?checked": "${checkedAttribute}",
+            "?disabled": "${this.disabled}",
+            "?required": "${this.required}",
+            "role": "switch",
+            "aria-checked": "${this.checked ? \"true\" : \"false\"}",
+            "aria-describedby": "hint",
+            "@click": "${this.handleClick}",
+            "@keydown": "${this.handleKeyDown}"
+          }
+        },
+        {
+          "tag": "span",
+          "attrs": {
+            "part": "control",
+            "class": "switch"
+          },
+          "children": [
+            {
+              "tag": "span",
+              "attrs": {
+                "part": "thumb",
+                "class": "thumb"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "slot",
+          "attrs": {
+            "part": "label",
+            "class": "label"
+          }
+        }
+      ],
+      "classMap": [
+        {
+          "name": "checked",
+          "when": "this.checked"
+        },
+        {
+          "name": "disabled",
+          "when": "this.disabled"
+        }
+      ]
+    },
+    {
+      "tag": "slot",
+      "attrs": {
+        "id": "hint",
+        "name": "hint",
+        "part": "hint",
+        "aria-hidden": "${hasHint ? \"false\" : \"true\"}"
+      },
+      "children": [
+        {
+          "text": "${this.hint}"
+        }
+      ],
+      "classMap": [
+        {
+          "name": "has-slotted",
+          "when": "hasHint"
+        }
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "part": "base",
+      "tag": "label",
+      "path": "label"
+    },
+    {
+      "part": "switch",
+      "tag": "label",
+      "path": "label"
+    },
+    {
+      "part": "control",
+      "tag": "span",
+      "path": "label[base] > span"
+    },
+    {
+      "part": "thumb",
+      "tag": "span",
+      "path": "label[base] > span[control] > span"
+    },
+    {
+      "part": "label",
+      "tag": "slot",
+      "path": "label[base] > slot"
+    },
+    {
+      "part": "hint",
+      "tag": "slot",
+      "path": "slot"
+    }
+  ],
+  "slots": [
+    {
+      "name": "(default)",
+      "parts": [
+        "label"
+      ]
+    },
+    {
+      "name": "hint",
+      "parts": [
+        "hint"
+      ]
+    }
+  ],
+  "dependencies": [],
+  "states": [
+    ".checked (this.checked)",
+    ":checked",
+    ":disabled",
+    ":focus-visible",
+    ":hover",
+    "host[did-ssr]",
+    "host[required]",
+    "host[size=l]",
+    "host[size=large]",
+    "host[size=m]",
+    "host[size=medium]",
+    "host[size=s]",
+    "host[size=small]",
+    "host[size=xl]",
+    "host[size=xs]",
+    "not .disabled",
+    "not .has-count",
+    "not .has-hint",
+    "not .has-slotted"
+  ],
+  "definedTokens": {
+    "--height": [
+      {
+        "selector": ":host",
+        "value": "var(--wa-form-control-toggle-size)"
+      }
+    ],
+    "--width": [
+      {
+        "selector": ":host",
+        "value": "calc(var(--height) * 1.75)"
+      }
+    ],
+    "--thumb-size": [
+      {
+        "selector": ":host",
+        "value": "0.75em"
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": ":host",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "flex-direction",
+          "value": "column",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": "[part~='form-control']",
+      "targets": [
+        "part:form-control"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "contents",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": ":is([part~='form-control-label'], [part~='label']):has(*:not(:empty))",
+      "targets": [
+        "part:form-control-label"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-flex",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-label-color)",
+          "tokens": [
+            "--wa-form-control-label-color"
+          ]
+        },
+        {
+          "prop": "font-weight",
+          "value": "var(--wa-form-control-label-font-weight)",
+          "tokens": [
+            "--wa-form-control-label-font-weight"
+          ]
+        },
+        {
+          "prop": "line-height",
+          "value": "var(--wa-form-control-label-line-height)",
+          "tokens": [
+            "--wa-form-control-label-line-height"
+          ]
+        },
+        {
+          "prop": "margin-block-end",
+          "value": "0.5em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": ":is([part~='form-control-label'], [part~='label']).has-label",
+      "targets": [
+        "part:form-control-label"
+      ],
+      "states": [],
+      "unknown": [
+        ".has-label"
+      ],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-flex",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-label-color)",
+          "tokens": [
+            "--wa-form-control-label-color"
+          ]
+        },
+        {
+          "prop": "font-weight",
+          "value": "var(--wa-form-control-label-font-weight)",
+          "tokens": [
+            "--wa-form-control-label-font-weight"
+          ]
+        },
+        {
+          "prop": "line-height",
+          "value": "var(--wa-form-control-label-line-height)",
+          "tokens": [
+            "--wa-form-control-label-line-height"
+          ]
+        },
+        {
+          "prop": "margin-block-end",
+          "value": "0.5em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": ":host([required]) :is([part~='form-control-label'], [part~='label'])::after",
+      "targets": [
+        "part:form-control-label"
+      ],
+      "states": [
+        "host[required]"
+      ],
+      "decls": [
+        {
+          "prop": "content",
+          "value": "var(--wa-form-control-required-content)",
+          "tokens": [
+            "--wa-form-control-required-content"
+          ]
+        },
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--wa-form-control-required-content-offset)",
+          "tokens": [
+            "--wa-form-control-required-content-offset"
+          ]
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-required-content-color)",
+          "tokens": [
+            "--wa-form-control-required-content-color"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": "[part~='hint']:not(.has-slotted, .has-hint, .has-count)",
+      "targets": [
+        "part:hint"
+      ],
+      "states": [
+        "not .has-slotted",
+        "not .has-hint",
+        "not .has-count"
+      ],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-form_control_styles_default.js",
+      "selector": "[part~='hint']",
+      "targets": [
+        "part:hint"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "block",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-hint-color)",
+          "tokens": [
+            "--wa-form-control-hint-color"
+          ]
+        },
+        {
+          "prop": "font-weight",
+          "value": "var(--wa-form-control-hint-font-weight)",
+          "tokens": [
+            "--wa-form-control-hint-font-weight"
+          ]
+        },
+        {
+          "prop": "line-height",
+          "value": "var(--wa-form-control-hint-line-height)",
+          "tokens": [
+            "--wa-form-control-hint-line-height"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "0.5em",
+          "tokens": []
+        },
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-smaller)",
+          "tokens": [
+            "--wa-font-size-smaller"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xs'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xs]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xs)",
+          "tokens": [
+            "--wa-font-size-xs"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='s'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=s]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='small'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=small]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='m'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=m]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='medium'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=medium]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='l'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=l]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='large'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=large]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xl'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xl]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xl)",
+          "tokens": [
+            "--wa-font-size-xl"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ":host",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--height",
+          "value": "var(--wa-form-control-toggle-size)",
+          "tokens": [
+            "--wa-form-control-toggle-size"
+          ]
+        },
+        {
+          "prop": "--width",
+          "value": "calc(var(--height) * 1.75)",
+          "tokens": [
+            "--height"
+          ]
+        },
+        {
+          "prop": "--thumb-size",
+          "value": "0.75em",
+          "tokens": []
+        },
+        {
+          "prop": "display",
+          "value": "inline-flex",
+          "tokens": []
+        },
+        {
+          "prop": "line-height",
+          "value": "var(--wa-form-control-value-line-height)",
+          "tokens": [
+            "--wa-form-control-value-line-height"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": "label",
+      "targets": [
+        "part:base"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "position",
+          "value": "relative",
+          "tokens": []
+        },
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "font",
+          "value": "inherit",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-value-color)",
+          "tokens": [
+            "--wa-form-control-value-color"
+          ]
+        },
+        {
+          "prop": "vertical-align",
+          "value": "middle",
+          "tokens": []
+        },
+        {
+          "prop": "cursor",
+          "value": "pointer",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".switch",
+      "targets": [
+        "part:control"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "flex",
+          "value": "0 0 auto",
+          "tokens": []
+        },
+        {
+          "prop": "position",
+          "value": "relative",
+          "tokens": []
+        },
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "justify-content",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "width",
+          "value": "var(--width)",
+          "tokens": [
+            "--width"
+          ]
+        },
+        {
+          "prop": "height",
+          "value": "var(--height)",
+          "tokens": [
+            "--height"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-form-control-background-color)",
+          "tokens": [
+            "--wa-form-control-background-color"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-form-control-border-color)",
+          "tokens": [
+            "--wa-form-control-border-color"
+          ]
+        },
+        {
+          "prop": "border-radius",
+          "value": "var(--height)",
+          "tokens": [
+            "--height"
+          ]
+        },
+        {
+          "prop": "border-style",
+          "value": "var(--wa-form-control-border-style)",
+          "tokens": [
+            "--wa-form-control-border-style"
+          ]
+        },
+        {
+          "prop": "border-width",
+          "value": "var(--wa-form-control-border-width)",
+          "tokens": [
+            "--wa-form-control-border-width"
+          ]
+        },
+        {
+          "prop": "transition-property",
+          "value": "translate, background, border-color, box-shadow",
+          "tokens": []
+        },
+        {
+          "prop": "transition-duration",
+          "value": "var(--wa-transition-normal)",
+          "tokens": [
+            "--wa-transition-normal"
+          ]
+        },
+        {
+          "prop": "transition-timing-function",
+          "value": "var(--wa-transition-easing)",
+          "tokens": [
+            "--wa-transition-easing"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ":host([did-ssr]:not(:defined)) .switch",
+      "targets": [
+        "part:control"
+      ],
+      "states": [
+        "host[did-ssr]"
+      ],
+      "decls": [
+        {
+          "prop": "transition-property",
+          "value": "unset",
+          "tokens": []
+        },
+        {
+          "prop": "transition-duration",
+          "value": "unset",
+          "tokens": []
+        },
+        {
+          "prop": "transition-timing-function",
+          "value": "unset",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".switch .thumb",
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "aspect-ratio",
+          "value": "1 / 1",
+          "tokens": []
+        },
+        {
+          "prop": "width",
+          "value": "var(--thumb-size)",
+          "tokens": [
+            "--thumb-size"
+          ]
+        },
+        {
+          "prop": "height",
+          "value": "var(--thumb-size)",
+          "tokens": [
+            "--thumb-size"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-form-control-border-color)",
+          "tokens": [
+            "--wa-form-control-border-color"
+          ]
+        },
+        {
+          "prop": "border-radius",
+          "value": "50%",
+          "tokens": []
+        },
+        {
+          "prop": "translate",
+          "value": "calc((var(--width) - var(--height)) / -2)",
+          "tokens": [
+            "--width",
+            "--height"
+          ]
+        },
+        {
+          "prop": "transition",
+          "value": "inherit",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".switch .thumb:dir(rtl)",
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "translate",
+          "value": "calc((var(--width) - var(--height)) / 2)",
+          "tokens": [
+            "--width",
+            "--height"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".input",
+      "targets": [
+        "label[base] > input"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "position",
+          "value": "absolute",
+          "tokens": []
+        },
+        {
+          "prop": "opacity",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "padding",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "margin",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": "label:not(.disabled) .input:focus-visible ~ [part~='control']",
+      "targets": [
+        "part:control"
+      ],
+      "states": [
+        "not .disabled",
+        ":focus-visible"
+      ],
+      "decls": [
+        {
+          "prop": "outline",
+          "value": "var(--wa-focus-ring)",
+          "tokens": [
+            "--wa-focus-ring"
+          ]
+        },
+        {
+          "prop": "outline-offset",
+          "value": "var(--wa-focus-ring-offset)",
+          "tokens": [
+            "--wa-focus-ring-offset"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".checked .switch",
+      "targets": [
+        "part:control"
+      ],
+      "states": [
+        ".checked (this.checked)"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "var(--wa-form-control-activated-color)",
+          "tokens": [
+            "--wa-form-control-activated-color"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-form-control-activated-color)",
+          "tokens": [
+            "--wa-form-control-activated-color"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".checked .switch .thumb",
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [
+        ".checked (this.checked)"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-surface-default)",
+          "tokens": [
+            "--wa-color-surface-default"
+          ]
+        },
+        {
+          "prop": "translate",
+          "value": "calc((var(--width) - var(--height)) / 2)",
+          "tokens": [
+            "--width",
+            "--height"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ".checked .switch .thumb:dir(rtl)",
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [
+        ".checked (this.checked)"
+      ],
+      "decls": [
+        {
+          "prop": "translate",
+          "value": "calc((var(--width) - var(--height)) / -2)",
+          "tokens": [
+            "--width",
+            "--height"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": "label:has(> :disabled)",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        ":disabled"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0.5",
+          "tokens": []
+        },
+        {
+          "prop": "cursor",
+          "value": "not-allowed",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": "[part~='label']",
+      "targets": [
+        "part:label"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-block",
+          "tokens": []
+        },
+        {
+          "prop": "line-height",
+          "value": "var(--height)",
+          "tokens": [
+            "--height"
+          ]
+        },
+        {
+          "prop": "margin-inline-start",
+          "value": "0.5em",
+          "tokens": []
+        },
+        {
+          "prop": "user-select",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "-webkit-user-select",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ":host([required]) [part~='label']::after",
+      "targets": [
+        "part:label"
+      ],
+      "states": [
+        "host[required]"
+      ],
+      "decls": [
+        {
+          "prop": "content",
+          "value": "var(--wa-form-control-required-content)",
+          "tokens": [
+            "--wa-form-control-required-content"
+          ]
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-form-control-required-content-color)",
+          "tokens": [
+            "--wa-form-control-required-content-color"
+          ]
+        },
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--wa-form-control-required-content-offset)",
+          "tokens": [
+            "--wa-form-control-required-content-offset"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ":checked:enabled + .switch:hover .thumb",
+      "media": [
+        "@media (forced-colors: active)"
+      ],
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [
+        ":hover",
+        ":checked"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "ButtonText",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-switch_styles_default.js",
+      "selector": ":checked + .switch .thumb",
+      "media": [
+        "@media (forced-colors: active)"
+      ],
+      "targets": [
+        "part:thumb"
+      ],
+      "states": [
+        ":checked"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "ButtonText",
+          "tokens": []
+        }
+      ]
+    }
+  ],
+  "unmapped": [
+    {
+      "selector": ":is([part~='form-control-label'], [part~='label']).has-label",
+      "unknown": [
+        ".has-label"
+      ]
+    }
+  ]
+}

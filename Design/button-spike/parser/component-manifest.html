@@ -1,0 +1,572 @@
+<title>Component Manifest Levels</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, one context in each tab, detail in foldables. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 16px 0 4px; text-wrap: balance; }
+h3 { font: 600 15px/1.3 var(--f-head); margin: 6px 0 0; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible, .foldbar button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; min-width: 0; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .9em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; overflow-wrap: normal; }
+.flow { display: grid; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; display: grid; gap: 2px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node .sub { color: var(--muted); font-size: 12.5px; }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .node.ext { border-style: dashed; }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1.3 var(--f-mono); padding: 5px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+.bars { display: grid; gap: 6px; font-size: 13px; }
+.bar { display: grid; grid-template-columns: 9.5em 1fr 3.2em; gap: 8px; align-items: center; }
+.bar .track { height: 10px; border-radius: 5px; background: var(--code-bg); overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); }
+.bar .fill.w { background: var(--warn); }
+.bar .n { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--f-mono); font-size: 12px; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11px; } .bar { grid-template-columns: 7.5em 1fr 3em; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · A8 · component data</span>
+    <h1>Component Manifest Levels</h1>
+    <p class="lead">The data that a complex component needs to go from HTML to Unity, level by level, with <code>wa-button</code> as the test case.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="levels">Levels</button>
+    <button role="tab" aria-selected="false" data-tab="shape">Data shape</button>
+    <button role="tab" aria-selected="false" data-tab="composition">Composition</button>
+    <button role="tab" aria-selected="false" data-tab="tools">Tools</button>
+    <button role="tab" aria-selected="false" data-tab="questions">Questions</button>
+  </nav>
+
+  <!-- ============ SUMMARY ============ -->
+  <section class="tab" id="summary">
+    <div class="card">
+      <div><span class="chip info">RECOMMENDATION</span></div>
+      <p>The manifest entry of each component has 3 levels: API, anatomy and styles. Tokens are a 4th level in one shared file. The styles level holds the cascade result as an ordered list of conditional patches, so Unity never runs a CSS cascade.</p>
+      <p>Headless Edge (CDP <code>CSS</code> domain) is the cascade reference and the check. It is already on this computer.</p>
+    </div>
+
+    <h2>Each level gives the key for the next level</h2>
+    <div class="flow">
+      <div class="node"><b>L0 · API</b><span class="sub">tag, attributes, events, slots, parts, states · standard CEM</span></div>
+      <div class="arrow">property names, attribute names</div>
+      <div class="node hl"><b>L1 · Anatomy</b><span class="sub">node tree, parts, slots, child components, conditions</span></div>
+      <div class="arrow">node IDs, part names, class names</div>
+      <div class="node hl"><b>L2 · Styles</b><span class="sub">ordered patches: node + condition → values</span></div>
+      <div class="arrow">token names</div>
+      <div class="node"><b>L3 · Tokens</b><span class="sub">variant scopes + shared theme file (DTCG)</span></div>
+      <div class="arrow">sampled states</div>
+      <div class="node ext"><b>L4 · Resolved samples</b><span class="sub">computed values from Edge · test fixture only</span></div>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>Level</th><th>Stored in</th><th>Main tool</th></tr>
+      <tr><td>L0 API</td><td>CEM declaration</td><td><code>@custom-elements-manifest/analyzer</code></td></tr>
+      <tr><td>L1 Anatomy</td><td>CEM field <code>ui.anatomy</code></td><td>TypeScript API + <code>parse5</code> + own code</td></tr>
+      <tr><td>L2 Styles</td><td>CEM field <code>ui.styles</code></td><td>PostCSS + own code, checked by Edge</td></tr>
+      <tr><td>L3 Tokens</td><td><code>tokens.json</code> + <code>ui.tokenScopes</code></td><td>PostCSS + own code</td></tr>
+      <tr><td>L4 Samples</td><td>Test fixture, not the contract</td><td>Edge CDP + own sampler</td></tr>
+    </table></div>
+
+    <div class="card">
+      <h3>Why patches and not a full state table</h3>
+      <p><code>wa-button</code> has 48,000 state combinations. About 40 patches describe all of them. Unity applies the patches whose condition matches, in list order.</p>
+      <div class="bars" role="img" aria-label="48,000 state combinations against about 40 patches">
+        <div class="bar"><span>State combinations</span><span class="track"><span class="fill w" style="display:block;width:100%"></span></span><span class="n">48,000</span></div>
+        <div class="bar"><span>Patches</span><span class="track"><span class="fill" style="display:block;width:0.6%;min-width:3px"></span></span><span class="n">~40</span></div>
+      </div>
+      <p class="lead" style="font-size:13px">5 variants × 5 appearances × 5 sizes × 3 pointer states × 2 focus states × 2⁶ flags (disabled, loading, pill, caret, icon-button, rtl).</p>
+    </div>
+
+    <p>Sample files: <code>Design/button-spike/parser/samples/wa-button.manifest.json</code> and <code>ds-button.manifest.json</code>.</p>
+  </section>
+
+  <!-- ============ LEVELS ============ -->
+  <section class="tab" id="levels" hidden>
+    <p class="lead">Each level for <code>wa-button</code>: purpose, sample data, the link to the next level, and the accuracy of the static parser.</p>
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <h2>Links between the levels</h2>
+    <div class="tbl"><table>
+      <tr><th>From → to</th><th>Key</th><th>Example</th></tr>
+      <tr><td>L0 → L1</td><td>Property name</td><td><code>withCaret</code> → caret node <code>if</code></td></tr>
+      <tr><td>L0 → L2</td><td>Reflected attribute</td><td><code>appearance</code> → <code>:host([appearance])</code></td></tr>
+      <tr><td>L1 → L2</td><td>Part or class name</td><td><code>.button</code> → node <code>button</code></td></tr>
+      <tr><td>L1 → L2</td><td>Host state name</td><td><code>loading</code> → flag <code>loading</code></td></tr>
+      <tr><td>L1 → other entry</td><td>Component ID</td><td>caret → <code>wa-icon</code> entry</td></tr>
+      <tr><td>L2 → L3</td><td>Token name</td><td><code>{wa-color-fill-loud}</code></td></tr>
+      <tr><td>L3 → value</td><td>Token name + theme</td><td><code>wa-color-brand-50</code> → color</td></tr>
+    </table></div>
+
+    <details>
+      <summary>L0 · API <span class="sub">· what a consumer sees · standard CEM</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Purpose</dt><dd>The public contract: attributes with types and defaults, events, slots, parts, custom states.</dd>
+          <dt>Source</dt><dd>Class fields, decorators, JSDoc tags. Web Awesome ships it as <code>custom-elements.json</code>.</dd>
+          <dt>Static parser</dt><dd>Properties 95 %, events 100 %. Types are lost in the dist build.</dd>
+        </dl>
+<pre>{ <span class="k">"tagName"</span>: "wa-button",
+  <span class="k">"attributes"</span>: [
+    { "name": "variant", "fieldName": "variant",
+      "type": { "text": "'neutral' | 'brand' | 'success' | 'warning' | 'danger'" },
+      "default": "'neutral'" },
+    { "name": "with-caret", "fieldName": "withCaret",
+      "type": { "text": "boolean" } },
+    <span class="c">… 24 more</span> ],
+  <span class="k">"events"</span>:    [ { "name": "wa-invalid" }, { "name": "focus" }, { "name": "blur" } ],
+  <span class="k">"slots"</span>:     [ { "name": "" }, { "name": "start" }, { "name": "end" } ],
+  <span class="k">"cssParts"</span>:  [ "button", "start", "label", "end", "caret", "spinner" ],
+  <span class="k">"cssStates"</span>: [ "disabled", "icon-button", "link", "loading" ] }</pre>
+        <p><b>Link to L1:</b> <code>fieldName</code> is the name that the render conditions use (<code>this.withCaret</code>).</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>L1 · Anatomy <span class="sub">· nodes, slots, child components, conditions</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Purpose</dt><dd>The node tree that Unity builds: each node has an ID, a part, a slot or a child component, and a render condition.</dd>
+          <dt>Source</dt><dd>The <code>render()</code> template, <code>classMap</code>, <code>customStates.set</code>.</dd>
+          <dt>Static parser</dt><dd>Anatomy and conditions about 95 %. Parts, slots, children 90 %.</dd>
+        </dl>
+<pre>{ <span class="k">"id"</span>: "button",
+  <span class="k">"element"</span>: { "if": "href", "then": "a", "else": "button" },
+  <span class="k">"classes"</span>: { "loading": "loading", "rtl": "dir:rtl",
+               "has-start": "slot:start | withStart",
+               "is-icon-button": "isIconButton" },
+  <span class="k">"children"</span>: [
+    { "id": "start",   "slot": "start", "part": "start" },
+    { "id": "label",   "slot": "",      "part": "label" },
+    { "id": "end",     "slot": "end",   "part": "end" },
+    { "id": "caret",   "component": "wa-icon", "part": "caret", "if": "withCaret",
+      "props": { "library": "system", "name": "chevron-down" } },
+    { "id": "spinner", "component": "wa-spinner", "part": "spinner", "if": "loading" } ] }
+<span class="k">"derived"</span>: { "isIconButton": "slot: holds only wa-icon" }</pre>
+        <p><b>Condition grammar:</b> a property name, <code>slot:&lt;name&gt;</code> (the slot has content), <code>dir:rtl</code>, a derived name, <code>|</code> and <code>!</code>. Unity evaluates it.</p>
+        <p><b>Link to L2:</b> node IDs, part names and class names are the targets of the style selectors.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>L2 · Styles <span class="sub">· each rule to a node and a condition</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Purpose</dt><dd>The look of each node in each state, with token references and not values.</dd>
+          <dt>Source</dt><dd>The 3 sheets in <code>WaButton.css</code>: button, variants, size.</dd>
+          <dt>Static parser</dt><dd>Tokens 100 %. Targets and states about 83 %. State coverage about 60 %.</dd>
+        </dl>
+        <h3>One CSS rule</h3>
+<pre>:host([appearance='accent']) {
+  @media (hover: hover) {
+    .button:not(.disabled):not(.loading):hover {
+      background-color: color-mix(in oklab,
+        var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud)),
+        var(--wa-color-mix-hover)); } } }</pre>
+        <h3>The same rule as a patch</h3>
+<pre>{ <span class="k">"on"</span>: "button",
+  <span class="k">"if"</span>: { "appearance": "accent", "pointer": "hover",
+          "not": ["disabled", "loading"], "media": "hover" },
+  <span class="k">"set"</span>: { "background-color":
+           "mix(oklab, {wa-color-fill-loud}, {wa-color-mix-hover})" } }</pre>
+        <p><b>Order:</b> the list is in cascade order (layer, then specificity, then source order). A later matching patch wins. Inherited properties (color, font) flow down the anatomy tree.</p>
+        <p><b>Link to L3:</b> each <code>{name}</code> is a token name.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>L3 · Tokens <span class="sub">· from the token name to the theme value</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Purpose</dt><dd>Resolve each token to a value for a variant and a theme.</dd>
+          <dt>Source</dt><dd>The variants sheet (scopes) and the theme CSS (values). The theme CSS is not downloaded, so the values below are samples.</dd>
+        </dl>
+        <h3>Chain for <code>variant="brand"</code>, accent background</h3>
+        <div class="flow">
+          <div class="node"><b>button.background-color</b><span class="sub">L2 patch: <code>{wa-color-fill-loud}</code></span></div>
+          <div class="arrow">variant scope: brand</div>
+          <div class="node"><b>wa-color-brand-fill-loud</b><span class="sub">component scope in <code>ui.tokenScopes</code></span></div>
+          <div class="arrow">theme alias</div>
+          <div class="node"><b>wa-color-brand-50</b><span class="sub">shared <code>tokens.json</code></span></div>
+          <div class="arrow">theme value</div>
+          <div class="node"><b>#0071ec</b><span class="sub">sample value</span></div>
+        </div>
+<pre><span class="c">// ui.tokenScopes (in the manifest entry)</span>
+"variant": { "inheritsFrom": "ancestor .wa-&lt;variant&gt;, else :root (neutral)",
+  "values": { "brand": { "wa-color-fill-loud": "{wa-color-brand-fill-loud}" } } }
+
+<span class="c">// tokens.json (shared, DTCG format)</span>
+"wa-color-brand-fill-loud": { "$type": "color", "$value": "{wa-color-brand-50}" },
+"wa-color-brand-50":        { "$type": "color", "$value": "#0071ec" }</pre>
+        <p><b>Link to Unity:</b> the token asset holds the same names. Unity components read tokens at runtime.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>L4 · Resolved samples <span class="sub">· test fixture from Edge</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Purpose</dt><dd>The truth for a sample of states. It checks L2 and L3, and the Unity result.</dd>
+          <dt>Source</dt><dd>Edge renders the component. CDP forces each state and reads the computed style and the winning rule.</dd>
+        </dl>
+<pre>{ <span class="k">"state"</span>: { "variant": "brand", "appearance": "accent", "pointer": "hover" },
+  <span class="k">"node"</span>: "button",
+  <span class="k">"computed"</span>: { "background-color": "oklab(0.55 -0.03 -0.2)", "height": "40px" },
+  <span class="k">"winner"</span>: { "background-color":
+    ":host([appearance='accent']) .button:not(.disabled):not(.loading):hover" } }</pre>
+        <p><b>Check:</b> evaluate the patches and tokens for the same state. The result must equal <code>computed</code>. A difference names the wrong patch.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DATA SHAPE ============ -->
+  <section class="tab" id="shape" hidden>
+    <p class="lead">One CEM declaration for each component. Levels 1 and 2 and the token scopes go in one extra field, <code>ui</code>.</p>
+<pre>{ "tagName": "wa-button", <span class="c">// L0: standard CEM 2.1 fields</span>
+  "attributes": […], "events": […], "slots": […],
+  "cssParts": […], "cssStates": […],
+  <span class="k">"ui"</span>: {
+    <span class="k">"extends"</span>:     "html:button",   <span class="c">// native base, from the standard</span>
+    <span class="k">"anatomy"</span>:     { … },            <span class="c">// L1</span>
+    <span class="k">"derived"</span>:     { … },            <span class="c">// L1: names from slot content</span>
+    <span class="k">"hostStates"</span>:  { … },            <span class="c">// L1: customStates</span>
+    <span class="k">"behavior"</span>:    { … },            <span class="c">// focus, click guard, form</span>
+    <span class="k">"tokenScopes"</span>: { … },            <span class="c">// L3: variant remaps</span>
+    <span class="k">"styles"</span>:      [ … ] } }         <span class="c">// L2: ordered patches</span>
+
+<span class="c">// tokens.json: L3, shared by all components</span></pre>
+
+    <h2>Complex and simple button use the same shape</h2>
+    <div class="tbl"><table>
+      <tr><th>Field</th><th><code>wa-button</code></th><th><code>ds-button</code></th></tr>
+      <tr><td>L0 source</td><td>CEM, 26 attributes</td><td>HTML standard <code>button</code></td></tr>
+      <tr><td><code>ui.extends</code></td><td><code>html:button</code></td><td><code>html:button</code></td></tr>
+      <tr><td>Anatomy nodes</td><td>6, two child components</td><td>4, one pseudo-element</td></tr>
+      <tr><td>Conditions</td><td>9 classes, 4 host states</td><td>None</td></tr>
+      <tr><td>Patches</td><td>About 40</td><td>8</td></tr>
+      <tr><td>Token scopes</td><td>Variant (5 values)</td><td>None</td></tr>
+      <tr><td>Token chain</td><td>Scope → theme → value</td><td>Component → semantic → primitive</td></tr>
+    </table></div>
+    <p>The simple button fills fewer fields. It does not need a second format.</p>
+
+    <details>
+      <summary>Native <code>ds-button</code> entry <span class="sub">· full sample</span></summary>
+      <div class="body">
+<pre>{ "name": "ds-button",
+  "ui": {
+    "extends": "html:button",
+    "anatomy": { "id": "root", "element": "button", "children": [
+      { "id": "lip",  "pseudo": "::before" },
+      { "id": "face", "class": "ds-button__face", "children": [
+        { "id": "label", "class": "ds-button__label", "text": true } ] } ] },
+    "styles": [
+      { "on": "face", "set": { "background": "gradient(down, {button-top}, {button-bottom})" } },
+      { "on": "face", "if": { "pointer": "hover", "not": ["disabled"] },
+        "set": { "filter": "brightness({button-hover-brightness})" } },
+      { "on": "face", "if": { "pointer": "active", "not": ["disabled"] },
+        "set": { "top": "calc({button-depth} - {button-depth-pressed})" } },
+      <span class="c">… 5 more</span> ] } }</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Value expressions <span class="sub">· what Unity must evaluate</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Expression</th><th>Example</th><th>Unity needs</th></tr>
+          <tr><td>Token reference</td><td><code>{wa-form-control-height}</code></td><td>Token asset lookup</td></tr>
+          <tr><td>Color mix</td><td><code>mix(oklab, a, b)</code></td><td>OKLab mix function</td></tr>
+          <tr><td>Calc</td><td><code>calc(50% - 0.5em)</code></td><td>Small calc with px, em, %</td></tr>
+          <tr><td>Relative unit</td><td><code>1em</code>, <code>0.875em</code></td><td>Inherited font size</td></tr>
+          <tr><td>Current color</td><td><code>currentColor</code></td><td>Inherited text color</td></tr>
+          <tr><td>Gradient</td><td><code>gradient(down, a, b)</code></td><td>Gradient shader or sprite</td></tr>
+          <tr><td>Filter</td><td><code>brightness(1.08)</code></td><td>Color multiply</td></tr>
+        </table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ COMPOSITION ============ -->
+  <section class="tab" id="composition" hidden>
+    <p class="lead">The composition kinds in <code>wa-button</code> and <code>ds-button</code>, and the Unity part for each kind.</p>
+    <div class="tbl"><table>
+      <tr><th>Kind</th><th>Example</th><th>Unity needs</th></tr>
+      <tr><td>Child component</td><td>caret = <code>wa-icon</code></td><td>Nested prefab by component ID</td></tr>
+      <tr><td>Slot</td><td><code>start</code>, label, <code>end</code></td><td>Named content container</td></tr>
+      <tr><td>Slot content state</td><td><code>is-icon-button</code></td><td>Content check on change</td></tr>
+      <tr><td>Part style in a child</td><td><code>wa-icon::part(svg)</code></td><td>Child exposes a style hook</td></tr>
+      <tr><td>Variant token scope</td><td><code>variant="brand"</code></td><td>Token scope on a parent</td></tr>
+      <tr><td>Rule set by attribute</td><td><code>appearance</code>, <code>size</code></td><td>Enum field selects patches</td></tr>
+      <tr><td>Interaction state</td><td>hover, active, focus-visible</td><td>Selectable state + focus source</td></tr>
+      <tr><td>Flag state</td><td><code>disabled</code>, <code>loading</code></td><td>Bool field, patch condition</td></tr>
+      <tr><td>Environment state</td><td>rtl, hover media, reduced motion</td><td>Global context values</td></tr>
+      <tr><td>Polymorphic root</td><td><code>a</code> or <code>button</code></td><td>One root, other action</td></tr>
+      <tr><td>Parent context</td><td><code>--_button-*-radius</code> from a group</td><td>Parent writes child fields</td></tr>
+      <tr><td>Inheritance</td><td>font size, <code>currentColor</code></td><td>Values flow down the tree</td></tr>
+      <tr><td>Pseudo-element</td><td><code>ds-button::before</code> lip</td><td>Extra child Image</td></tr>
+    </table></div>
+
+    <details>
+      <summary>Child component · caret and spinner <span class="sub">· recursion to another entry</span></summary>
+      <div class="body">
+        <p>The anatomy node gives the component ID and fixed props. Unity uses the prefab of that ID. The child entry gives its own levels.</p>
+<pre>{ "id": "caret", "component": "wa-icon", "part": "caret", "if": "withCaret",
+  "props": { "library": "system", "name": "chevron-down", "variant": "solid" } }</pre>
+        <p>If Unity has no prefab for the ID, the validation gives an error.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Slot · start, label, end <span class="sub">· consumer content</span></summary>
+      <div class="body">
+        <p>A slot is a named container. The consumer puts content in it. Two states come from the content: <code>has-start</code> and <code>is-icon-button</code>.</p>
+        <p>Unity needs a child RectTransform for each slot and a check that runs when the content changes.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Variant token scope <span class="sub">· tokens remap, rules stay the same</span></summary>
+      <div class="body">
+        <p>The variant does not change a rule. It remaps 9 alias tokens. An ancestor with the class <code>.wa-brand</code> also sets the scope, so the scope is inherited.</p>
+        <p>Unity needs a token scope component. A component reads a token from the nearest scope, else from the theme.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>States <span class="sub">· 4 sources</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Source</th><th>Example</th><th>Patch condition</th></tr>
+          <tr><td>Pointer</td><td><code>:hover</code>, <code>:active</code></td><td><code>"pointer": "hover"</code></td></tr>
+          <tr><td>Focus</td><td><code>:focus-visible</code></td><td><code>"focus": "visible"</code></td></tr>
+          <tr><td>Property</td><td><code>.loading</code>, <code>:host([disabled])</code></td><td><code>"flag": "loading"</code></td></tr>
+          <tr><td>Content</td><td><code>.is-icon-button</code></td><td><code>"flag": "icon-button"</code></td></tr>
+          <tr><td>Environment</td><td><code>:dir(rtl)</code>, <code>@media (hover)</code></td><td><code>"dir"</code>, <code>"media"</code></td></tr>
+        </table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ TOOLS ============ -->
+  <section class="tab" id="tools" hidden>
+    <p class="lead">For each level: the existing tool, what it gives, and what stays our own code. The npm tools are not tested yet.</p>
+
+    <div class="tbl"><table>
+      <tr><th>Level</th><th>Existing tool</th><th>Own code</th></tr>
+      <tr><td>L0 API</td><td><code>@custom-elements-manifest/analyzer</code></td><td>None</td></tr>
+      <tr><td>L1 Anatomy</td><td>TypeScript API, <code>parse5</code></td><td>Condition model</td></tr>
+      <tr><td>L2 extract</td><td>PostCSS, <code>postcss-nested</code>, <code>postcss-selector-parser</code></td><td>Selector → node + condition</td></tr>
+      <tr><td>L2 order</td><td><code>specificity</code> or own sort</td><td>Patch sort</td></tr>
+      <tr><td>L2 check</td><td>Edge CDP <code>CSS.getMatchedStylesForNode</code></td><td>State driver</td></tr>
+      <tr><td>L3 Tokens</td><td>PostCSS, DTCG format</td><td>Graph resolve, Unity writer</td></tr>
+      <tr><td>L4 Samples</td><td>Edge CDP <code>CSS.getComputedStyleForNode</code></td><td>Sampler, compare</td></tr>
+    </table></div>
+
+    <div class="card">
+      <div><span class="chip good">KEY TOOL</span></div>
+      <p>Edge CDP gives the real cascade for each node in each forced state: layers, specificity, shadow scope and the authored <code>var()</code> text. It replaces an own cascade engine as the reference.</p>
+      <p>Node 26 has a built-in WebSocket, so CDP needs no npm package. <code>record-pointer-cdp.mjs</code> already uses this path.</p>
+    </div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>L0 · <code>@custom-elements-manifest/analyzer</code> <span class="sub">· tool gives all</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Gives</dt><dd>Attributes with union types, defaults, events, slots, parts, states from TS source and JSDoc.</dd>
+          <dt>Own code</dt><dd>None. A plugin adds the <code>ui</code> field.</dd>
+          <dt>Other</dt><dd><code>@lit-labs/analyzer</code> gives the Lit property model and also writes CEM.</dd>
+          <dt>Limit</dt><dd>Parts, slots and states come from hand-written JSDoc. The anatomy check of L1 finds JSDoc that does not match the template.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>L1 · TypeScript API + <code>parse5</code> <span class="sub">· tool gives the trees, we give meaning</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Gives</dt><dd>The class AST: <code>render()</code>, <code>html``</code> templates, ternaries, <code>classMap</code>. <code>parse5</code> gives the template HTML tree with markers for the expressions.</dd>
+          <dt>Own code</dt><dd>Expressions → condition grammar. Slot content rules (<code>derived</code>). About 150 lines (estimate).</dd>
+          <dt>Check</dt><dd>Edge renders a set of prop values and reads the shadow tree. Each node must match an anatomy node.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>L2 · PostCSS + Edge CDP <span class="sub">· static extract, browser check</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Gives</dt><dd><code>postcss-nested</code> flattens <code>&amp;</code> and nested <code>@media</code>. <code>postcss-selector-parser</code> gives the selector AST. CDP gives the winner for each property.</dd>
+          <dt>Own code</dt><dd>Selector AST → node and condition. This is the part with 83 % accuracy, and the AST removes the regex errors.</dd>
+          <dt>Why both</dt><dd>Static gives the conditions and token names. The browser gives the truth for one state. A browser alone cannot see conditions.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>L3 · PostCSS + DTCG <span class="sub">· standard token format</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Gives</dt><dd>All custom property declarations of the theme CSS. DTCG is the W3C community format for tokens.</dd>
+          <dt>Own code</dt><dd>The alias graph, cycle check, the Unity token asset writer.</dd>
+          <dt>Other</dt><dd>Style Dictionary reads DTCG. Add it only if a second output format is necessary.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>L4 · Edge CDP sampler <span class="sub">· own code, no package</span></summary>
+      <div class="body">
+        <ol>
+          <li>Load the gallery page in headless Edge.</li>
+          <li>Set the attributes of one state combination.</li>
+          <li>Force <code>:hover</code>, <code>:active</code>, <code>:focus-visible</code> with <code>CSS.forcePseudoState</code>.</li>
+          <li>Set <code>hover</code> and <code>prefers-reduced-motion</code> with <code>Emulation.setEmulatedMedia</code>.</li>
+          <li>Read the computed style and matched rules of each part.</li>
+        </ol>
+        <p>Pairwise sampling covers each pair of axis values in about 40 states, not 48,000.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ QUESTIONS ============ -->
+  <section class="tab" id="questions" hidden>
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details open>
+      <summary>Q1 · Tool test: install the npm tools in the scratchpad? <span class="chip info">NEXT</span></summary>
+      <div class="body">
+        <p>Packages: <code>@custom-elements-manifest/analyzer</code>, <code>typescript</code>, <code>parse5</code>, <code>postcss</code>, <code>postcss-nested</code>, <code>postcss-selector-parser</code>, and <code>@awesome.me/webawesome</code> for the Edge render.</p>
+        <p><b>Recommendation:</b> yes. Test L2 first: run PostCSS on the 3 sheets, then compare with CDP for 10 states. The result shows if the 83 % goes to 100 %.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q2 · Our HTML components: custom elements or CSS classes? <span class="chip warn">DECIDE</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. Lit custom elements</td><td>CEM tools give L0. Real slots and parts.</td><td>Build step, shadow DOM</td></tr>
+          <tr><td>B. CSS classes on native elements</td><td>L0 from the standard. Simple.</td><td>Variants and slots have no standard declaration</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A for components with slots or child components, B for simple ones. Both make the same manifest shape.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q3 · The extension: a <code>ui</code> field in CEM or a sibling file? <span class="chip warn">DECIDE</span></summary>
+      <div class="body">
+        <p><b>Recommendation:</b> a <code>ui</code> field in the declaration. Then one file has all the data. Examine the CEM 2.1 schema for extra fields before the parser writes it.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q4 · Live tokens or values baked for each state? <span class="chip warn">DECIDE</span></summary>
+      <div class="body">
+        <p>Live tokens need a small Unity evaluator: token lookup, OKLab mix, calc with px, em and %. Baked values need no evaluator, but a token change needs a build again.</p>
+        <p><b>Recommendation:</b> live tokens. It matches Q4 of the UI Parity Plan (option B).</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q5 · Where does behavior data come from? <span class="chip warn">DECIDE</span></summary>
+      <div class="body">
+        <p>Focus, the click guard and form actions are code, not declarations. A static read finds only known patterns.</p>
+        <p><b>Recommendation:</b> take the base behavior from the native root (<code>ui.extends</code>). Extract only the guard <code>disabled | loading</code>. The Unity component implements the rest.</p>
+      </div>
+    </details>
+
+    <h2>Non-goals</h2>
+    <ul>
+      <li>No CSS cascade in Unity. Reason: the patch order holds the cascade result.</li>
+      <li>No own cascade engine as the reference. Reason: Edge is exact and already installed.</li>
+      <li>No full state table in the manifest. Reason: 48,000 combinations for one button.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

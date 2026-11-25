@@ -1,0 +1,585 @@
+<title>Button Builder Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, one context per tab, detail in foldables. Same look as the UI Parity Plan. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --gold: #f5a300;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  --gold: #ffc23d; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  --gold: #ffc23d; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 16px 0 4px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-head); margin: 8px 0 4px; }
+p { margin: 0; max-width: 65ch; }
+.lead { color: var(--muted); }
+a { color: var(--accent); }
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; min-width: 0; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+details details { background: var(--bg); }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12.5px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .92em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+pre .e { color: var(--bad); font-weight: 500; }
+pre .w { color: var(--warn); font-weight: 500; }
+pre .g { color: var(--good); font-weight: 500; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { overflow-wrap: normal; white-space: nowrap; }
+.flow { display: grid; gap: 0; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .node.bad { border-color: var(--bad); background: var(--bad-soft); }
+.flow .node.good { border-color: var(--good); background: var(--good-soft); }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1 var(--f-mono); padding: 5px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; }
+/* Folder tree: one row per file, aligned name, kind and role columns */
+.tree { font: 12.5px/1.45 var(--f-mono); display: grid; gap: 4px; }
+.tree details { border-radius: 6px; }
+.tree details > summary { padding: 6px 8px; font-weight: 500; font-size: 12.5px; }
+.tree .rows { padding: 0 8px 6px 22px; display: grid; }
+.tree .row { display: grid; grid-template-columns: minmax(0, 1.4fr) 5.5em minmax(0, 2fr); gap: 8px; padding: 3px 0; border-top: 1px dashed var(--line); }
+.tree .row span { min-width: 0; overflow-wrap: anywhere; }
+.tree .row .kind { color: var(--accent); }
+.tree .row .role { color: var(--muted); font-family: var(--f-body); }
+.tree .row.new .name::after { content: " +"; color: var(--good); }
+/* Hierarchy view */
+.hier { font: 12.5px/1.6 var(--f-mono); background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.hier .go { font-weight: 500; }
+.hier .cmp { color: var(--accent); }
+.hier .add { color: var(--good); }
+.hier .ind { padding-left: 16px; }
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11.5px; } .tree .row { grid-template-columns: minmax(0, 1fr) 4.8em; } .tree .row .role { grid-column: 1 / -1; padding-left: 8px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · A8 · Unity builder</span>
+    <h1>Button Builder Plan</h1>
+    <p class="lead">One JSON entry goes in. One Unity component reads it, checks it and builds a button that matches the HTML button.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="json">JSON</button>
+    <button role="tab" aria-selected="false" data-tab="matching">Matching</button>
+    <button role="tab" aria-selected="false" data-tab="builder">Builder</button>
+    <button role="tab" aria-selected="false" data-tab="flow">Edit flow</button>
+    <button role="tab" aria-selected="false" data-tab="questions">Questions</button>
+  </nav>
+
+  <!-- ============ SUMMARY ============ -->
+  <section class="tab" id="summary">
+    <div class="card">
+      <div><span class="chip info">PLAN</span> <span class="chip warn">NEEDS YOUR OK</span></div>
+      <p>The manifest <code>components.json</code> has one entry, <code>ds-button</code>, in CEM 2.1 shape with a small <code>ds</code> extension. The Unity component <code>DsButton</code> finds its entry, checks it against what it can do, and adds only the parts that the entry names.</p>
+      <p>An error stops the build and leaves the GameObject as it was. A warning lets the build continue.</p>
+    </div>
+
+    <h2>One build, step by step</h2>
+    <div class="flow">
+      <div class="node"><b>components.json</b> — entry <code>ds-button</code>: parts, states, tokens, sprites</div>
+      <div class="arrow">DsButton finds its ID</div>
+      <div class="node hl"><b>Check</b> — entry against the DsButton capabilities</div>
+      <div class="arrow">result</div>
+      <div class="split">
+        <div class="node bad"><b>Errors</b><br>log, stop, no change</div>
+        <div class="node good"><b>No errors</b><br>log warnings, build</div>
+      </div>
+      <div class="arrow">part modules run</div>
+      <div class="node"><b>Built button</b> — Image, DsSelectable, Label child (TMP)</div>
+    </div>
+
+    <h2>Decisions in this plan</h2>
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Decision</th></tr>
+      <tr><td>Format</td><td>CEM 2.1 shape plus <code>ds</code> extension</td></tr>
+      <tr><td>JSON reader</td><td><code>JsonUtility</code>: arrays only, no package</td></tr>
+      <tr><td>Who checks</td><td>Each Unity component checks its own entry</td></tr>
+      <tr><td>When it builds</td><td>In the Editor only. Runtime reads no JSON.</td></tr>
+      <tr><td>Face look</td><td>Sprites from HTML, one for each state</td></tr>
+      <tr><td>Label look</td><td>Live values from tokens</td></tr>
+    </table></div>
+  </section>
+
+  <!-- ============ JSON ============ -->
+  <section class="tab" id="json" hidden>
+    <p class="lead">The HTML side owns the file. Unity gets a copy in <code>Assets/UISpike/</code>, so the sprites in <code>Art/</code> are next to it.</p>
+
+    <h2>Fields of the entry</h2>
+    <div class="tbl"><table>
+      <tr><th>Field</th><th>Content</th><th>Source</th></tr>
+      <tr><td><code>name</code></td><td>Component ID</td><td>CSS block class</td></tr>
+      <tr><td><code>attributes</code>, <code>events</code></td><td><code>disabled</code>, <code>click</code></td><td>HTML standard (<code>"source": "native"</code>)</td></tr>
+      <tr><td><code>cssParts</code>, <code>cssStates</code></td><td>2 parts, 4 states</td><td>CEM fields, from <code>button.css</code></td></tr>
+      <tr><td><code>ds.native</code></td><td><code>button</code></td><td>The element in the markup</td></tr>
+      <tr><td><code>ds.anatomy</code></td><td>Kind, parent, inset, slice, sprites</td><td>Extension</td></tr>
+      <tr><td><code>ds.tokens</code></td><td>Part, state, property, token, value</td><td>Extension, from <code>tokens.css</code></td></tr>
+    </table></div>
+
+    <details open>
+      <summary>Sample <span class="sub">· the ds extension, shortened</span></summary>
+      <div class="body">
+<pre>"ds": {
+  <span class="k">"version"</span>: 1,
+  <span class="k">"native"</span>: "button",
+  <span class="k">"size"</span>: { "width": 320, "height": 108 },
+  <span class="k">"anatomy"</span>: [
+    { "part": "face", "kind": "image", "parent": "",
+      "slice": { "left": 22, "top": 22, "right": 22, "bottom": 34 },
+      "sprites": [
+        { "state": "normal", "file": "button-normal.png" },
+        { "state": "active", "file": "button-pressed.png" }  <span class="c">… 5 states</span>
+      ] },
+    { "part": "label", "kind": "label", "parent": "face", "slot": "",
+      "inset": { "left": 0, "top": 0, "right": 0, "bottom": 12 },
+      "font": { "family": "Inter", "weight": 600 },
+      "transform": "uppercase", "align": "center" }
+  ],
+  <span class="k">"tokens"</span>: [
+    { "part": "label", "state": "normal", "property": "color",
+      "token": "--button-label", "value": "#3a1d00" },
+    { "part": "label", "state": "disabled", "property": "color",
+      "token": "--button-disabled-label", "value": "#6b6b6b" },
+    { "part": "face", "state": "active", "property": "child-offset-y",
+      "token": "calc(--button-depth - --button-depth-pressed)", "value": "8px" }
+    <span class="c">… 12 tokens</span>
+  ]
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Rules of the format <span class="sub">· 5 rules</span></summary>
+      <div class="body">
+        <ul>
+          <li>Each token has its resolved value. Unity does not resolve <code>var()</code> chains.</li>
+          <li>Each token names one part, one state and one property.</li>
+          <li>Native items have <code>"source": "native"</code>. They come from the HTML standard, not from a declaration.</li>
+          <li>Lists are arrays, never maps. <code>JsonUtility</code> cannot read maps.</li>
+          <li>Sprite files are names only. Unity finds them in <code>Art/</code> next to the manifest.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Full file <span class="sub">· Design/button-spike/components.json</span></summary>
+      <div class="body">
+        <p>The file is in the repo: <code>Design/button-spike/components.json</code>. It has 12 of the 22 button tokens. The other face tokens are in the sprites, so a sample of them is enough for the spike.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ MATCHING ============ -->
+  <section class="tab" id="matching" hidden>
+    <p class="lead">"Matching" means: Unity can honor each item of the entry. Each Unity component declares its capabilities. The check compares the entry with them.</p>
+
+    <h2>What gives an error, what gives a warning</h2>
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Error</th><th>Warning</th></tr>
+      <tr><td>Component ID</td><td>No entry with the ID</td><td>None</td></tr>
+      <tr><td>Version, native</td><td>Unknown <code>ds.version</code> or <code>native</code></td><td>None</td></tr>
+      <tr><td>Attributes</td><td>No Unity field, or wrong type</td><td>Unity field not in the entry</td></tr>
+      <tr><td>Events</td><td>No Unity event</td><td>Unity event not in the entry</td></tr>
+      <tr><td>States</td><td>No Unity state</td><td>None</td></tr>
+      <tr><td>Parts</td><td>Unknown part kind</td><td>None</td></tr>
+      <tr><td>Tokens</td><td>Value does not parse</td><td>Live part, no Unity property</td></tr>
+      <tr><td>Sprites, fonts</td><td>File or font asset missing</td><td>Size or slice differs</td></tr>
+    </table></div>
+    <p><b>Rule:</b> an error means Unity cannot do what the HTML does. A warning means the build is usable, but one detail can differ.</p>
+
+    <h2>Tokens: live or in a sprite</h2>
+    <div class="tbl"><table>
+      <tr><th>Token on</th><th>Unity uses</th><th>Check</th></tr>
+      <tr><td>A part with sprites (<code>face</code>)</td><td>The sprite. The token is in the image.</td><td>Count only</td></tr>
+      <tr><td>A geometry property on it (<code>child-offset-y</code>)</td><td>DsSelectable moves the children</td><td>Error if no target</td></tr>
+      <tr><td>A part without sprites (<code>label</code>)</td><td>TMP property</td><td>Warning if no target</td></tr>
+    </table></div>
+
+    <h2>State names</h2>
+    <div class="tbl"><table>
+      <tr><th>CSS state</th><th>uGUI state</th><th>Note</th></tr>
+      <tr><td><code>normal</code></td><td>Normal</td><td>No pseudo-class</td></tr>
+      <tr><td><code>hover</code></td><td>Highlighted</td><td></td></tr>
+      <tr><td><code>active</code></td><td>Pressed</td><td></td></tr>
+      <tr><td><code>focus-visible</code></td><td>Selected</td><td>Keyboard select only</td></tr>
+      <tr><td><code>disabled</code></td><td>Disabled</td><td><code>interactable = false</code></td></tr>
+    </table></div>
+
+    <details open>
+      <summary>Sample result: the good entry <span class="sub">· 0 errors</span></summary>
+      <div class="body">
+<pre><span class="g">[ds-button] built: 0 errors, 0 warnings.</span>
+  parts: face (image), label (label)
+  tokens: 5 live, 7 in sprites
+  states: normal, hover, active, focus-visible, disabled</pre>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Sample result: a broken entry <span class="sub">· 1 error, 1 warning</span></summary>
+      <div class="body">
+        <p>The test entry adds an event <code>long-press</code> and a label token <code>text-shadow</code>.</p>
+<pre><span class="e">[ds-button] not built: 1 error, 1 warning.</span>
+  <span class="e">E-EVENT</span>  event "long-press": DsButton has no Unity event for it.
+  <span class="w">W-TOKEN</span>  label/normal "text-shadow" (--button-label-shadow): no TMP property. Ignored.
+  <span class="c">The GameObject did not change.</span></pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>All codes <span class="sub">· 9 errors, 4 warnings</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Code</th><th>Meaning</th></tr>
+          <tr><td><code>E-ID</code></td><td>No entry with the component ID</td></tr>
+          <tr><td><code>E-VERSION</code></td><td>Unknown <code>ds.version</code></td></tr>
+          <tr><td><code>E-NATIVE</code></td><td>Unknown <code>ds.native</code> element</td></tr>
+          <tr><td><code>E-ATTR</code></td><td>Attribute with no Unity field, or wrong type</td></tr>
+          <tr><td><code>E-EVENT</code></td><td>Event with no Unity event</td></tr>
+          <tr><td><code>E-STATE</code></td><td>State with no uGUI state</td></tr>
+          <tr><td><code>E-PART</code></td><td>Part kind with no module</td></tr>
+          <tr><td><code>E-VALUE</code></td><td>Token value that does not parse</td></tr>
+          <tr><td><code>E-ASSET</code></td><td>Sprite file or font asset missing</td></tr>
+          <tr><td><code>W-EXTRA</code></td><td>Unity attribute or event not in the entry</td></tr>
+          <tr><td><code>W-TOKEN</code></td><td>Live token with no Unity property</td></tr>
+          <tr><td><code>W-SIZE</code></td><td>Sprite size differs from the part box</td></tr>
+          <tr><td><code>W-SLICE</code></td><td>Sprite has no slice for a sliced part</td></tr>
+        </table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ BUILDER ============ -->
+  <section class="tab" id="builder" hidden>
+    <h2>What the builder adds, item by item</h2>
+    <div class="tbl"><table>
+      <tr><th>Entry item</th><th>Unity result</th></tr>
+      <tr><td><code>ds.size</code></td><td>RectTransform size 320 × 108</td></tr>
+      <tr><td><code>face</code>, kind <code>image</code></td><td>Image on the root, Sliced, normal sprite</td></tr>
+      <tr><td><code>face.slice</code></td><td>Sprite border 22, 34, 22, 22</td></tr>
+      <tr><td><code>native: button</code> + sprites</td><td>DsSelectable, Sprite Swap, 4 state sprites</td></tr>
+      <tr><td><code>label</code>, kind <code>label</code></td><td>Child "Label", TextMeshProUGUI</td></tr>
+      <tr><td>Label tokens</td><td>Font size 40, spacing 5, colors</td></tr>
+      <tr><td><code>child-offset-y</code></td><td>DsSelectable pressed offset 8</td></tr>
+    </table></div>
+
+    <h2>Hierarchy, before and after</h2>
+    <div class="flow">
+      <div class="hier"><div class="go">PlayButton</div><div class="ind cmp">RectTransform</div><div class="ind cmp">DsButton (manifest, label "Play")</div></div>
+      <div class="arrow">Build</div>
+      <div class="hier">
+        <div class="go">PlayButton</div>
+        <div class="ind cmp">RectTransform <span class="add">320 × 108</span></div>
+        <div class="ind cmp">DsButton</div>
+        <div class="ind add">Image (face, sliced)</div>
+        <div class="ind add">DsSelectable (Button)</div>
+        <div class="ind"><div class="go add">Label</div><div class="ind add">TextMeshProUGUI</div></div>
+      </div>
+    </div>
+
+    <h2>Classes</h2>
+    <div class="tbl"><table>
+      <tr><th>Class</th><th>Kind</th><th>Job</th></tr>
+      <tr><td><code>DsComponent</code></td><td>Base MonoBehaviour</td><td>Find entry, check, run modules</td></tr>
+      <tr><td><code>DsButton</code></td><td>Component</td><td>ID and capabilities</td></tr>
+      <tr><td><code>DsParts</code></td><td>Static modules</td><td>Image part, label part</td></tr>
+      <tr><td><code>DsSelectable</code></td><td>Button subclass</td><td>Label color, offset, focus rule</td></tr>
+      <tr><td><code>DsManifest</code></td><td>Data</td><td>JsonUtility classes</td></tr>
+    </table></div>
+
+    <details>
+      <summary>DsComponent <span class="sub">· the base, sketch</span></summary>
+      <div class="body">
+<pre>public abstract class DsComponent : MonoBehaviour
+{
+    [SerializeField] TextAsset manifest;
+    [SerializeField] string[] lastResult;   <span class="c">// shown in the Inspector</span>
+
+    protected abstract string Id { get; }
+    protected abstract DsCapabilities Capabilities { get; }
+
+    [ContextMenu("Build from manifest")]
+    public DsResult Build()
+    {
+        var entry = DsManifest.Find(manifest, Id);        <span class="c">// E-ID</span>
+        var result = Check(entry, Capabilities);          <span class="c">// E-*, W-*</span>
+        if (result.HasErrors) return Log(result);         <span class="c">// no change</span>
+        foreach (var part in entry.ds.anatomy)
+            DsParts.Build(this, part, entry);             <span class="c">// by kind</span>
+        OnBuilt(entry);                                   <span class="c">// component-specific</span>
+        return Log(result);
+    }
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>DsButton <span class="sub">· capabilities, sketch</span></summary>
+      <div class="body">
+<pre>public sealed class DsButton : DsComponent
+{
+    [SerializeField] string label = "Play";   <span class="c">// slot text, from screen.json later</span>
+
+    protected override string Id =&gt; "ds-button";
+    protected override DsCapabilities Capabilities =&gt; new()
+    {
+        Native = "button",
+        Attributes = { "disabled" },   <span class="c">// Selectable.interactable</span>
+        Events = { "click" },          <span class="c">// Button.onClick</span>
+        States = { "normal", "hover", "active", "focus-visible", "disabled" },
+        PartKinds = { "image", "label" },
+    };
+
+    protected override void OnBuilt(DsEntry entry)
+    {
+        <span class="c">// DsSelectable: sprite states, label colors, pressed offset.</span>
+    }
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>DsParts <span class="sub">· one module for each part kind</span></summary>
+      <div class="body">
+<pre>static class DsParts
+{
+    public static void Build(DsComponent owner, DsPart part, DsEntry entry)
+    {
+        switch (part.kind)
+        {
+            case "image": Image(owner, part, entry); break;   <span class="c">// Image, sprite, slice</span>
+            case "label": Label(owner, part, entry); break;   <span class="c">// child + TMP</span>
+        }
+    }
+    <span class="c">// Each module finds its object or adds it. A second build changes values only.</span>
+}</pre>
+        <p>A part with <code>parent: ""</code> goes on the root GameObject. Other parts become a child with the part name.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>DsSelectable <span class="sub">· the 3 gaps of phase 0</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Gap</th><th>Fix</th></tr>
+          <tr><td>Disabled label stays dark</td><td>Label color for each state</td></tr>
+          <tr><td>Pressed label does not move</td><td>Children move 8 down in Pressed</td></tr>
+          <tr><td>Focus ring after a click</td><td>Selected looks Normal after a pointer select</td></tr>
+        </table></div>
+<pre>protected override void DoStateTransition(SelectionState state, bool instant)
+{
+    if (state == SelectionState.Selected &amp;&amp; !keyboardSelect)
+        state = SelectionState.Normal;   <span class="c">// :focus-visible is keyboard only</span>
+    base.DoStateTransition(state, instant);   <span class="c">// sprite swap</span>
+    label.color = colorFor(state);
+    label.rectTransform.anchoredPosition = state == SelectionState.Pressed ? pressedOffset : Vector2.zero;
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Files <span class="sub">· proposal, + is a new file</span></summary>
+      <div class="body tree">
+        <details open>
+          <summary>Assets/UISpike/</summary>
+          <div class="rows">
+            <div class="row new"><span class="name">components.json</span><span class="kind">data</span><span class="role">copy of the manifest</span></div>
+            <div class="row new"><span class="name">DsButtonSpike.unity</span><span class="kind">scene</span><span class="role">one built button</span></div>
+          </div>
+          <details>
+            <summary>DesignSystem/</summary>
+            <div class="rows">
+              <div class="row new"><span class="name">DsComponent.cs</span><span class="kind">base</span><span class="role">find, check, build</span></div>
+              <div class="row new"><span class="name">DsButton.cs</span><span class="kind">component</span><span class="role">ID, capabilities</span></div>
+              <div class="row new"><span class="name">DsParts.cs</span><span class="kind">modules</span><span class="role">image part, label part</span></div>
+              <div class="row new"><span class="name">DsSelectable.cs</span><span class="kind">runtime</span><span class="role">state colors, offset, focus</span></div>
+              <div class="row new"><span class="name">DsManifest.cs</span><span class="kind">data</span><span class="role">JsonUtility classes</span></div>
+            </div>
+          </details>
+          <details>
+            <summary>Tests/</summary>
+            <div class="rows">
+              <div class="row new"><span class="name">ds-button-broken.json</span><span class="kind">data</span><span class="role">the error case</span></div>
+            </div>
+          </details>
+          <details>
+            <summary>Art/</summary>
+            <div class="rows">
+              <div class="row"><span class="name">button-*.png</span><span class="kind">sprite</span><span class="role">5 state sprites from HTML</span></div>
+            </div>
+          </details>
+        </details>
+        <details>
+          <summary>Design/button-spike/</summary>
+          <div class="rows">
+            <div class="row new"><span class="name">components.json</span><span class="kind">data</span><span class="role">the manifest, source</span></div>
+            <div class="row new"><span class="name">builder-plan.html</span><span class="kind">page</span><span class="role">this page</span></div>
+          </div>
+        </details>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ EDIT FLOW ============ -->
+  <section class="tab" id="flow" hidden>
+    <details open>
+      <summary>Flow: build a button in the Editor</summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node">Add <b>DsButton</b> to a GameObject under a Canvas</div>
+          <div class="arrow">set the manifest field</div>
+          <div class="node hl"><b>Build</b> — context menu, or the manifest field changes</div>
+          <div class="arrow">check, then modules</div>
+          <div class="node">Result in the Console and in the Inspector</div>
+          <div class="arrow">save</div>
+          <div class="node">Scene or prefab keeps the built components</div>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Flow: change a token</summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node">Edit <code>tokens.css</code></div>
+          <div class="arrow">export sprites if the face changed</div>
+          <div class="node">Write the new value in <code>components.json</code></div>
+          <div class="arrow">copy to Assets</div>
+          <div class="node hl">Build each DsButton again</div>
+          <div class="arrow">same objects, new values</div>
+          <div class="node">Capture and compare</div>
+        </div>
+      </div>
+    </details>
+
+    <h2>Build rules</h2>
+    <ul>
+      <li>A second build finds each object by part name. It changes values and adds nothing twice.</li>
+      <li>The build never deletes a child that it did not make.</li>
+      <li>The runtime reads no JSON. The scene keeps the built components.</li>
+    </ul>
+
+    <h2>Spike after your OK</h2>
+    <div class="tbl"><table>
+      <tr><th>#</th><th>Step</th><th>Check</th></tr>
+      <tr><td>1</td><td>Write the 5 scripts</td><td>Editor compiles, no errors</td></tr>
+      <tr><td>2</td><td>Build a button in <code>DsButtonSpike.unity</code></td><td>Hierarchy as in the Builder tab</td></tr>
+      <tr><td>3</td><td>Capture 5 states</td><td>Against the HTML captures</td></tr>
+      <tr><td>4</td><td>Record a touch (real input path)</td><td>0 clicks outside, 1 on it</td></tr>
+      <tr><td>5</td><td>Build from the broken entry</td><td>1 error, 1 warning, no change</td></tr>
+      <tr><td>6</td><td>Break the check code on purpose</td><td>The broken entry builds: test fails</td></tr>
+    </table></div>
+  </section>
+
+  <!-- ============ QUESTIONS ============ -->
+  <section class="tab" id="questions" hidden>
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details open>
+      <summary>Q1 · Who calls Build? <span class="chip info">SPIKE</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. Context menu and field change</td><td>Simple, clear</td><td>A manifest edit needs a manual build</td></tr>
+          <tr><td>B. Also on manifest import</td><td>Always up to date</td><td>Edits scenes that are not open</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A for the spike. B when a second component exists.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q2 · Copy the manifest or read it from Design/? <span class="chip info">SPIKE</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. Copy into Assets as a TextAsset</td><td>Normal Unity asset, import events</td><td>Two files can differ</td></tr>
+          <tr><td>B. Read a path outside Assets</td><td>One file</td><td>No asset reference, no import event</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A, with the copy in the export step.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q3 · Property names for computed values <span class="chip warn">FORMAT</span></summary>
+      <div class="body">
+        <p>CSS moves the face with <code>top: calc(…)</code>. The entry calls it <code>child-offset-y</code>, because the face sprite does not move in Unity. The component-data session can decide a general name.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q4 · Is Selected after a pointer press Normal or Highlighted? <span class="chip warn">LOOK</span></summary>
+      <div class="body">
+        <p>HTML shows hover after a click while the pointer is on the button. The plan uses Normal, and the pointer enter event gives Highlighted again. The touch video shows the result.</p>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

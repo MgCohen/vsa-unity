@@ -1,0 +1,46 @@
+{
+  "$comment": "Sample manifest entry for the native ds-button (Design/button-spike/button.css). Same shape as wa-button. Level 0 comes from the HTML standard for <button>, so the entry has no attributes, events or slots of its own.",
+  "schemaVersion": "2.1.0",
+  "modules": [
+    {
+      "kind": "css-module",
+      "path": "button.css",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ds-button",
+          "ui": {
+            "extends": "html:button",
+            "anatomy": {
+              "id": "root",
+              "element": "button",
+              "children": [
+                { "id": "lip", "pseudo": "::before" },
+                { "id": "face", "class": "ds-button__face",
+                  "children": [ { "id": "label", "class": "ds-button__label", "text": true } ] }
+              ]
+            },
+            "styles": [
+              { "on": "root", "set": {
+                  "width": "{button-width}",
+                  "height": "calc({button-face-height} + {button-depth})",
+                  "color": "{button-label}",
+                  "font-size": "{button-font-size}" } },
+              { "on": "lip", "set": { "height": "{button-face-height}", "background": "{button-lip}" } },
+              { "on": "face", "set": {
+                  "background": "gradient(down, {button-top}, {button-bottom})",
+                  "box-shadow": "inset 0 {button-shine-height} {button-shine}" } },
+              { "on": "face", "if": { "pointer": "hover", "not": ["disabled"] }, "set": { "filter": "brightness({button-hover-brightness})" } },
+              { "on": "face", "if": { "pointer": "active", "not": ["disabled"] }, "set": {
+                  "top": "calc({button-depth} - {button-depth-pressed})", "box-shadow": "none" } },
+              { "on": "face", "if": { "focus": "visible" }, "set": {
+                  "box-shadow": "inset ring {button-focus-width} {button-focus}" } },
+              { "on": "root", "if": { "flag": "disabled" }, "set": { "color": "{button-disabled-label}" } },
+              { "on": "lip", "if": { "flag": "disabled" }, "set": { "background": "{button-disabled-lip}" } }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

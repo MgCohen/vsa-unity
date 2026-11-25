@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "2.1.0",
+  "readme": "Component manifest of the button spike. CEM 2.1 shape, plus the 'ds' extension. Written by hand from tokens.css and button.css.",
+  "modules": [
+    {
+      "kind": "css-module",
+      "path": "button.css",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "ds-button",
+          "description": "A chunky game button: a face on a lip. The face moves down when pressed.",
+          "attributes": [
+            { "name": "disabled", "type": { "text": "boolean" }, "source": "native" }
+          ],
+          "events": [
+            { "name": "click", "source": "native" }
+          ],
+          "slots": [
+            { "name": "", "description": "The label text." }
+          ],
+          "cssParts": [
+            { "name": "face" },
+            { "name": "label" }
+          ],
+          "cssStates": [
+            { "name": "hover" },
+            { "name": "active" },
+            { "name": "focus-visible" },
+            { "name": "disabled" }
+          ],
+          "ds": {
+            "version": 1,
+            "native": "button",
+            "size": { "width": 320, "height": 108 },
+            "anatomy": [
+              {
+                "part": "face",
+                "kind": "image",
+                "parent": "",
+                "inset": { "left": 0, "top": 0, "right": 0, "bottom": 0 },
+                "slice": { "left": 22, "top": 22, "right": 22, "bottom": 34 },
+                "sprites": [
+                  { "state": "normal", "file": "button-normal.png" },
+                  { "state": "hover", "file": "button-hover.png" },
+                  { "state": "active", "file": "button-pressed.png" },
+                  { "state": "focus-visible", "file": "button-focus.png" },
+                  { "state": "disabled", "file": "button-disabled.png" }
+                ]
+              },
+              {
+                "part": "label",
+                "kind": "label",
+                "parent": "face",
+                "slot": "",
+                "inset": { "left": 0, "top": 0, "right": 0, "bottom": 12 },
+                "font": { "family": "Inter", "weight": 600 },
+                "transform": "uppercase",
+                "align": "center"
+              }
+            ],
+            "tokens": [
+              { "part": "face", "state": "normal", "property": "background-top", "token": "--button-top", "value": "#ffd760" },
+              { "part": "face", "state": "normal", "property": "background-bottom", "token": "--button-bottom", "value": "#f5a300" },
+              { "part": "face", "state": "normal", "property": "lip-color", "token": "--button-lip", "value": "#8f4f00" },
+              { "part": "face", "state": "normal", "property": "shine-color", "token": "--button-shine", "value": "#fff0b8" },
+              { "part": "face", "state": "hover", "property": "brightness", "token": "--button-hover-brightness", "value": "1.08" },
+              { "part": "face", "state": "focus-visible", "property": "ring-color", "token": "--button-focus", "value": "#7fe0ff" },
+              { "part": "face", "state": "disabled", "property": "background-top", "token": "--button-disabled-top", "value": "#e4e4e4" },
+              { "part": "face", "state": "active", "property": "child-offset-y", "token": "calc(--button-depth - --button-depth-pressed)", "value": "8px" },
+              { "part": "label", "state": "normal", "property": "color", "token": "--button-label", "value": "#3a1d00" },
+              { "part": "label", "state": "disabled", "property": "color", "token": "--button-disabled-label", "value": "#6b6b6b" },
+              { "part": "label", "state": "normal", "property": "font-size", "token": "--button-font-size", "value": "40px" },
+              { "part": "label", "state": "normal", "property": "letter-spacing", "token": "--button-letter-spacing", "value": "2px" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

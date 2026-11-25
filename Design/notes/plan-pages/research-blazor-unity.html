@@ -1,0 +1,1186 @@
+<title>Blazor in Unity</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, each context in its own tab, detail in foldables. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 24px 0 8px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-head); margin: 16px 0 6px; }
+p { margin: 0 0 10px; max-width: 65ch; }
+.lead { color: var(--muted); }
+a { color: var(--accent); }
+
+/* Tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+
+/* Cards, verdict chips */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.verdict { display: grid; gap: 8px; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+
+/* Foldables */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: block; padding-left: 30px; text-indent: -16px; }
+details > summary .chip { text-indent: 0; margin-left: 4px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; width: 16px; text-indent: 0; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+details details { background: var(--bg); }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+
+/* Code: lines wrap, never scroll sideways */
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12.5px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .92em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+
+/* Tables: scroll in their own box */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+
+/* Flow diagram: vertical, always fits the width */
+.flow { display: grid; gap: 0; justify-items: stretch; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1 var(--f-mono); padding: 4px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+
+/* SVG figures: scale down to the width */
+figure { margin: 0; }
+figure svg { display: block; width: 100%; height: auto; max-width: 100%; }
+figure figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+svg text { fill: var(--fg); font-family: var(--f-body); }
+svg .muted { fill: var(--muted); }
+svg .box { fill: var(--surface); stroke: var(--line); }
+svg .hl { fill: var(--accent-soft); stroke: var(--accent); }
+svg .ln { stroke: var(--muted); fill: none; }
+svg .bar { fill: var(--accent); }
+
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+.sources { font-size: 13px; }
+.sources li { overflow-wrap: anywhere; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11.5px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Added rules: tokens only */
+.flow .node.bad { border-color: var(--bad); background: var(--bad-soft); }
+.flow .node.good { border-color: var(--good); background: var(--good-soft); }
+.nc { color: var(--warn); font-weight: 600; font-size: 12px; }
+svg .good { fill: var(--good); }
+svg .warn { fill: var(--warn); }
+svg .badc { fill: var(--bad); }
+svg .grid { stroke: var(--line); fill: none; }
+.what { margin: 0; color: var(--fg); }
+.kv a + a { margin-left: 10px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · research · 2026-11-22</span>
+    <h1>Blazor in Unity</h1>
+    <p class="lead">Share the presenter, not the Razor view: a runtime Razor renderer for uGUI is possible but costly.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="model">Blazor model</button>
+    <button role="tab" aria-selected="false" data-tab="renderers">Renderers</button>
+    <button role="tab" aria-selected="false" data-tab="limits">Unity limits</button>
+    <button role="tab" aria-selected="false" data-tab="options">Options</button>
+    <button role="tab" aria-selected="false" data-tab="split">Split model</button>
+    <button role="tab" aria-selected="false" data-tab="plans">Plans</button>
+  </nav>
+
+  <!-- SUMMARY -->
+  <section class="tab" id="summary">
+    <div class="card verdict">
+      <div><span class="chip good">B VIABLE</span> <span class="chip warn">A RISK</span> <span class="chip warn">C RISK</span> <span class="chip bad">net5+ in Unity DEAD END</span></div>
+      <p>The presenter is plain C# (Umpire targets netstandard2.1), so a Blazor view and a uGUI view can bind to the same presenter. A Razor renderer to GameObjects needs Blazor 3.1, the last netstandard2.0 version, which is out of support since December 2022.</p>
+      <p>Modern Blazor (net5+) can run in Unity only after Unity ships a CoreCLR editor and player for production.</p>
+    </div>
+
+    <div class="flow">
+      <div class="node hl"><b>Presenter</b> — plain C#, state + <code>Changed</code></div>
+      <div class="arrow">binds</div>
+      <div class="split">
+        <div class="node good"><b>Razor view</b><br>browser, Blazor 10</div>
+        <div class="node good"><b>uGUI view</b><br><code>PresenterComponent&lt;T&gt;</code></div>
+      </div>
+      <div class="arrow">optional, later</div>
+      <div class="node bad"><b>Razor → GameObject renderer</b><br>Blazor 3.1 only, IL2CPP not tested</div>
+    </div>
+  </section>
+
+  <!-- BLAZOR MODEL -->
+  <section class="tab" id="model" hidden>
+    <p>Blazor is a component tree plus a diff engine. The HTML output is one renderer of many.</p>
+    <div class="flow">
+      <div class="node"><b>.razor file</b></div>
+      <div class="arrow">Razor source generator (SDK)</div>
+      <div class="node"><b>C# class</b> : <code>ComponentBase</code><br><code>BuildRenderTree(RenderTreeBuilder)</code></div>
+      <div class="arrow">StateHasChanged</div>
+      <div class="node hl"><b>Renderer</b> — compares old and actual frames</div>
+      <div class="arrow">RenderBatch (edits)</div>
+      <div class="split">
+        <div class="node">WebRenderer<br>browser DOM</div>
+        <div class="node">Custom renderer<br>native element</div>
+      </div>
+      <div class="arrow">DispatchEventAsync(id)</div>
+      <div class="node"><b>EventCallback</b> → component → render again</div>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>Part</th><th>Job</th></tr>
+      <tr><td><code>ComponentBase</code></td><td>Lifecycle, parameters, StateHasChanged</td></tr>
+      <tr><td><code>RenderTreeBuilder</code></td><td>Writes frames: element, attribute, text</td></tr>
+      <tr><td><code>Renderer</code></td><td>Abstract; owns diff and dispatch</td></tr>
+      <tr><td><code>RenderBatch</code></td><td>Edits: insert, remove, set attribute</td></tr>
+      <tr><td><code>Dispatcher</code></td><td>Puts render work on one thread</td></tr>
+      <tr><td>Razor compiler</td><td>Source generator since .NET 6</td></tr>
+    </table></div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+    <details>
+      <summary>Compiled output <span class="sub">· what the generator writes</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <pre><span class="c">// Counter.razor: &lt;Label Text="@Title" /&gt;</span>
+<span class="k">protected override void</span> BuildRenderTree(RenderTreeBuilder b) {
+    b.OpenComponent&lt;Label&gt;(0);
+    b.AddAttribute(1, "Text", Title);
+    b.CloseComponent();
+}</pre>
+        <ul>
+          <li>Sequence numbers (0, 1) are static. The diff uses them to match frames.</li>
+          <li>Text in <code>.razor</code> is HTML by default. A custom renderer uses components such as <code>&lt;Label&gt;</code>.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Custom renderer contract <span class="sub">· three abstract members</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <pre><span class="k">public abstract class</span> Renderer {
+    <span class="k">public abstract</span> Dispatcher Dispatcher { get; }
+    <span class="k">protected abstract</span> Task UpdateDisplayAsync(in RenderBatch batch);
+    <span class="k">protected abstract void</span> HandleException(Exception e);
+}</pre>
+        <ul>
+          <li>The <code>RenderTree</code> types are "pubternal". Analyzer BL0006 shows a warning on use.</li>
+          <li>The API can change between major versions. <span class="nc">not confirmed for 3.1 → 10 deltas</span></li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Events <span class="sub">· handler IDs in the batch</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <ul>
+          <li>An attribute with a delegate value gets an <code>ulong</code> handler ID.</li>
+          <li>The native side calls <code>DispatchEventAsync(id, info, args)</code>.</li>
+          <li><code>EventCallback</code> calls <code>StateHasChanged</code> on the owner after the handler.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- RENDERERS -->
+  <section class="tab" id="renderers" hidden>
+    <div class="tbl"><table>
+      <tr><th>Project</th><th>Target</th><th>TFM</th><th>Last activity</th><th>State</th></tr>
+      <tr><td><a href="https://github.com/dotnet/MobileBlazorBindings">Mobile Blazor Bindings</a></td><td>Xamarin.Forms</td><td>ns2.0 (v0.5)</td><td>archived; push 2024-10</td><td>dead</td></tr>
+      <tr><td><a href="https://github.com/Dreamescaper/BlazorBindings.Maui">BlazorBindings.Maui</a></td><td>.NET MAUI</td><td>net10</td><td>4.0.19, 2026-05</td><td>active</td></tr>
+      <tr><td><a href="https://github.com/Blazonia/Blazonia">Blazonia</a></td><td>Avalonia</td><td>net8+ <span class="nc">nc</span></td><td>12.0.0-preview1.9</td><td>active</td></tr>
+      <tr><td><a href="https://github.com/RazorConsole/RazorConsole">RazorConsole</a></td><td>Spectre.Console</td><td>net8–11</td><td>v0.7.0, 2026-11-08</td><td>active</td></tr>
+      <tr><td><a href="https://github.com/chaldea/miko">Miko</a></td><td>SkiaSharp</td><td>net10</td><td>1.0.0-preview.1</td><td>young</td></tr>
+      <tr><td><a href="https://github.com/tifye/unity-blazor-components">unity-blazor-components</a></td><td>Unity WebGL</td><td>browser</td><td>2024-10</td><td>PoC</td></tr>
+      <tr><td><a href="https://github.com/mgrman/BlazorWith3d">BlazorWith3d</a></td><td>Unity WebGL</td><td>browser</td><td>2026-08</td><td>alpha</td></tr>
+    </table></div>
+    <div class="tbl"><table>
+      <tr><th>Embed or template tool</th><th>Kind</th><th>Last activity</th><th>State</th></tr>
+      <tr><td><a href="https://github.com/webcyou-org/unity-blazor">webcyou unity-blazor</a></td><td>Blazor in Unity WebGL page</td><td>2023-01</td><td>stale</td></tr>
+      <tr><td><a href="https://github.com/rob011235/UnityBlazorComponent">UnityBlazorComponent</a></td><td>Unity WebGL in Blazor</td><td>2022-05</td><td>stale</td></tr>
+      <tr><td><a href="https://github.com/Voltstro-Studios/UnityWebBrowser">UnityWebBrowser</a></td><td>CEF webview in Unity</td><td>2.2.8, 2026-01</td><td>active</td></tr>
+      <tr><td><a href="https://developer.vuplex.com/webview/overview">Vuplex 3D WebView</a></td><td>Paid webview in Unity</td><td>store 2026-06</td><td>active</td></tr>
+      <tr><td><a href="https://github.com/toddams/RazorLight">RazorLight</a></td><td>Razor text templates</td><td>2.3.1, 2023-01</td><td>stale</td></tr>
+      <tr><td><a href="https://github.com/Antaris/RazorEngine">RazorEngine</a></td><td>Razor text templates</td><td>push 2021-05</td><td>stale</td></tr>
+    </table></div>
+    <p>All native renderers use one pattern: a Razor component per native control, and a handler that holds the native object. Only MBB v0.5 targets netstandard2.0.</p>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>Mobile Blazor Bindings <span class="sub">· the reference adapter design, ns2.0 in v0.5</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">Microsoft experiment that renders Razor components as native Xamarin.Forms controls, without HTML.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/dotnet/MobileBlazorBindings">Repo</a><a href="https://learn.microsoft.com/en-us/mobile-blazor-bindings/">Docs</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (archived, push 2024-10-29); <code>Core</code> source on main; csproj at tag v0.5.50-preview (2020-10-30)</dd>
+          <dt>Target</dt><dd>Xamarin.Forms (later MAUI)</dd><dt>Runtime</dt><dd>v0.5: netstandard2.0, Components 3.1.5; main: net6.0</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Archived. Last release v0.5.50-preview, 2020-10-30</dd>
+          <dt>Why RISK</dt><dd>It is the only renderer on netstandard2.0, so its design fits Unity Mono. The repo is archived and depends on out-of-support Blazor 3.1.</dd>
+        </dl>
+        <ul>
+          <li><code>NativeComponentRenderer : Renderer</code> keeps one <code>NativeComponentAdapter</code> per component ID.</li>
+          <li>The adapter reads <code>RenderTreeEdit</code>s and calls an <code>ElementManager</code> to add or remove children.</li>
+          <li><code>IElementHandler</code> holds <code>TargetElement</code> and gets <code>ApplyAttribute</code> calls.</li>
+        </ul>
+        <pre><span class="k">public interface</span> IElementHandler {
+    <span class="k">void</span> ApplyAttribute(ulong eventHandlerId, string name, object value, string eventUpdatesName);
+    <span class="k">object</span> TargetElement { get; }
+}
+<span class="k">public abstract class</span> ElementManager {
+    <span class="k">public abstract void</span> AddChildElement(IElementHandler parent, IElementHandler child, int index);
+    <span class="k">public abstract void</span> RemoveChildElement(IElementHandler parent, IElementHandler child);
+    <span class="c">// + GetChildElementIndex, IsParented, IsParentOfChild</span>
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>BlazorBindings.Maui <span class="sub">· MBB fork, generated MAUI wrappers</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Community fork of Mobile Blazor Bindings that renders Razor components as native .NET MAUI controls.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Dreamescaper/BlazorBindings.Maui">Repo</a><a href="https://dreamescaper.github.io/MobileBlazorBindingsDocs/">Docs</a><a href="https://www.nuget.org/packages/BlazorBindings.Maui">NuGet</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2026-11-12), release 4.0.19 (2026-05-07), <code>BlazorBindings.Core</code> 4.0.19 nuspec</dd>
+          <dt>Target</dt><dd>.NET MAUI controls</dd><dt>Runtime</dt><dd>net10.0, Components 10.0</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Active. Release 4.0.19 (2026-05-07); push 2026-11-12</dd>
+          <dt>Why INFO</dt><dd>The design is a good model, but <code>BlazorBindings.Core</code> targets net10.0. Unity Mono cannot load it.</dd>
+        </dl>
+        <ul>
+          <li>Split into <code>BlazorBindings.Core</code> (renderer) and the MAUI layer.</li>
+          <li>A component generator makes Razor wrappers from MAUI control types.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Blazonia <span class="sub">· Razor for native Avalonia controls</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Library that builds Avalonia desktop and mobile apps from Razor components, with no WebView.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Blazonia/Blazonia">Repo</a><a href="https://www.nuget.org/packages/Blazonia">NuGet</a></dd>
+          <dt>Checked</dt><dd>README, repo metadata (push 2026-10-26), NuGet version list (12.0.0-preview1.9)</dd>
+          <dt>Target</dt><dd>Avalonia controls, no WebView</dd><dt>Runtime</dt><dd>modern .NET <span class="nc">exact TFM not confirmed</span></dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Active. NuGet 12.0.0-preview1.9; push 2026-10-26</dd>
+          <dt>Why INFO</dt><dd>It proves the adapter pattern on a second UI toolkit. It runs on modern .NET, so it does not load in Unity.</dd>
+        </dl>
+        <ul>
+          <li>Hosts a Razor root inside an Avalonia control: <code>&lt;b:BlazoniaControl x:TypeArguments="pages:Hello"/&gt;</code>.</li>
+          <li>README states NativeAot and trimming support with extra configuration.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>RazorConsole <span class="sub">· Razor to terminal, via a VDOM translator</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Framework that renders Razor components as terminal UI through Spectre.Console renderables.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/RazorConsole/RazorConsole">Repo</a><a href="https://razorconsole.github.io/RazorConsole/">Site</a><a href="https://www.nuget.org/packages/RazorConsole.Core">NuGet</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2026-11-18), release v0.7.0 (2026-11-08), 0.7.0 nuspec, docs search summary</dd>
+          <dt>Target</dt><dd>Spectre.Console renderables</dd><dt>Runtime</dt><dd>net8.0, net9.0, net10.0, net11.0</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Active. v0.7.0 (2026-11-08), nightly 2026-11-17</dd>
+          <dt>Why INFO</dt><dd>Its VDOM translator is a model for a design-time converter (P2). It targets net8+, so it cannot run in Unity.</dd>
+        </dl>
+        <ul>
+          <li>Builds a VDOM from the render batch, then translates nodes with <code>IVdomElementTranslator</code>.</li>
+          <li>Uses HTML-like tags, so standard Razor markup works.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Miko <span class="sub">· Razor to SkiaSharp, own layout engine</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">UI engine that compiles Razor components to SkiaSharp draw calls, with CSS-like layout.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/chaldea/miko">Repo</a><a href="https://chaldea.github.io/miko/">Docs</a><a href="https://www.nuget.org/packages/Miko">NuGet</a></dd>
+          <dt>Checked</dt><dd>README (1.0.0-preview.1), repo metadata (created 2026-05-08, push 2026-11-22), NuGet version list (0.1.0)</dd>
+          <dt>Target</dt><dd>SkiaSharp canvas</dd><dt>Runtime</dt><dd>.NET 10</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>1.0.0-preview.1 (NuGet 0.1.0); created 2026-05</dd>
+          <dt>Why INFO</dt><dd>It draws pixels, not uGUI objects, and needs .NET 10. It shows the size of an HTML-like layout engine.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>unity-blazor-components <span class="sub">· Blazor components drive Unity GameObjects</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">Proof of concept where Blazor component lifecycle calls create and update Unity WebGL GameObjects.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/tifye/unity-blazor-components">Repo</a><a href="https://github.com/tifye/blazor-three-js">Follow-up repo</a></dd>
+          <dt>Checked</dt><dd>README, repo metadata (created 2024-02-28, push 2024-10-06, no releases)</dd>
+          <dt>Target</dt><dd>Unity WebGL scene, from the browser</dd><dt>Runtime</dt><dd>Blazor WASM + Unity WASM in one page</dd><dt>License</dt><dd>None stated</dd><dt>Status</dt><dd>PoC, last push 2024-10-06, 2 stars</dd>
+          <dt>Why RISK</dt><dd>It maps components to GameObjects, but Blazor runs in the browser, not in Unity. No license, so we cannot copy code.</dd>
+        </dl>
+        <ul>
+          <li>Component lifecycle methods send create, update and destroy calls to Unity over JS interop.</li>
+          <li>It does not use a custom <code>Renderer</code>.</li>
+        </ul>
+        <pre>&lt;Garden Map="@GardenMap"&gt;
+    &lt;Mower X="MowerX" Y="MowerY" /&gt;
+&lt;/Garden&gt;</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>BlazorWith3d <span class="sub">· generated interop Blazor ↔ Unity WebGL</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Sample that uses source generators for typed messages between Blazor and a Unity WebGL build.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/mgrman/BlazorWith3d">Repo</a><a href="https://blazorwith3d-a3avcthnbbf3edf4.westeurope-01.azurewebsites.net/">Demo</a> (not opened)</dd>
+          <dt>Checked</dt><dd>README, repo metadata (push 2026-08-13, no releases). The demo did not answer.</dd>
+          <dt>Target</dt><dd>Unity WebGL, ThreeJS, BabylonJS, HTML</dd><dt>Runtime</dt><dd>Blazor (ASP.NET Core 9 docs), Unity WASM</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Alpha, last push 2026-08-13</dd>
+          <dt>Why INFO</dt><dd>Unity owns its scene, and Blazor only sends messages. The shared-interface idea is useful; the renderer is not.</dd>
+        </dl>
+        <ul>
+          <li>A shared C# interface makes source-generated binary messages (MemoryPack or JsonUtility).</li>
+          <li>A WebSocket relay connects Blazor to a Unity Editor for fast iteration.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>webcyou unity-blazor <span class="sub">· Blazor WASM in a Unity WebGL page</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">Sample that runs a Blazor WebAssembly app beside a Unity WebGL build in one page.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/webcyou-org/unity-blazor">Repo</a></dd>
+          <dt>Checked</dt><dd>README (Unity 2019.3.13, .NET Core 3.1 and 5.0 SDK), repo metadata (push 2023-01-28)</dd>
+          <dt>Target</dt><dd>Browser page</dd><dt>License</dt><dd>None stated</dd><dt>Status</dt><dd>Stale, one push in 2023-01</dd>
+          <dt>Why DEAD END</dt><dd>It is a page embed on Unity 2019, with no renderer and no license.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>UnityBlazorComponent <span class="sub">· Unity WebGL as one Blazor component</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">Rob Garner experiment that wraps a Unity WebGL build as a 3D Blazor component.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/rob011235/UnityBlazorComponent">Repo</a><a href="https://robgarnerblog.wordpress.com/2022/05/20/using-unity-to-create-a-3d-blazor-component/">Blog</a> (not opened)</dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2022-05-15). The blog returned HTTP 429.</dd>
+          <dt>Target</dt><dd>Browser page</dd><dt>Status</dt><dd>Stale since 2022-05</dd>
+          <dt>Why DEAD END</dt><dd>Unity is a canvas inside Blazor. Nothing maps Razor to GameObjects.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>UnityWebBrowser <span class="sub">· CEF webview inside Unity</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Open-source Unity package that shows a Chromium (CEF) browser page as a Unity texture.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Voltstro-Studios/UnityWebBrowser">Repo</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2026-06-18), release 2.2.8 (2026-01-07)</dd>
+          <dt>Target</dt><dd>Texture in a Unity scene</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>Active</dd>
+          <dt>Why INFO</dt><dd>It can show a hosted Blazor app, but as a texture, not as uGUI objects. It also adds a browser process.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>Vuplex 3D WebView <span class="sub">· paid webview inside Unity</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">Commercial Unity asset that shows web pages in a scene, one package per platform.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://developer.vuplex.com/webview/overview">Docs</a><a href="https://store.vuplex.com/">Site</a><a href="https://assetstore.unity.com/packages/tools/gui/3d-webview-for-windows-and-macos-web-browser-154144">Store</a> (not opened)</dd>
+          <dt>Checked</dt><dd>Docs and site answer (HTTP 200). Prices from a search summary only.</dd>
+          <dt>Target</dt><dd>Texture in a Unity scene</dd><dt>Price</dt><dd>Windows and macOS $179.99; Android and iOS about $374 (search summary)</dd><dt>License</dt><dd><span class="nc">terms not confirmed</span></dd>
+          <dt>Why INFO</dt><dd>It shows a texture, not uGUI objects, and it is paid per platform. It breaks the zero-install rule for users.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>RazorLight <span class="sub">· Razor as a text template engine</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">Library that renders Razor templates to text strings, outside ASP.NET MVC.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/toddams/RazorLight">Repo</a><a href="https://www.nuget.org/packages/RazorLight">NuGet</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2024-07-06), release v2.3.1 (2023-01-16), 2.3.1 nuspec</dd>
+          <dt>Target</dt><dd>Any text: C#, YAML, JSON</dd><dt>Runtime</dt><dd>ns2.0, netcoreapp3.1, net5, net6</dd><dt>License</dt><dd>Apache-2.0</dd><dt>Status</dt><dd>No release since 2023-01</dd>
+          <dt>Why RISK</dt><dd>It works as a design-time tool, but it is stale. C# string templates or a source generator do the same job.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>RazorEngine <span class="sub">· older Razor template engine</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">Older open-source engine that renders Razor templates to text on .NET Framework.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Antaris/RazorEngine">Repo</a><a href="https://www.nuget.org/packages/RazorEngine">NuGet</a></dd>
+          <dt>Checked</dt><dd>Repo metadata (push 2021-05-11, no GitHub releases)</dd>
+          <dt>Target</dt><dd>Any text</dd><dt>License</dt><dd>No SPDX ID on GitHub</dd><dt>Status</dt><dd>Stale since 2021-05</dd>
+          <dt>Why DEAD END</dt><dd>No activity since 2021 and no clear license ID. RazorLight or plain C# replaces it.</dd>
+        </dl>
+      </div>
+    </details>
+  </section>
+
+  <!-- UNITY LIMITS -->
+  <section class="tab" id="limits" hidden>
+    <div class="tbl"><table>
+      <tr><th>Package</th><th>TFMs</th><th>Unity Mono</th></tr>
+      <tr><td><a href="https://www.nuget.org/packages/Microsoft.AspNetCore.Components/3.1.32">Components 3.1.32</a></td><td>netcoreapp3.1, ns2.0</td><td>loads <span class="nc">nc</span></td></tr>
+      <tr><td><a href="https://www.nuget.org/packages/Microsoft.AspNetCore.Components/5.0.17">Components 5.0.x</a></td><td>net5.0</td><td>no</td></tr>
+      <tr><td><a href="https://www.nuget.org/packages/Microsoft.AspNetCore.Components">Components 6–10</a></td><td>net6+ … net10.0</td><td>no</td></tr>
+      <tr><td>Umpire 0.2.0-preview.23</td><td>ns2.1</td><td>yes (ships)</td></tr>
+    </table></div>
+
+    <div class="flow">
+      <div class="node"><b>Microsoft.AspNetCore.Components 3.1.32</b> (ns2.0, 2022-12-13)</div>
+      <div class="arrow">depends on</div>
+      <div class="split">
+        <div class="node">Authorization 3.1.32<br>→ Options, Logging.Abstractions</div>
+        <div class="node">JSInterop 3.1.32<br>→ System.Text.Json 4.7.2</div>
+        <div class="node">ComponentModel.Annotations 4.7</div>
+      </div>
+      <div class="arrow">collides with</div>
+      <div class="node hl"><b>com.vsa.core Plugins</b>: Microsoft.Extensions.* 8.0, ComponentModel.Annotations 5.0</div>
+    </div>
+    <p>Version ranges are "&gt;=", so the 8.0 assemblies satisfy them. Unity Mono load of mixed 3.1 and 8.0 assemblies is <span class="nc">not confirmed</span>.</p>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+    <details>
+      <summary>Mono profile <span class="sub">· ns2.1 and .NET Framework, C# 9</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">The .NET API set and C# version that Unity scripts and plugins can use.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://docs.unity3d.com/6000.0/Documentation/Manual/dotnet-profile-support.html">Docs</a><a href="https://www.nuget.org/packages/Microsoft.AspNetCore.Components/3.1.32">NuGet 3.1.32</a></dd>
+          <dt>Checked</dt><dd>Unity 6 manual page (HTTP 200); NuGet nuspecs of Components 3.1.32, 5.0.17, 10.0.0; local plugin DLL versions</dd>
+          <dt>Why RISK</dt><dd>Only Blazor 3.1 fits the profile, and it gets no security fixes since 2022-12.</dd>
+        </dl>
+        <ul>
+          <li>Unity 6 compiles scripts as C# 9 against .NET Standard 2.1 or .NET Framework 4.8.</li>
+          <li>Precompiled ns2.0 and ns2.1 DLLs load. net5+ DLLs do not.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>IL2CPP <span class="sub">· AOT, reflection, generic delegates</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">Unity ahead-of-time compiler that limits runtime code generation and strips unused types.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://docs.unity3d.com/6000.0/Documentation/Manual/scripting-restrictions.html">Docs: restrictions</a><a href="https://docs.unity3d.com/6000.0/Documentation/Manual/managed-code-stripping.html">Docs: stripping</a></dd>
+          <dt>Checked</dt><dd>Both Unity 6 manual pages answer (HTTP 200). No public Blazor 3.1 IL2CPP test found.</dd>
+          <dt>Why RISK</dt><dd>Blazor sets parameters with reflection and generic delegates. Nobody shows that this works under IL2CPP.</dd>
+        </dl>
+        <ul>
+          <li>Blazor sets <code>[Parameter]</code> properties with reflection and generic delegates. <span class="nc">IL2CPP result not confirmed</span></li>
+          <li>Component types are made with <code>Activator</code>. Managed stripping can remove them. Use <code>link.xml</code>.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>CoreCLR status <span class="sub">· experimental in 6.7, production later</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">Unity plan to replace Mono with the CoreCLR runtime of modern .NET.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://discussions.unity.com/t/coreclr-scripting-and-net-update-october-2026/1738338">Forum: Oct 2026</a> (not opened)<a href="https://discussions.unity.com/t/coreclr-scripting-and-ecs-status-update-march-2026/1711852">Forum: Mar 2026</a> (not opened)</dd>
+          <dt>Checked</dt><dd>Search summary only. The forum returns HTTP 403 to the fetch.</dd>
+          <dt>6.7 LTS</dt><dd>Experimental CoreCLR player. C# 9, .NET Standard 2.1 API surface.</dd><dt>6.8</dt><dd>CoreCLR editor (March 2026 commitment)</dd><dt>7.0</dt><dd>Updated IL2CPP on all platforms; parity with 6.7 first</dd><dt>.NET 10 / C# 14</dt><dd><span class="nc">version and date not confirmed</span></dd>
+          <dt>Why DEAD END</dt><dd>The 6.7 player keeps the .NET Standard 2.1 API surface and is not for production. Blazor 6+ cannot load until that changes.</dd>
+        </dl>
+      </div>
+    </details>
+    <details>
+      <summary>Razor compile <span class="sub">· outside Unity, as a DLL</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">The .NET SDK step that turns <code>.razor</code> files into C# classes in a DLL.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://learn.microsoft.com/en-us/aspnet/core/razor-pages/sdk">Docs: Razor SDK</a><a href="https://learn.microsoft.com/en-us/aspnet/core/blazor/components/class-libraries">Docs: Razor class libraries</a></dd>
+          <dt>Checked</dt><dd>Both docs pages answer (HTTP 200); MBB v0.5 csproj (ns2.0, Components 3.1.5)</dd>
+          <dt>Why RISK</dt><dd>MBB v0.5 shows Razor on ns2.0 in Mono. Nobody shows the same DLL in Unity.</dd>
+        </dl>
+        <ul>
+          <li>Unity does not compile <code>.razor</code>. A separate SDK project must make the DLL.</li>
+          <li>Build with a .NET 10 SDK, ns2.0 and Components 3.1: <span class="nc">not confirmed</span>. It can need <code>RazorLangVersion</code> 3.0.</li>
+        </ul>
+        <pre><span class="c">&lt;!-- Razor.Views.csproj (spike) --&gt;</span>
+&lt;Project Sdk="Microsoft.NET.Sdk.Razor"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+    &lt;RazorLangVersion&gt;3.0&lt;/RazorLangVersion&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.32" /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- OPTIONS -->
+  <section class="tab" id="options" hidden>
+    <figure>
+      <svg viewBox="0 0 360 230" role="img" aria-label="Effort and risk of options A, B and C">
+        <rect class="box" x="0.5" y="0.5" width="359" height="229" rx="8"/>
+        <line class="grid" x1="50" y1="20" x2="50" y2="190"/>
+        <line class="grid" x1="50" y1="190" x2="340" y2="190"/>
+        <line class="grid" x1="195" y1="20" x2="195" y2="190" stroke-dasharray="3 3"/>
+        <line class="grid" x1="50" y1="105" x2="340" y2="105" stroke-dasharray="3 3"/>
+        <text x="195" y="212" font-size="12" text-anchor="middle" class="muted">Effort →</text>
+        <text x="18" y="105" font-size="12" text-anchor="middle" class="muted" transform="rotate(-90 18 105)">Risk →</text>
+        <circle class="good" cx="85" cy="165" r="11"/>
+        <text x="85" y="169" font-size="12" text-anchor="middle" fill="var(--surface)" style="fill:var(--surface)">B</text>
+        <text x="102" y="169" font-size="11">share presenter</text>
+        <circle class="warn" cx="200" cy="110" r="11"/>
+        <text x="200" y="114" font-size="12" text-anchor="middle" style="fill:var(--surface)">C</text>
+        <text x="217" y="114" font-size="11">Razor/HTML → prefab</text>
+        <circle class="badc" cx="300" cy="45" r="11"/>
+        <text x="300" y="49" font-size="12" text-anchor="middle" style="fill:var(--surface)">A</text>
+        <text x="285" y="49" font-size="11" text-anchor="end">runtime renderer</text>
+      </svg>
+      <figcaption>B has the lowest effort and risk. A has the highest of both. Positions are estimates.</figcaption>
+    </figure>
+
+    <div class="tbl"><table>
+      <tr><th>Option</th><th>Effort</th><th>Risk</th><th>Blocker</th></tr>
+      <tr><td>A runtime renderer</td><td>4–8 weeks <span class="nc">est.</span></td><td>high</td><td>Blazor 3.1, IL2CPP, layout</td></tr>
+      <tr><td>B shared presenter</td><td>2–4 days <span class="nc">est.</span></td><td>low</td><td>presenters in Unity asmdefs</td></tr>
+      <tr><td>C design-time convert</td><td>2–3 weeks <span class="nc">est.</span></td><td>medium</td><td>CSS to RectTransform map</td></tr>
+    </table></div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>A · Runtime Razor renderer to uGUI <span class="sub">· MBB design on Blazor 3.1</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node">Razor DLL (ns2.0, Components 3.1)</div>
+          <div class="arrow">StateHasChanged</div>
+          <div class="node hl"><b>UnityRenderer : Renderer</b><br>Dispatcher on main thread</div>
+          <div class="arrow">RenderBatch</div>
+          <div class="node">Adapter → <code>IElementHandler</code></div>
+          <div class="arrow">SetParent, SetSiblingIndex</div>
+          <div class="node good">GameObject + Text / Image / Button</div>
+        </div>
+        <ul>
+          <li>Each uGUI control needs one Razor component and one handler.</li>
+          <li>HTML and CSS do not work. Layout comes from LayoutGroups only.</li>
+          <li>It duplicates <code>PresenterComponent</code>; prefab design in the Editor is lost.</li>
+        </ul>
+        <pre><span class="c">// Razor side: the element that the adapter maps</span>
+<span class="k">public sealed class</span> Label : NativeControlComponentBase {
+    [Parameter] <span class="k">public string</span> Text { get; set; }
+    <span class="k">protected override void</span> RenderAttributes(AttributesBuilder b)
+        =&gt; b.AddAttribute(nameof(Text), Text);
+}
+
+<span class="c">// Unity side: one handler holds one GameObject</span>
+<span class="k">public sealed class</span> LabelHandler : IElementHandler {
+    <span class="k">readonly</span> Text text;
+    <span class="k">public</span> LabelHandler() {
+        <span class="k">var</span> go = <span class="k">new</span> GameObject("Label", <span class="k">typeof</span>(RectTransform), <span class="k">typeof</span>(Text));
+        text = go.GetComponent&lt;Text&gt;();
+    }
+    <span class="k">public object</span> TargetElement =&gt; text.gameObject;
+    <span class="k">public void</span> ApplyAttribute(ulong id, string name, object value, string _) {
+        <span class="k">if</span> (name == "Text") text.text = (string)value;
+    }
+}
+
+<span class="c">// Tree edits: Transform parent and order</span>
+<span class="k">public override void</span> AddChildElement(IElementHandler p, IElementHandler c, int i) {
+    <span class="k">var</span> t = ((GameObject)c.TargetElement).transform;
+    t.SetParent(((GameObject)p.TargetElement).transform, <span class="k">false</span>);
+    t.SetSiblingIndex(i);
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>B · Share the presenter layer <span class="sub">· two views, one presenter</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node hl"><b>CounterPresenter</b> (Umpire, ns2.1)</div>
+          <div class="arrow">Changed</div>
+          <div class="split">
+            <div class="node">Counter.razor<br>Blazor 10, browser</div>
+            <div class="node">CounterView<br>uGUI prefab</div>
+          </div>
+        </div>
+        <ul>
+          <li>Umpire targets netstandard2.1. A net10 Blazor app can reference it.</li>
+          <li>Feature code (presenters, slices) must compile outside Unity. Move it to a plain C# project or link the files.</li>
+          <li>The Razor view is a fast design and test surface. It does not become the Unity view.</li>
+        </ul>
+        <pre><span class="c">// Shared: plain C#, no UnityEngine (from DiceGame)</span>
+<span class="k">public sealed class</span> CounterPresenter : Presenter {
+    <span class="k">public int</span> Count { get; <span class="k">private set</span>; }
+    <span class="k">public int</span> Last { get; <span class="k">private set</span>; }
+    <span class="k">public</span> Task RollAsync() =&gt; Run(Roll, ...);
+}</pre>
+        <pre><span class="c">@* Counter.razor: Blazor view of the same presenter *@</span>
+@implements IDisposable
+&lt;p&gt;Rolls: @P.Count   Last: @P.Last&lt;/p&gt;
+&lt;button @onclick="() =&gt; P.RollAsync()"&gt;Roll&lt;/button&gt;
+@code {
+    [Parameter] <span class="k">public</span> CounterPresenter P { get; set; }
+    <span class="k">protected override void</span> OnInitialized() =&gt; P.Changed += Redraw;
+    <span class="k">void</span> Redraw() =&gt; InvokeAsync(StateHasChanged);
+    <span class="k">public void</span> Dispose() =&gt; P.Changed -= Redraw;
+}</pre>
+        <pre><span class="c">// Unity view: the code in the repo</span>
+<span class="k">public sealed class</span> CounterView : PresenterComponent&lt;CounterPresenter&gt; {
+    <span class="k">protected override void</span> Render() =&gt;
+        label.text = "Rolls: " + Presenter.Count + "   Last: " + Presenter.Last;
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>C · Design-time Razor or HTML to prefab <span class="sub">· output is plain Unity assets</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node">Razor component (Blazor 10)</div>
+          <div class="arrow">render in a .NET tool, not in Unity</div>
+          <div class="node hl">Element tree + computed layout (JSON)</div>
+          <div class="arrow">Editor importer</div>
+          <div class="split">
+            <div class="node good">Prefab (uGUI)</div>
+            <div class="node good">View stub .cs</div>
+          </div>
+        </div>
+        <ul>
+          <li>No Blazor runtime in the player. IL2CPP and Mono limits do not apply.</li>
+          <li>The hard part is the layout map: flex and CSS to RectTransform and LayoutGroup.</li>
+          <li>The conversion is one way. Edits in the prefab do not return to Razor.</li>
+        </ul>
+        <pre><span class="c">// Tool: render with a custom Renderer, write JSON</span>
+<span class="k">protected override</span> Task UpdateDisplayAsync(in RenderBatch b) {
+    tree.Apply(b);              <span class="c">// keep a VDOM, as RazorConsole does</span>
+    File.WriteAllText(path, tree.ToJson());
+    <span class="k">return</span> Task.CompletedTask;
+}</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- PLANS -->
+  <section class="tab" id="split" hidden>
+    <div class="card verdict">
+      <div><span class="chip good">VIABLE</span> <span class="chip info">PLAN P4 BELOW</span></div>
+      <p>Each Blazor screen has three layers. The logic is in a presenter that both apps share. The markup becomes uGUI through the HTML importer, and the design system components match by contract.</p>
+    </div>
+
+    <h2>Plan</h2>
+    <details open>
+      <summary>P4 · Split model: logic, DS components, markup · 2–3 weeks (est.) <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>A Blazor screen of thin DS components becomes a Unity screen prefab and view, with the same presenter.</dd><dt>Needs</dt><dd>Blazor P1; Component Parity P1 (Button contract); HTML to uGUI P1 (importer)</dd></dl>
+        <h3>Phase 1 (spike): thin Blazor screen</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Add <code>Summary</code> to <code>CounterPresenter</code></td><td>presenter property</td><td><code>CounterView</code> uses it; Play Mode test passes</td></tr>
+          <tr><td>2</td><td>Write <code>PresenterView&lt;T&gt;</code> in the Blazor preview</td><td>base component</td><td>Changed re-renders the view</td></tr>
+          <tr><td>3</td><td>Write <code>DsButton.razor</code> and <code>DsLabel.razor</code></td><td>two thin components</td><td><code>@code</code> has parameters only</td></tr>
+          <tr><td>4</td><td>Write <code>Counter.razor</code> from the two components</td><td>screen</td><td>Roll click changes Summary</td></tr>
+          <tr><td>5</td><td>Render the screen to HTML (Blazor P2 tool)</td><td><code>counter.html</code></td><td>has <code>data-ui</code> and <code>data-action</code></td></tr>
+        </table></div>
+        <h3>Phase 2: matching set</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>6</td><td>Make <code>DsLabel</code> as a contract (Button exists from Parity P1)</td><td>Label.contract.json, prefab</td><td>EditMode test: prefab matches contract</td></tr>
+          <tr><td>7</td><td>Compare Razor parameters with each contract</td><td>one .NET test</td><td>break one name; the test fails</td></tr>
+        </table></div>
+        <h3>Phase 3: screen import</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>8</td><td>Import <code>counter.html</code> with the HTML importer</td><td>screen prefab with DS prefab copies</td><td>RectTransforms match the snapshot</td></tr>
+          <tr><td>9</td><td>Generate <code>CounterScreenView</code> from <code>data-action</code></td><td>C# view class</td><td>compiles; wrong name fails compile</td></tr>
+          <tr><td>10</td><td>Put the prefab in the DiceGame scene</td><td>scene object</td><td>Play Mode: Roll changes the label</td></tr>
+        </table></div>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Assets/DiceGame/Features/Counter/Presenters/CounterPresenter.cs</code>: <code>Summary</code></li>
+          <li><code>Tools/blazor-preview/</code>: <code>PresenterView.cs</code>, <code>Ds/*.razor</code>, <code>Counter.razor</code></li>
+          <li>Contracts and DS prefabs: the place that Component Parity P1 decides</li>
+          <li>Generated view: <code>Assets/DiceGame/App/Views/Generated/</code> (folder name is a proposal)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>One command renders <code>Counter.razor</code> to HTML with DS markers.</li>
+          <li>The import makes a screen prefab and a view class with no manual edit.</li>
+          <li>Play Mode: Roll in the imported screen changes the label, as in Blazor.</li>
+          <li>The parity test fails when a Razor parameter and a contract prop differ.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If a screen needs C# in markup that a property cannot replace, stop and list the cases.</li>
+          <li>If Blazor P1, Parity P1 or the HTML importer does not pass, do not start that phase.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li><code>data-action</code>: method name, or a separate action name?</li>
+          <li>Generate the screen view, or check a hand-written one?</li>
+          <li>Lists: <code>data-ui="List"</code> with an item prefab and a prefab factory?</li>
+        </ul>
+        <p class="lead">Rules: Phase 1 adds no Unity tool. Make one DS component at a time, when a screen needs it. Keep the Editor open for phases 2 and 3.</p>
+      </div>
+    </details>
+
+    <h2>One screen, three layers</h2>
+    <div class="flow">
+      <div class="node"><b>Counter.razor</b> · screen: composes DS components</div>
+      <div class="arrow">splits into</div>
+      <div class="split" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="node"><b>Markup</b><br>HTML + CSS + <code>data-ui</code></div>
+        <div class="node"><b>DS components</b><br>DsButton, DsLabel</div>
+        <div class="node hl"><b>Logic</b><br>CounterPresenter</div>
+      </div>
+      <div class="arrow">reaches Unity by</div>
+      <div class="split" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="node">HTML importer<br>→ prefab</div>
+        <div class="node">contract<br>→ matching set</div>
+        <div class="node hl">the same DLL<br>→ no change</div>
+      </div>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>Layer</th><th>Lives in</th><th>To Unity</th><th>Unity form</th></tr>
+      <tr><td>Logic</td><td>Presenter, plain C#</td><td>Shared code</td><td>Same class</td></tr>
+      <tr><td>DS components</td><td>Thin Razor components</td><td>Contract match</td><td>DS prefab + MonoBehaviour</td></tr>
+      <tr><td>Markup</td><td>Rendered HTML</td><td>Snapshot + importer</td><td>Screen prefab</td></tr>
+      <tr><td>Event links</td><td><code>data-on-click</code> names</td><td>Code generator</td><td>Screen view class</td></tr>
+    </table></div>
+
+    <h2>Rules for a thin component</h2>
+    <ul>
+      <li>A DS component has no logic. It shows props and raises events.</li>
+      <li>Its parameters are the props of its contract. Its callbacks are the events.</li>
+      <li>It writes <code>data-ui</code> and its props into the HTML.</li>
+      <li>A screen has no logic. It passes presenter state to props and events to presenter methods.</li>
+      <li>All state and all calls go to the presenter.</li>
+    </ul>
+
+    <h2>A Roll click in both apps</h2>
+    <div class="split" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">
+      <div class="flow">
+        <div class="node"><b>Blazor</b> · DsButton click</div>
+        <div class="arrow">OnClick</div>
+        <div class="node">Counter.razor</div>
+        <div class="arrow">calls</div>
+        <div class="node hl">RollAsync()</div>
+        <div class="arrow">Changed</div>
+        <div class="node">StateHasChanged</div>
+      </div>
+      <div class="flow">
+        <div class="node"><b>Unity</b> · DsButton click</div>
+        <div class="arrow">onClick</div>
+        <div class="node">CounterScreenView</div>
+        <div class="arrow">calls</div>
+        <div class="node hl">RollAsync()</div>
+        <div class="arrow">Changed</div>
+        <div class="node">Render()</div>
+      </div>
+    </div>
+
+    <h2>Snippets</h2>
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>Shared presenter <span class="sub">· one class, two apps</span> <span class="chip good">EXISTS</span></summary>
+      <div class="body">
+        <pre><span class="c">// Assets/DiceGame/Features/Counter/Presenters/CounterPresenter.cs (shape only)</span>
+<span class="k">public sealed class</span> CounterPresenter : Presenter {
+    <span class="k">public int</span> Count { get; }
+    <span class="k">public int</span> Last { get; }
+    <span class="k">public string</span> Summary { get; }   <span class="c">// proposal: the screen text</span>
+    <span class="k">public</span> Task RollAsync();   <span class="c">// sends RollRequest, then raises Changed</span>
+}</pre>
+        <p>The presenter uses no <code>UnityEngine</code> type. Blazor P1 proves that it compiles outside Unity.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Blazor base view <span class="sub">· the twin of PresenterComponent</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre><span class="c">// Tools/blazor-preview/PresenterView.cs (proposal)</span>
+<span class="k">public abstract class</span> PresenterView&lt;T&gt; : ComponentBase, IDisposable <span class="k">where</span> T : Presenter {
+    [Inject] <span class="k">protected</span> T Presenter { get; set; }
+    <span class="k">protected override void</span> OnInitialized() =&gt; Presenter.Changed += OnChanged;
+    <span class="k">void</span> OnChanged() =&gt; _ = InvokeAsync(StateHasChanged);
+    <span class="k">public void</span> Dispose() =&gt; Presenter.Changed -= OnChanged;
+}</pre>
+        <p>It does in Blazor what <code>PresenterComponent&lt;T&gt;</code> does in Unity: it listens to <code>Changed</code> and renders on the UI thread.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Thin DS component <span class="sub">· DsButton.razor</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre>&lt;button class="ds-button" data-ui="Button" data-action="@Action"
+        disabled="@Disabled" @onclick="OnClick"&gt;@Label&lt;/button&gt;
+
+@code {
+    [Parameter] <span class="k">public string</span> Label { get; set; }      <span class="c">// contract prop</span>
+    [Parameter] <span class="k">public bool</span> Disabled { get; set; }     <span class="c">// contract prop</span>
+    [Parameter] <span class="k">public string</span> Action { get; set; }     <span class="c">// event link name</span>
+    [Parameter] <span class="k">public</span> EventCallback OnClick { get; set; } <span class="c">// contract event</span>
+}</pre>
+        <p>The <code>@code</code> block has only parameters. A test can compare them with the contract.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Screen <span class="sub">· Counter.razor composes DS components</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre>@inherits PresenterView&lt;CounterPresenter&gt;
+
+&lt;div class="panel" data-u="Counter"&gt;
+  &lt;DsLabel Text="@Presenter.Summary" /&gt;
+  &lt;DsButton Label="Roll"
+            Action="@nameof(CounterPresenter.RollAsync)"
+            OnClick="Presenter.RollAsync" /&gt;
+&lt;/div&gt;</pre>
+        <p><code>nameof</code> gives a compile error if the method name is wrong. The rendered HTML keeps the name in <code>data-action</code>.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Rendered HTML <span class="sub">· what the importer reads</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre>&lt;div class="panel" data-u="Counter"&gt;
+  &lt;span class="ds-label" data-ui="Label"&gt;Rolls: 2   Last: 5&lt;/span&gt;
+  &lt;button class="ds-button" data-ui="Button" data-action="RollAsync"&gt;Roll&lt;/button&gt;
+&lt;/div&gt;</pre>
+        <p>The snapshot adds the rect and the computed style of each node. Blazor P2 makes this HTML with <code>HtmlRenderer</code>.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Contract <span class="sub">· Button.contract.json</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre>{
+  "ui": "Button",
+  "props":  { "Label": "string", "Disabled": "bool" },
+  "events": { "Click": "OnClick" },
+  "states": [ "normal", "hover", "pressed", "focus", "disabled" ],
+  "unity":  "Packages/com.vsa.ui/Prefabs/DsButton.prefab"
+}</pre>
+        <p>The Component Parity page owns the contract format. This snippet shows only the fields that the split needs.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Generated Unity screen view <span class="sub">· direct calls, compile checked</span> <span class="chip info">PROPOSAL</span></summary>
+      <div class="body">
+        <pre><span class="c">// Generated from data-u="Counter". Do not edit.</span>
+<span class="k">public sealed class</span> CounterScreenView : PresenterComponent&lt;CounterPresenter&gt; {
+    [SerializeField] DsLabel label;
+    [SerializeField] DsButton roll;
+
+    <span class="k">void</span> Start() =&gt; roll.Clicked += () =&gt; _ = Presenter?.RollAsync();
+
+    <span class="k">protected override void</span> Render() =&gt; label.Text = Presenter.Summary;
+}</pre>
+        <p>The generator writes <code>RollAsync</code> from <code>data-action</code>. A wrong name gives a compile error in Unity too.</p>
+      </div>
+    </details>
+
+    <h2>How the DS layer reaches Unity</h2>
+    <div class="tbl"><table>
+      <tr><th>Way</th><th>Work</th><th>Determinism</th><th>Verdict</th></tr>
+      <tr><td>Matching set by contract</td><td>Hand-make each Unity DS prefab once</td><td>High; a test checks parity</td><td><span class="chip good">USE</span></td></tr>
+      <tr><td>Convert rendered HTML</td><td>Importer reads <code>data-ui</code> nodes</td><td>High; browser does layout</td><td><span class="chip good">USE</span></td></tr>
+      <tr><td>Parse Razor source</td><td>Razor syntax tree to C#</td><td>Low; logic needs a translator</td><td><span class="chip bad">AVOID</span></td></tr>
+    </table></div>
+    <p>The DS components are few and change slowly, so a hand-made matching set is cheap. Screens are many and change often, so screens use the importer.</p>
+
+    <h2>Screen text comes from the presenter</h2>
+    <p>A text expression in a screen is logic. Put it in the presenter as a property, for example <code>Summary</code>.</p>
+    <p>Then the generator copies a property name, not an expression. So a screen has no C# that the generator must translate.</p>
+
+    <h2>Open questions</h2>
+    <ul>
+      <li>Is <code>data-action</code> the method name, or a separate action name on the presenter?</li>
+      <li>Does the generator write the screen view, or only check a hand-written one?</li>
+      <li>Where do the DS prefabs live: in <code>com.vsa.core</code> or in a separate UI package?</li>
+      <li>How does a list (for example the roll list) map: a <code>data-ui="List"</code> with an item prefab?</li>
+    </ul>
+  </section>
+
+  <section class="tab" id="plans" hidden>
+    <div class="card verdict">
+      <div><span class="chip good">P1 FIRST</span> <span class="chip warn">P2 AFTER HTML IMPORTER</span> <span class="chip good">P4 SPLIT MODEL</span> <span class="chip warn">P3 ONLY IF ASKED</span></div>
+      <p>Keep uGUI views as <code>PresenterComponent&lt;T&gt;</code>. Use Blazor as a second view of the same presenter.</p>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>ID</th><th>Proposal</th><th>Effort</th><th>Needs</th><th>Verdict</th></tr>
+      <tr><td>P1</td><td>Shared presenter, Blazor preview</td><td>2–4 days (est.)</td><td>None</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P2</td><td>Razor → layout JSON → prefab</td><td>1–2 weeks (est.)</td><td>HTML to uGUI P1 importer</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td>P4</td><td>Split model (plan in "Split model" tab)</td><td>2–3 weeks (est.)</td><td>P1, P2; Parity P1; HTML P1</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P3</td><td>Runtime Razor renderer to uGUI</td><td>2 days probes (est.)</td><td>None; only if asked</td><td><span class="chip warn">RISK</span></td></tr>
+    </table></div>
+
+    <div class="flow">
+      <div class="node hl"><b>P1</b> · shared presenter spike</div>
+      <div class="arrow">passes; Razor view exists</div>
+      <div class="split">
+        <div class="node"><b>P2</b> · second source for the importer<br>after HTML to uGUI P1</div>
+        <div class="node hl"><b>P4</b> · split model<br>after P2 and Parity P1</div>
+        <div class="node"><b>P3</b> · go/no-go probes<br>only if asked</div>
+      </div>
+      <div class="arrow">all probes pass + user yes</div>
+      <div class="node bad"><b>P3 phase 2</b> · renderer for one control</div>
+    </div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>P1 · Shared presenter, Blazor preview · 2–4 days (est.) <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>A Blazor view and <code>CounterView</code> show the same <code>CounterPresenter</code> state.</dd><dt>Needs</dt><dd>None</dd></dl>
+        <h3>Phase 1 (spike)</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Compile the Counter feature files outside Unity asmdefs</td><td>build log</td><td>0 errors; no <code>UnityEngine</code> use</td></tr>
+          <tr><td>2</td><td>Make a net10 Blazor WASM project</td><td><code>Tools/blazor-preview/</code></td><td><code>dotnet build</code> passes</td></tr>
+          <tr><td>3</td><td>Reference Umpire.dll and link the Counter files</td><td>csproj items</td><td>build passes, no file copies</td></tr>
+          <tr><td>4</td><td>Prepare an in-memory request sender</td><td>DI setup in <code>Program.cs</code></td><td>Roll returns a result</td></tr>
+          <tr><td>5</td><td>Write <code>Counter.razor</code> that binds the presenter</td><td>Razor view</td><td>Roll click changes Count</td></tr>
+          <tr><td>6</td><td>Compare with <code>CounterView</code> in Play Mode</td><td>two screenshots</td><td>same text for same rolls</td></tr>
+        </table></div>
+        <p>Later phases, each after the earlier phase passes: (2) add <code>RollListView</code> as a second Razor view. (3) Add one Razor component test, when a real need shows.</p>
+        <details>
+          <summary>Step 3 snippet <span class="sub">· link, not copy</span></summary>
+          <div class="body">
+            <pre><span class="c">&lt;!-- Tools/blazor-preview/BlazorPreview.csproj (proposal) --&gt;</span>
+&lt;Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly"&gt;
+  &lt;PropertyGroup&gt;&lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;&lt;/PropertyGroup&gt;
+  &lt;ItemGroup&gt;
+    &lt;Reference Include="..\..\Packages\com.vsa.core\Runtime\Plugins\Umpire.dll" /&gt;
+    &lt;Compile Include="..\..\Assets\DiceGame\Features\Counter\**\*.cs"
+             Exclude="..\..\Assets\DiceGame\Features\Counter\IsExternalInit.cs" /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</pre>
+            <p>net10 defines <code>IsExternalInit</code>, so the csproj excludes the Unity copy.</p>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/blazor-preview/</code> (folder name is a proposal): csproj, <code>Program.cs</code>, <code>Counter.razor</code></li>
+          <li>No change in <code>Packages/</code> or <code>Assets/</code>, if step 1 passes</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li><code>dotnet build Tools/blazor-preview</code> passes with linked Counter files.</li>
+          <li>A screenshot in Edge shows "Rolls" and "Last" after Roll clicks.</li>
+          <li>A Play Mode screenshot of <code>CounterView</code> shows the same text format.</li>
+          <li>The Unity project compiles with no change.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If step 1 needs changes outside the Counter feature files, stop and report the blocking types.</li>
+          <li>If Umpire.dll does not load in Blazor WASM, stop and report the error.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Use the Umpire host with <code>CounterModule</code>, or a hand-written sender? Prefer the Umpire host.</li>
+          <li>Blazor WASM or Blazor Server for the preview?</li>
+        </ul>
+        <p class="lead">Rules: the tool uses only the .NET SDK and Edge on this computer. No helper before a real need. Keep the Editor open for step 6.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>P2 · Razor to prefab via layout JSON · 1–2 weeks (est.) <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>A Razor component gives the same layout JSON that the HTML to uGUI importer reads.</dd><dt>Needs</dt><dd>The Editor importer of the HTML to uGUI page, P1. P2 only adds a second source.</dd></dl>
+        <h3>Phase 1 (spike)</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Wait for the HTML to uGUI P1 importer and JSON format</td><td>format doc</td><td>importer test passes</td></tr>
+          <tr><td>2</td><td>Render <code>Counter.razor</code> to static HTML in a .NET tool</td><td>HTML file</td><td>HTML matches the browser view</td></tr>
+          <tr><td>3</td><td>Give the HTML to the snapshot step of HTML to uGUI P1</td><td>layout JSON</td><td>JSON has label and button</td></tr>
+          <tr><td>4</td><td>Import the JSON in the Editor</td><td>prefab</td><td>prefab opens; RectTransforms match</td></tr>
+          <tr><td>5</td><td>Bind the prefab to <code>CounterView</code></td><td>scene object</td><td>Play Mode shows Count</td></tr>
+        </table></div>
+        <p>Later phase, after phase 1 passes: (2) write a VDOM renderer only if static HTML loses data that the importer needs.</p>
+        <details>
+          <summary>Step 2 snippet <span class="sub">· HtmlRenderer, .NET 8+</span></summary>
+          <div class="body">
+            <pre><span class="k">await using var</span> html = <span class="k">new</span> HtmlRenderer(services, loggerFactory);
+<span class="k">var</span> text = <span class="k">await</span> html.Dispatcher.InvokeAsync(<span class="k">async</span> () =&gt;
+    (<span class="k">await</span> html.RenderComponentAsync&lt;Counter&gt;(parameters)).ToHtmlString());
+File.WriteAllText(outPath, text);</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/blazor-preview/</code> (from P1): one console entry that writes the HTML</li>
+          <li>No Unity file of its own; it uses the HTML to uGUI importer</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The tool writes HTML for <code>Counter.razor</code> with one command.</li>
+          <li>The importer makes a prefab from it with no manual edit.</li>
+          <li>A Play Mode screenshot shows the prefab with live Count.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If the HTML to uGUI importer does not exist or does not pass, do not start.</li>
+          <li>If Razor output needs importer changes beyond a source switch, stop and report.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Static HTML (<code>HtmlRenderer</code>) or a custom VDOM renderer? Prefer static HTML first.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>P3 · Runtime Razor renderer, go/no-go probes · 2 days (est.) <span class="chip warn">ONLY IF ASKED</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>Find with three probes if Blazor 3.1 can drive uGUI GameObjects in Mono and IL2CPP.</dd><dt>Needs</dt><dd>None. Start only if the user asks for it.</dd></dl>
+        <h3>Phase 1 (probes)</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Compile one <code>Label.razor</code> to ns2.0 on Components 3.1.32</td><td>Razor DLL</td><td><code>BuildRenderTree</code> in the DLL</td></tr>
+          <tr><td>2</td><td>Put the DLL and 3.1 deps in a probe folder</td><td><code>Assets/Probes/BlazorRuntime/</code></td><td>Editor compiles beside Extensions 8.0</td></tr>
+          <tr><td>3</td><td>Render <code>Label</code> with a minimal <code>Renderer</code> in the Editor</td><td>one GameObject</td><td>Text shows the parameter</td></tr>
+          <tr><td>4</td><td>Build the probe with <code>il2cpp-check.ps1</code></td><td>IL2CPP player</td><td>parameter set works in the player</td></tr>
+          <tr><td>5</td><td>Report go or no-go</td><td>one result table</td><td>each probe has pass or fail</td></tr>
+        </table></div>
+        <p>Later phases, only on "go" and a user yes: (2) one uGUI control with the MBB handler design. (3) Event dispatch for Button.</p>
+        <details>
+          <summary>Step 3 snippet <span class="sub">· minimal renderer</span></summary>
+          <div class="body">
+            <pre><span class="k">sealed class</span> ProbeRenderer : Renderer {
+    <span class="k">public override</span> Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
+    <span class="k">protected override</span> Task UpdateDisplayAsync(in RenderBatch b) {
+        Debug.Log(b.UpdatedComponents.Count); <span class="c">// probe only</span>
+        <span class="k">return</span> Task.CompletedTask;
+    }
+    <span class="k">protected override void</span> HandleException(Exception e) =&gt; Debug.LogException(e);
+}</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/razor-probe/</code> (proposal): ns2.0 Razor csproj</li>
+          <li><code>Assets/Probes/BlazorRuntime/</code> (proposal): DLLs and one probe script; delete after the report</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The report has pass or fail for the compile, the Mono load and the IL2CPP parameter set.</li>
+          <li>A screenshot shows the Label GameObject in the Editor and in the IL2CPP player.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If one probe fails, stop. Report "no-go" and remove the probe files.</li>
+          <li>If Components 3.1 deps conflict with the Microsoft.Extensions 8.0 DLLs in <code>com.vsa.core</code>, stop.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Accept an out-of-support Blazor 3.1 in a shipped package? The probes do not answer this.</li>
+          <li>Wait for a production CoreCLR player and use Blazor 10 instead?</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Use, copy, avoid <span class="sub">· from the research</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Item</th><th>Action</th><th>Why</th></tr>
+          <tr><td>Presenters, slices, Umpire ns2.1</td><td>use</td><td>run in Blazor 10 and Unity</td></tr>
+          <tr><td><code>Changed</code> → <code>StateHasChanged</code></td><td>use</td><td>one line in Razor</td></tr>
+          <tr><td>MBB handler + element manager</td><td>copy</td><td>design for P3 phase 2</td></tr>
+          <tr><td>BlazorWith3d shared interface</td><td>copy</td><td>generated Blazor ↔ Unity messages</td></tr>
+          <tr><td>Blazor 5+ in the package</td><td>avoid</td><td>targets net5+</td></tr>
+          <tr><td>Blazor 3.1 without owner</td><td>avoid</td><td>out of support</td></tr>
+          <tr><td>HTML or CSS parity in uGUI</td><td>avoid</td><td>no layout engine</td></tr>
+          <tr><td>RazorLight, RazorEngine</td><td>avoid</td><td>stale; use C# generators</td></tr>
+        </table></div>
+        <p>Open question with no plan: when Unity exposes net8+ APIs to scripts (6.8 or 7.x).</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Sources <span class="sub">· primary docs, repos, local files</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+    <ul class="sources">
+      <li><a href="https://github.com/dotnet/MobileBlazorBindings">dotnet/MobileBlazorBindings (source: NativeComponentRenderer, IElementHandler, ElementManager; csproj at v0.5.50-preview)</a></li>
+      <li><a href="https://github.com/Dreamescaper/BlazorBindings.Maui">Dreamescaper/BlazorBindings.Maui</a> · <a href="https://www.nuget.org/packages/BlazorBindings.Core">BlazorBindings.Core on NuGet</a></li>
+      <li><a href="https://github.com/Blazonia/Blazonia">Blazonia/Blazonia</a></li>
+      <li><a href="https://github.com/RazorConsole/RazorConsole">RazorConsole/RazorConsole</a> · <a href="https://razorconsole.github.io/RazorConsole/">RazorConsole docs</a></li>
+      <li><a href="https://github.com/chaldea/miko">chaldea/miko</a></li>
+      <li><a href="https://github.com/mgrman/BlazorWith3d">mgrman/BlazorWith3d</a></li>
+      <li><a href="https://github.com/tifye/unity-blazor-components">tifye/unity-blazor-components</a></li>
+      <li><a href="https://github.com/webcyou-org/unity-blazor">webcyou-org/unity-blazor</a> · <a href="https://robgarnerblog.wordpress.com/2022/05/20/using-unity-to-create-a-3d-blazor-component/">Rob Garner, Unity as a 3D Blazor component</a></li>
+      <li><a href="https://github.com/Voltstro-Studios/UnityWebBrowser">Voltstro-Studios/UnityWebBrowser</a></li>
+      <li><a href="https://github.com/toddams/RazorLight">toddams/RazorLight</a> · <a href="https://github.com/Antaris/RazorEngine">Antaris/RazorEngine</a></li>
+      <li><a href="https://www.nuget.org/packages/Microsoft.AspNetCore.Components/3.1.32">Microsoft.AspNetCore.Components 3.1.32 (TFMs, dependencies)</a></li>
+      <li><a href="https://discussions.unity.com/t/coreclr-scripting-and-net-update-october-2026/1738338">Unity: CoreCLR, Scripting, and .NET Update, October 2026</a></li>
+      <li><a href="https://discussions.unity.com/t/coreclr-scripting-and-ecs-status-update-march-2026/1711852">Unity: CoreCLR, Scripting, and ECS Status Update, March 2026</a></li>
+      <li><a href="https://learn.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-10.0">Microsoft Learn: ASP.NET Core Blazor</a></li>
+      <li>Local: <code>Packages/com.vsa.core/Runtime/Plugins</code> DLL versions; <code>CounterView.cs</code>, <code>CounterPresenter.cs</code></li>
+    </ul>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

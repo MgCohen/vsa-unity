@@ -1,0 +1,1135 @@
+<title>HTML to uGUI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, each context in its own tab, detail in foldables. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 24px 0 8px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-head); margin: 16px 0 6px; }
+p { margin: 0 0 10px; max-width: 65ch; }
+.lead { color: var(--muted); }
+a { color: var(--accent); }
+
+/* Tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+
+/* Cards, verdict chips */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.verdict { display: grid; gap: 8px; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+
+/* Foldables */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: block; padding-left: 30px; text-indent: -16px; }
+details > summary .chip { text-indent: 0; margin-left: 4px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; width: 16px; text-indent: 0; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+details details { background: var(--bg); }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+
+/* Code: lines wrap, never scroll sideways */
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12.5px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .92em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+
+/* Tables: scroll in their own box */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+
+/* Flow diagram: vertical, always fits the width */
+.flow { display: grid; gap: 0; justify-items: stretch; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1 var(--f-mono); padding: 4px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+
+/* SVG figures: scale down to the width */
+figure { margin: 0; }
+figure svg { display: block; width: 100%; height: auto; max-width: 100%; }
+figure figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+svg text { fill: var(--fg); font-family: var(--f-body); }
+svg .muted { fill: var(--muted); }
+svg .box { fill: var(--surface); stroke: var(--line); }
+svg .hl { fill: var(--accent-soft); stroke: var(--accent); }
+svg .ln { stroke: var(--muted); fill: none; }
+svg .bar { fill: var(--accent); }
+
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+.sources { font-size: 13px; }
+.sources li { overflow-wrap: anywhere; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11.5px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.nc { color: var(--warn); font-weight: 600; }
+.steps { display: grid; gap: 6px; }
+.note { font-size: 13px; color: var(--muted); }
+.what { margin: 0; color: var(--fg); }
+.kv a + a { margin-left: 10px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · A8 research</span>
+    <h1>HTML to uGUI</h1>
+    <p class="lead">A browser snapshot to JSON, then an Editor importer, gives a deterministic uGUI prefab.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="render">Render HTML</button>
+    <button role="tab" aria-selected="false" data-tab="converters">Converters</button>
+    <button role="tab" aria-selected="false" data-tab="design">Design files</button>
+    <button role="tab" aria-selected="false" data-tab="gap">The gap</button>
+    <button role="tab" aria-selected="false" data-tab="plans">Plans</button>
+  </nav>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <section class="tab" id="summary">
+    <div class="card verdict">
+      <div><span class="chip good">VIABLE</span> browser snapshot + importer</div>
+      <div><span class="chip warn">RISK</span> Figma converters, AI and MCP tools</div>
+      <div><span class="chip warn">SPIKE</span> runtime HTML UI: one UI, Unity shows it (ReactUnity, Mako UI)</div>
+      <div><span class="chip bad">DEAD END</span> HTML parsers, desktop-only browsers</div>
+      <p>Two routes fit. Route A: the HTML becomes uGUI prefabs (flow below). Route B: the HTML is the UI, and a runtime engine shows it (Render HTML tab).</p>
+      <p>For route A, only a real browser computes CSS layout correctly, so let the browser do the layout. A small open project (HTML-to-UGUI-Baker) uses this method already. vsa-unity can own a short JS extractor and a C# importer with no paid tool.</p>
+    </div>
+
+    <div class="flow">
+      <div class="node"><b>screen.html</b> — HTML/CSS or Design artifact</div>
+      <div class="arrow">headless Edge or Chrome</div>
+      <div class="node"><b>extract.js</b> — getBoundingClientRect + getComputedStyle</div>
+      <div class="arrow">writes</div>
+      <div class="node hl"><b>layout.json</b> — flat node list, px, RGBA</div>
+      <div class="arrow">Editor importer (C#)</div>
+      <div class="split">
+        <div class="node">Prefab (RectTransform, Image, TMP)</div>
+        <div class="node">Sprites (9-slice, icons)</div>
+      </div>
+      <div class="arrow">factory binds</div>
+      <div class="node">PresenterComponent&lt;TPresenter&gt;</div>
+    </div>
+  </section>
+
+  <!-- ===================== RENDER HTML ===================== -->
+  <section class="tab" id="render" hidden>
+    <p>Route B: the HTML is the game UI. An engine shows it inside Unity. A bridge sends events to C# and state to the UI.</p>
+    <div class="flow">
+      <div class="node hl"><b>screen.html</b> · one UI for web and Unity</div>
+      <div class="arrow">runtime engine draws it</div>
+      <div class="node">Unity screen · overlay, canvas or world space</div>
+      <div class="arrow">click, input</div>
+      <div class="node"><b>JS bridge</b> → C# adapter</div>
+      <div class="arrow">calls</div>
+      <div class="node">CounterPresenter.RollAsync()</div>
+      <div class="arrow">Changed → push state to the UI</div>
+      <div class="node">screen.html shows Count</div>
+    </div>
+
+    <h3>What decides the fit</h3>
+    <div class="tbl"><table>
+      <tr><th>Test</th><th>Why for vsa-unity</th></tr>
+      <tr><td>Android and the Windows Editor</td><td>Dice builds on the orch-phone emulator. Play Mode runs on Windows.</td></tr>
+      <tr><td>Render pipeline</td><td>Dice uses the Built-in pipeline. Mako UI and Loom need URP 17 or more.</td></tr>
+      <tr><td>Cost to each user</td><td><code>com.vsa.core</code> cannot ship a paid engine. Each user must buy it.</td></tr>
+      <tr><td>Bridge to C#</td><td>Events must reach presenter methods. State must reach the UI.</td></tr>
+      <tr><td>Phone speed and size</td><td>A full-screen UI must hold the frame budget on a phone.</td></tr>
+      <tr><td>Focus and back button</td><td>Gamepad, keyboard and the Android back button must work.</td></tr>
+    </table></div>
+
+    <h3>Engines</h3>
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>Engine</th><th>Android</th><th>Price</th><th>Fit</th></tr>
+      <tr><td><a href="https://github.com/ReactUnity/core">ReactUnity</a></td><td>JS + Yoga, uGUI objects</td><td>Yes</td><td>MIT, free</td><td><span class="chip good">SPIKE</span></td></tr>
+      <tr><td><a href="https://mako-ui.com/">Mako UI</a></td><td>Own C++ runtime, draw list</td><td>Listed</td><td>Commercial, waitlist</td><td><span class="chip warn">WATCH</span></td></tr>
+      <tr><td><a href="https://coherent-labs.com/all-features-gameface">Gameface</a></td><td>Own HTML engine</td><td>Yes</td><td>Quote, per title</td><td><span class="chip warn">COSTLY</span></td></tr>
+      <tr><td><a href="https://developer.vuplex.com/webview/overview">Vuplex 3D WebView</a></td><td>Chromium, OS webviews</td><td>Yes</td><td>$170–$320 per platform</td><td><span class="chip warn">COSTLY</span></td></tr>
+      <tr><td><a href="https://loomgui.com/">Loom</a></td><td>Rust browser engine, texture</td><td>No</td><td>Paid</td><td><span class="chip warn">WEAK</span></td></tr>
+      <tr><td><a href="https://github.com/Rovniy/xploit_game_ui">xploit_game_ui</a></td><td>V8, Skia, Yoga, texture</td><td>No</td><td>Apache-2.0</td><td><span class="chip info">IDEA</span></td></tr>
+      <tr><td><a href="https://github.com/gree/unity-webview">gree unity-webview</a></td><td>OS webview overlay</td><td>Yes</td><td>Free, open</td><td><span class="chip warn">WEAK</span></td></tr>
+      <tr><td><a href="https://relatedrepos.com/gh/Kulestar/powerui">PowerUI</a></td><td>Own C# engine</td><td>Yes</td><td>MIT</td><td><span class="chip warn">WEAK</span></td></tr>
+      <tr><td><a href="https://github.com/endink/MarkupUI">MarkupUI</a></td><td>UI Toolkit, no JS</td><td>Not stated</td><td>No license shown</td><td><span class="chip bad">AVOID</span></td></tr>
+      <tr><td><a href="https://github.com/ultralight-ux/Ultralight">Ultralight</a></td><td>WebKit fork, GPU</td><td>No</td><td>Free tier, paid</td><td><span class="chip bad">DEAD END</span></td></tr>
+      <tr><td><a href="https://assetstore.unity.com/packages/tools/gui/embedded-browser-55459/reviews">Embedded Browser</a></td><td>CEF, Chromium 74</td><td>No</td><td>Paid asset</td><td><span class="chip bad">DEAD END</span></td></tr>
+      <tr><td><a href="https://teamdev.com/dotnetbrowser/blog/how-to-render-web-content-as-a-texture-in-unity3d/">DotNetBrowser</a></td><td>Chromium</td><td>No</td><td>Commercial</td><td><span class="chip bad">DEAD END</span></td></tr>
+    </table></div>
+
+    <h3>Why teams use them, why teams stop</h3>
+    <div class="tbl"><table>
+      <tr><th>Use</th><th>Stop</th></tr>
+      <tr><td>Web team writes game UI</td><td>Per-title license cost</td></tr>
+      <tr><td>Live web content in game</td><td>Large native binaries</td></tr>
+      <tr><td>CSS animation for free</td><td>Platform gaps (mobile, console)</td></tr>
+      <tr><td></td><td>Input and focus bridge work</td></tr>
+      <tr><td></td><td>Not editable in Unity scene</td></tr>
+    </table></div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>ReactUnity <span class="sub">· React UI as uGUI objects</span> <span class="chip good">SPIKE</span></summary>
+      <div class="body">
+        <p class="what">A React and CSS framework that draws HTML-like tags as uGUI objects at runtime.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/ReactUnity/core">Repo</a> <a href="https://reactunity.github.io/">Docs</a></dd><dt>Checked</dt><dd>GitHub API (push 2026-11-20), release 0.27.1 (2026-11-02), docs. Research of the Component Parity page.</dd><dt>Output</dt><dd>uGUI objects (or UI Toolkit)</dd><dt>Platforms</dt><dd>Unity targets with its JS engines: QuickJS, Jint, ClearScript. Android with each engine <span class="nc">not confirmed</span>.</dd><dt>License/price</dt><dd>MIT, free</dd><dt>Status</dt><dd>Active. 904 stars.</dd><dt>Why SPIKE</dt><dd>It is free, and it draws native uGUI objects. So masks, sort order and 3D scenes work as usual.</dd></dl>
+        <ul><li>The UI is React JSX with a CSS subset on Yoga flexbox. A Design artifact needs a port to JSX.</li><li>The JS bundle build uses Node and npm. This computer has Node 26 and npm 11. The player needs only the bundle.</li><li>The Component Parity page copies its DOM event map.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Mako UI <span class="sub">· HTML game UI middleware, waitlist</span> <span class="chip warn">WATCH</span></summary>
+      <div class="body">
+        <p class="what">Commercial middleware that runs HTML, CSS and JS game UI in a native C++ runtime.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://mako-ui.com/">Site</a> <a href="https://discussions.unity.com/t/mako-ui-game-ui-in-html-css-javascript-for-unity-6/1741005">Forum</a></dd><dt>Checked</dt><dd>Site (© 2026 MakoWorks). Vendor forum post, 2026-11-03.</dd><dt>Output</dt><dd>Draw list, drawn by its own shaders. Full-screen overlay, Canvas widget or world-space panel.</dd><dt>Platforms</dt><dd>Windows, macOS, Linux, iOS, Android. Consoles under NDA.</dd><dt>Unity</dt><dd>Unity 6 with URP or HDRP. Overlays need URP 17+ or HDRP 12+.</dd><dt>License/price</dt><dd>Commercial. Asset Store, indie license. Studio license with source escrow. No price shown.</dd><dt>Status</dt><dd>Pre-launch. Waitlist. Evaluation builds ship in waves. The Unity version is work in progress.</dd><dt>Why WATCH</dt><dd>It matches route B best: one HTML UI, no browser, and a state and event bridge. It is not released, and it needs URP.</dd></dl>
+        <ul><li>CSS: flexbox, grid, block, inline, tables. JS: its own small VM, with ahead-of-time compile for consoles and iOS.</li><li>Tools: Mako UI Studio in the Editor, hot reload, Chrome DevTools over CDP.</li><li>Gamepad focus navigation is included. IME is not mentioned.</li><li>The "1 ms frame budget" is a vendor claim. The page shows no measurement.</li></ul>
+        <pre><span class="c">// C# → UI (from the vendor page)</span>
+panel.SetState("player.health", 87.5f);
+panel.CallJS("hud.showObjective", "{...}");
+<span class="c">// JS reads the state</span>
+engine.state.watch("player.health", v => ...);
+<span class="c">// UI → C#</span>
+&lt;button onclick="@mako:pauseClicked"&gt;Pause&lt;/button&gt;
+[MakoUIEvent("pauseClicked")] public UnityEvent OnPause;</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Loom <span class="sub">· hosted Rust browser engine</span> <span class="chip warn">WEAK</span></summary>
+      <div class="body">
+        <p class="what">A paid Unity plugin that shows an HTML, CSS and TypeScript UI through a Rust browser engine.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://loomgui.com/">Site</a></dd><dt>Checked</dt><dd>Site, Loom 1.0 (© 2026). Price page not opened.</dd><dt>Output</dt><dd>Texture in the Unity pipeline, zero copy</dd><dt>Platforms</dt><dd>Windows x86-64 (D3D11, D3D12), macOS Apple Silicon (Metal)</dd><dt>Unity</dt><dd>6000.3.0f1+ with URP 17.3.0+</dd><dt>License/price</dt><dd>Asset Store single seat, perpetual. Studio: 12-month team license.</dd><dt>Status</dt><dd>1.0 released. Solid.js only.</dd><dt>Why WEAK</dt><dd>Loom 1.0 has no Android build, and it needs URP. Its typed bridge is a good idea to copy.</dd></dl>
+        <ul><li>A source generator makes TypeScript types from C# bridge classes.</li><li>Tools: Vite dev server with live reload in Play Mode, Firefox DevTools, a "Doctor" check menu.</li><li>Gamepad and IME are not mentioned.</li></ul>
+        <pre><span class="c">// Shape from the site. Member names are examples.</span>
+[Bridge] public partial class HudBridge : LoomBridgeBase {
+    [BridgeAction] public void Pause() { }
+    public Event&lt;int&gt; Damaged;      <span class="c">// C# fires: Damaged.Fire(5)</span>
+}
+<span class="c">// TSX</span>
+const hud = useBridge();
+onEvent('damaged', flashRed);</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>xploit_game_ui <span class="sub">· open runtime, Windows only</span> <span class="chip info">IDEA</span></summary>
+      <div class="body">
+        <p class="what">An open Unity package that draws HTML, CSS and JS UI with V8 and Skia.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/Rovniy/xploit_game_ui">Repo</a></dd><dt>Checked</dt><dd>README. 29 commits, 1 star. No release shown.</dd><dt>Output</dt><dd>Texture for a RawImage, or a mesh in world space</dd><dt>Platforms</dt><dd>Windows 11 x64, Direct3D 12. Other renderers use a slow CPU path.</dd><dt>Unity</dt><dd>6000.2+</dd><dt>License/price</dt><dd>Apache-2.0, free</dd><dt>Status</dt><dd>One maintainer. 310 native tests, 46 Play Mode tests.</dd><dt>Why IDEA</dt><dd>Its bridge and its idle cost near zero are good models. It has no Android build, and one person keeps it.</dd></dl>
+        <ul><li>Parts: lexbor (HTML), V8 (JS), Yoga (flexbox), Skia (paint).</li><li>No CSS grid, <code>calc()</code>, custom properties or <code>@media</code>.</li><li>Idle menu at 800×600: 22.7 ms to 0.000 ms a frame (software paint).</li></ul>
+        <pre><span class="c">// JS</span>
+Unity.emit('inventory');
+Unity.on('healthChanged', fn);
+const ammo = await Unity.call('getAmmo');
+<span class="c">// C#</span>
+view.Load("UI/HUD/index.html");
+view.On("inventory", e => ...);
+view.Send("healthChanged", 75f);
+view.RegisterFunction("getAmmo", _ => ammo);</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>MarkupUI <span class="sub">· HTML through UI Toolkit</span> <span class="chip bad">AVOID</span></summary>
+      <div class="body">
+        <p class="what">An HTML and CSS UI framework for Unreal and Unity, with C# data binding.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/endink/MarkupUI">Repo</a></dd><dt>Checked</dt><dd>README. 15 commits, 1 star. Docs site not opened.</dd><dt>Output</dt><dd>UI Toolkit (Unity), UMG (Unreal)</dd><dt>Platforms</dt><dd>Not stated</dd><dt>License/price</dt><dd>No license shown</dd><dt>Status</dt><dd>Early. No releases.</dd><dt>Why AVOID</dt><dd>It draws through UI Toolkit, it has no JS, and it shows no license.</dd></dl>
+      </div>
+    </details>
+
+
+    <details>
+      <summary>Coherent Gameface <span class="sub">· HTML engine made for games</span> <span class="chip warn">COSTLY</span></summary>
+      <div class="body">
+        <p class="what">A commercial HTML and CSS engine that draws game UI on the GPU.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://coherent-labs.com/all-features-gameface">Site</a> <a href="https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/overview/">Docs</a> <a href="https://assets.coherent-labs.com/pricing">Pricing</a></dd><dt>Checked</dt><dd>Search summary only: FAQ and pricing page. No date shown.</dd><dt>Output</dt><dd>Its own GPU UI layer</dd><dt>Platforms</dt><dd>PC, PlayStation, Xbox, Switch, mobile</dd><dt>License/price</dt><dd>Quote only. Per title, per platform.</dd><dt>Status</dt><dd>Active. Unity and Unreal plugins.</dd><dt>Why COSTLY</dt><dd>It is made for route B: a full game UI in HTML on PC, console and mobile. The license is per title, so each vsa-unity user must buy one.</dd></dl>
+        <ul><li>Prysm is the Unity-only variant. Hummingbird is an older product.</li><li>The platform list comes from an older page. <span class="nc">Not confirmed</span> for 2026.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Vuplex 3D WebView <span class="sub">· one package per platform</span> <span class="chip warn">COSTLY</span></summary>
+      <div class="body">
+        <p class="what">A paid plugin that shows a real browser page on a Unity texture.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://developer.vuplex.com/webview/overview">Site</a> <a href="https://assetstore.unity.com/packages/tools/gui/3d-webview-for-windows-and-macos-web-browser-154144">Store</a> <a href="https://assetstore.unity.com/packages/tools/gui/135383">Store</a></dd><dt>Checked</dt><dd>Search summary only: overview and two store pages. No date shown.</dd><dt>Output</dt><dd>Web page on a Unity texture</dd><dt>Platforms</dt><dd>Windows, macOS, Android, iOS, visionOS, UWP, WebGL</dd><dt>License/price</dt><dd>Windows/macOS $169.99. Android/iOS $319.99 (Asset Store).</dd><dt>Status</dt><dd>Active. Desktop uses Chromium 137.</dd><dt>Why COSTLY</dt><dd>It shows a full browser page with a JS message bridge. Each platform is a paid package, and Chromium adds size on Android.</dd></dl>
+        <ul><li>The Vuplex store shows $129.99–$229.99 for Android/iOS. The two prices <span class="nc">conflict</span>.</li><li>A RawImage can show the texture in a canvas or in world space.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Ultralight <span class="sub">· no official Unity plugin</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A light WebKit-based HTML renderer in C++ for apps and game engines.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://ultralig.ht/">Site</a> <a href="https://github.com/ultralight-ux/Ultralight">Repo</a> <a href="https://docs.ultralig.ht/v1.1/docs/integrating-with-games">Docs</a></dd><dt>Checked</dt><dd>Search summary only: site, game docs v1.1 (superseded by v1.4).</dd><dt>Output</dt><dd>GPU draw calls or bitmap</dd><dt>Platforms</dt><dd>Windows, macOS, Linux</dd><dt>License/price</dt><dd>Core proprietary. AppCore LGPL. Free and commercial tiers.</dd><dt>Status</dt><dd>Active. C++ SDK v1.4.</dd><dt>Why DEAD END</dt><dd>It has no mobile build and no Unity plugin. We must write and keep a native plugin.</dd></dl>
+        <ul><li>UltralightNet (MIT) says Unity is "not officially supported".</li><li>The free license may not permit distribution. <span class="nc">Not confirmed</span> for the current terms.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Embedded Browser (ZFBrowser) <span class="sub">· Chromium 74, 1.3 GB</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A paid Chromium (CEF) browser for Unity desktop builds, sold as ZFBrowser.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/embedded-browser-55459/reviews">Store</a></dd><dt>Checked</dt><dd>Search summary only: store reviews for v3.1.0, about two years old.</dd><dt>Output</dt><dd>Web page on a texture</dd><dt>Platforms</dt><dd>Windows, macOS (x86_64), Linux. No mobile.</dd><dt>License/price</dt><dd>Paid Asset Store package</dd><dt>Status</dt><dd>Old Chromium. Reviews report errors on Apple arm64.</dd><dt>Why DEAD END</dt><dd>It runs on desktop only, with Chromium 74 and 1.3 GB. Dice needs Android.</dd></dl>
+        <ul><li>No official end-of-life notice found. <span class="nc">Not confirmed</span>.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>gree unity-webview <span class="sub">· OS webview overlay</span> <span class="chip warn">WEAK</span></summary>
+      <div class="body">
+        <p class="what">A free plugin that opens the native OS webview over the Unity game view.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/gree/unity-webview">Repo</a></dd><dt>Checked</dt><dd>Search summary only: README text in search results.</dd><dt>Output</dt><dd>Native overlay over the game view</dd><dt>Platforms</dt><dd>Android, iOS, macOS. Windows via WebView2 in one index.</dd><dt>License/price</dt><dd>Free, open source</dd><dt>Status</dt><dd>Maintained. Windows support <span class="nc">not confirmed</span>.</dd><dt>Why WEAK</dt><dd>It is free, with a JS bridge on Android and iOS. It has no Windows Editor support, so Play Mode on this computer cannot show it.</dd></dl>
+        <ul><li>An overlay sits on top of the game. uGUI cannot sort with it.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>DotNetBrowser <span class="sub">· .NET Chromium, off-screen mode</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A commercial .NET Chromium library with an off-screen pixel buffer mode.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://teamdev.com/dotnetbrowser/blog/how-to-render-web-content-as-a-texture-in-unity3d/">Docs</a> <a href="https://dotnetbrowser-support.teamdev.com/docs/guides/gs/browser-view.html">Docs</a></dd><dt>Checked</dt><dd>Search summary only: TeamDev Unity tutorial, release notes 2.23.</dd><dt>Output</dt><dd>Pixel buffer you copy to a texture</dd><dt>Platforms</dt><dd>Desktop .NET. Unity by a TeamDev tutorial.</dd><dt>License/price</dt><dd>Commercial. Price <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd>Active product. Unity is not a listed target.</dd><dt>Why DEAD END</dt><dd>It runs on desktop .NET only, and it is commercial. Dice needs Android.</dd></dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>PowerUI <span class="sub">· HTML/CSS engine in C#</span> <span class="chip warn">WEAK</span></summary>
+      <div class="body">
+        <p class="what">An HTML and CSS engine in pure C# that draws UI inside Unity.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://relatedrepos.com/gh/Kulestar/powerui">Listing</a> <a href="https://forum.unity3d.com/threads/powerui-powerful-html-css-ui-framework.196144/page-10">Forum</a> <span class="note">(not opened)</span></dd><dt>Checked</dt><dd>Search summary only: third-party repo listing, forum thread from 2013.</dd><dt>Output</dt><dd>Own runtime renderer</dd><dt>Platforms</dt><dd>All Unity targets (pure C#)</dd><dt>License/price</dt><dd>MIT-Unity, with BSD and MS-PL parts</dd><dt>Status</dt><dd>Low activity. Forum thread from 2013.</dd><dt>Why WEAK</dt><dd>It is pure C#, so all platforms work. Activity stops at about 2013, and its CSS level is old.</dd></dl>
+        <ul><li>The move to MIT comes from a third-party listing. <span class="nc">Not confirmed</span> from the author.</li></ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== CONVERTERS ===================== -->
+  <section class="tab" id="converters" hidden>
+    <p>Most HTML converters parse the HTML text and guess the layout. Only the Baker uses browser coordinates.</p>
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>Target</th><th>Layout source</th><th>License</th><th>Fit</th></tr>
+      <tr><td><a href="https://github.com/StarrDream/HTML-to-UGUI-Baker">HTML-to-UGUI-Baker</a></td><td>uGUI + TMP</td><td>Browser rects, JSON</td><td>Not shown</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td><a href="https://github.com/codedeefmd/HtmlToUGUI">HtmlToUGUI</a></td><td>uGUI</td><td>HtmlAgilityPack parser</td><td>MIT</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://github.com/xzzhuu/html-to-unity-ugui-workflow">html-to-unity-ugui-workflow</a></td><td>uGUI + TMP</td><td>XHTML subset</td><td>MIT</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://assetstore.unity.com/packages/tools/gui/htmltounitycanvas-381380">HtmlToUnityCanvas</a></td><td>uGUI + TMP</td><td>Not shown</td><td>$19.99, EULA</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://github.com/sassembla/UUebView">UUebView</a></td><td>uGUI, runtime</td><td>Own parser</td><td>Not shown</td><td><span class="chip bad">DEAD END</span></td></tr>
+      <tr><td><a href="https://www.npmjs.com/package/html2uuitk">html2uuitk</a></td><td>UI Toolkit</td><td>CSS text to USS</td><td>Not shown</td><td><span class="chip bad">DEAD END</span></td></tr>
+    </table></div>
+
+    <div class="flow">
+      <div class="node"><b>Parser method</b> — read HTML and CSS text</div>
+      <div class="arrow">guess</div>
+      <div class="node">Own cascade, own flex math, own units</div>
+      <div class="arrow">result</div>
+      <div class="node">Drift from the browser image</div>
+    </div>
+    <div class="flow">
+      <div class="node hl"><b>Browser method</b> — let Chromium do layout</div>
+      <div class="arrow">read</div>
+      <div class="node hl">Final px boxes and final styles</div>
+      <div class="arrow">result</div>
+      <div class="node hl">Same image as the browser, at one size</div>
+    </div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>HTML-to-UGUI-Baker <span class="sub">· web tool to JSON to uGUI</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <p class="what">A web tool reads browser boxes to JSON; a Unity window builds uGUI.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/StarrDream/HTML-to-UGUI-Baker">Repo</a></dd><dt>Checked</dt><dd>README, opened 2026-11-22. No release and no date shown.</dd><dt>Output</dt><dd>uGUI tree under a Canvas, TMP text</dd><dt>Platforms</dt><dd>Editor tool, any target</dd><dt>License/price</dt><dd>Free. License <span class="nc">not shown</span>.</dd><dt>Status</dt><dd>248 stars, 13 commits, no releases</dd><dt>Why VIABLE</dt><dd>It uses the browser layout, the same method as P1. It has no license file, so we copy the idea only.</dd></dl>
+        <ul><li>HTML uses <code>data-u-type</code> and <code>data-u-dir</code> attributes as a small DSL.</li><li>Reads position, size, colors, font size, text align. Maps Button, Toggle, Slider, ScrollRect, Dropdown.</li><li>No license file found, so read the idea only. Do not copy code.</li></ul>
+        <pre>&lt;div data-u-type="button" data-u-dir="h"&gt;Play&lt;/div&gt;</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>HtmlToUGUI <span class="sub">· parser, Editor menu, file watch</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A Unity Editor tool that parses HTML and CSS into a uGUI hierarchy.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/codedeefmd/HtmlToUGUI">Repo</a> <a href="https://context7.com/jixinhaoqi/htmltougui">Docs</a></dd><dt>Checked</dt><dd>README of the codedeefmd fork, opened 2026-11-22. Version badge 0.3.0.</dd><dt>Output</dt><dd>uGUI hierarchy, optional prefab per tag</dd><dt>Platforms</dt><dd>Unity 2019.4+ Editor</dd><dt>License/price</dt><dd>MIT (badge). Free.</dd><dt>Status</dt><dd>v0.3.0. jixinhaoqi repo, codedeefmd fork.</dd><dt>Why RISK</dt><dd>It parses text with HtmlAgilityPack and has no layout engine. Flex and fonts can drift from the browser.</dd></dl>
+        <ul><li>Supports selectors, <code>var()</code>, <code>em</code>, <code>rem</code>, <code>calc()</code>, a tag handler interface.</li><li>No real layout engine. The README asks for "AI-made" HTML for good results.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>html-to-unity-ugui-workflow <span class="sub">· Codex skill + XHTML importer</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A Codex skill writes XHTML; a Unity importer makes uGUI and TMP prefabs.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/xzzhuu/html-to-unity-ugui-workflow">Repo</a></dd><dt>Checked</dt><dd>README, opened 2026-11-22. 18 commits, no dates shown.</dd><dt>Output</dt><dd>Panel and Item prefabs, sprites, binding metadata</dd><dt>Platforms</dt><dd>Unity 2022.3, Python 3.10+</dd><dt>License/price</dt><dd>MIT</dd><dt>Status</dt><dd>1 star, 18 commits, no dates shown</dd><dt>Why RISK</dt><dd>It supports only a CSS subset and needs Python. The role metadata per element is a good idea.</dd></dl>
+        <ul><li>Stages output, then promotes it. Writes validation reports.</li><li>Good idea to copy: semantic name and role per element.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>HtmlToUnityCanvas <span class="sub">· Asset Store, v1.0.0</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A paid Asset Store tool that converts HTML into a uGUI Canvas with TMP.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/htmltounitycanvas-381380">Store</a></dd><dt>Checked</dt><dd>Search summary of the store page: v1.0.0, 2026-07-24.</dd><dt>Output</dt><dd>uGUI Canvas with TMP</dd><dt>Platforms</dt><dd>Unity 6000.3, all pipelines</dd><dt>License/price</dt><dd>$19.99, Asset Store EULA</dd><dt>Status</dt><dd>v1.0.0, 2026-07-24</dd><dt>Why RISK</dt><dd>The method is not documented. The EULA blocks use inside an open package.</dd></dl>
+        <ul><li>The listing does not describe the method. <span class="nc">Not confirmed</span> how it does layout.</li><li>EULA code cannot go in an open package.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>UUebView <span class="sub">· HTML to uGUI at runtime</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A runtime library that turns HTML text into uGUI objects for rich text views.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/sassembla/UUebView">Repo</a></dd><dt>Checked</dt><dd>Search summary of the README. No date shown.</dd><dt>Output</dt><dd>uGUI objects at runtime</dd><dt>Platforms</dt><dd>Unity runtime</dd><dt>License/price</dt><dd>Free. License <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd>Sparse README. Old project.</dd><dt>Why DEAD END</dt><dd>It builds objects at runtime, not prefabs. The README is sparse and the project is old.</dd></dl>
+        <ul><li>For rich text views, not for authored screens. No prefab output.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>html2uuitk <span class="sub">· npx CLI to UXML and USS</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A Node.js CLI that converts HTML and CSS into UI Toolkit UXML and USS.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://www.npmjs.com/package/html2uuitk">npm</a> <span class="note">(not opened)</span> <a href="https://relatedrepos.com/gh/fake-skate/html2uuitk">Listing</a> <a href="https://discussions.unity.com/t/html-css-converter-to-ui-toolkit/1655030">Forum</a> <span class="note">(not opened)</span></dd><dt>Checked</dt><dd>Search summary: npm page, forum thread. No date shown.</dd><dt>Output</dt><dd>UXML + USS (UI Toolkit)</dd><dt>Platforms</dt><dd>Node.js CLI</dd><dt>License/price</dt><dd>Free. License <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd>About 15 stars. Forum reports a missing reset.css.</dd><dt>Why DEAD END</dt><dd>It makes UI Toolkit files, but vsa-unity uses uGUI. It also needs Node.</dd></dl>
+        <ul><li>Wrong target for vsa-unity (uGUI). Unsupported CSS is skipped with a warning.</li></ul>
+        <pre>npx html2uuitk --input index.html --css index.css --output .</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>FlexUI CLI <span class="sub">· no source found</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">The brief names this tool, but no public tool with this name came up.</p>
+        <dl class="kv"><dt>Links</dt><dd>None found</dd><dt>Checked</dt><dd>One search for the name. No result matched.</dd><dt>Why INFO</dt><dd>No source exists to check.</dd></dl>
+        <p>No tool with this name came up in the search. <span class="nc">Not confirmed</span> that it exists.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== DESIGN FILES ===================== -->
+  <section class="tab" id="design" hidden>
+    <p>Design-file converters read a vector tree with constraints. Results are "mixed" because design layers are not uGUI objects.</p>
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>Source</th><th>Auto layout</th><th>Prefabs</th><th>License</th><th>Fit</th></tr>
+      <tr><td><a href="https://assetstore.unity.com/packages/tools/utilities/figma-converter-for-unity-198134">Figma Converter (D.A.)</a></td><td>Figma API</td><td>H/V LayoutGroup</td><td>Yes</td><td>$99</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://github.com/simonoliver/UnityFigmaBridge">UnityFigmaBridge</a></td><td>Figma API</td><td>Experimental, off</td><td>Components</td><td>MIT</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://github.com/havokentity/FigForge">FigForge</a></td><td>Figma plugin zip</td><td>Not stated</td><td>Canonical library</td><td>MIT</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://github.com/kyubuns/AkyuiUnity">AkyuiUnity</a></td><td>Adobe XD</td><td>Yes</td><td>Yes, diff import</td><td>MIT</td><td><span class="chip bad">DEAD END</span></td></tr>
+      <tr><td><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.7/manual/assets/figma-ui.html">Unity AI Assistant</a></td><td>Figma link</td><td>AI decides</td><td>AI decides</td><td>Unity AI</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td><a href="https://discussions.unity.com/t/experimental-ui-toolkit-connector-for-figma-design/1736969">Unity Figma Connector</a></td><td>Figma</td><td>Flex (UITK)</td><td>UXML</td><td>Experimental</td><td><span class="chip bad">DEAD END</span></td></tr>
+    </table></div>
+
+    <h3>Why the results are mixed</h3>
+    <div class="flow">
+      <div class="node">Designer groups layers by look, not by behavior</div>
+      <div class="arrow">so</div>
+      <div class="node">Constraints map to anchors, but not every case</div>
+      <div class="arrow">so</div>
+      <div class="node">Auto layout maps to H/V groups. No wrap, no space-between.</div>
+      <div class="arrow">so</div>
+      <div class="node">Effects (blur, inner shadow, multi fill) become images or drop</div>
+      <div class="arrow">result</div>
+      <div class="node hl">Manual repair after each import</div>
+    </div>
+
+    <h3>HTML to Figma to uGUI</h3>
+    <div class="flow">
+      <div class="node"><b>HTML</b></div>
+      <div class="arrow">html.to.design or Builder.io (reads DOM)</div>
+      <div class="node">Figma frame, auto layout guessed</div>
+      <div class="arrow">Figma converter</div>
+      <div class="node">uGUI prefab</div>
+    </div>
+    <p>This path works, but it has two lossy steps and two vendors. A direct DOM snapshot removes the middle step.</p>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>Figma Converter for Unity <span class="sub">· D.A. Assets, most complete</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A paid Unity Editor tool that imports Figma frames as uGUI prefabs.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/utilities/figma-converter-for-unity-198134">Store</a> <a href="https://da-assets.github.io/site">Site</a> <a href="https://da-assets.github.io/site/files/fcu/FCU_Manual_for_designers.pdf">Docs</a> <span class="nc">(404)</span></dd><dt>Checked</dt><dd>Search summary of the store page: v6.4.6, 2026-01-18. Manual titles.</dd><dt>Output</dt><dd>uGUI prefabs. UITK upgrade is extra.</dd><dt>Platforms</dt><dd>Editor, Figma API token</dd><dt>License/price</dt><dd>$99, Asset Store EULA</dd><dt>Status</dt><dd>v6.4.6 (2026-01-18) on store page. v7.5.1 on a mirror, <span class="nc">not confirmed</span>.</dd><dt>Why RISK</dt><dd>It is the most complete Figma importer, but it adds Figma and a $99 seat per user.</dd></dl>
+        <ul><li>Manuals cover H/V layout mapping and designer rules.</li><li>EULA: users of vsa-unity must buy their own seat.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>UnityFigmaBridge <span class="sub">· open, components to prefabs</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A free Unity tool that imports a Figma document as uGUI screens and prefabs.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/simonoliver/UnityFigmaBridge">Repo</a> <a href="https://simonoliver.itch.io/unity-figma-bridge">Site</a></dd><dt>Checked</dt><dd>README, opened 2026-11-22. No release and no date shown.</dd><dt>Output</dt><dd>uGUI screens, pages, component prefabs, TMP</dd><dt>Platforms</dt><dd>Unity 2021.3+</dd><dt>License/price</dt><dd>MIT, free</dd><dt>Status</dt><dd>"Very early release". No tagged releases.</dd><dt>Why RISK</dt><dd>MIT code is useful to copy, for example font import. Auto layout is experimental and many effects drop.</dd></dl>
+        <ul><li>Fetches Google Fonts and makes TMP font assets. Good idea to copy.</li><li>Not supported: Scale constraint, multi fill, blur, inner shadow, booleans.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>FigForge <span class="sub">· anchors per axis, MCP server</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A Figma plugin exports a zip; a Unity importer rebuilds an anchored uGUI tree.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/havokentity/FigForge">Repo</a></dd><dt>Checked</dt><dd>README, opened 2026-11-22. v1.0.57 in the install text, no date.</dd><dt>Output</dt><dd>uGUI (or UITK) from an export zip</dd><dt>Platforms</dt><dd>Figma Desktop, Unity 2022.3+, Node 22.6+</dd><dt>License/price</dt><dd>MIT, free</dd><dt>Status</dt><dd>v1.0.57 in README. Date <span class="nc">not confirmed</span>.</dd><dt>Why RISK</dt><dd>Anchors per axis and 9-slice corners are good MIT ideas. It still needs Figma Desktop and Node.</dd></dl>
+        <ul><li>Rounded fills become procedural 9-slice sprites. Good idea to copy.</li><li>Layer names like <code>Btn_play_PrimaryButton</code> select a real project prefab.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>AkyuiUnity <span class="sub">· XD to own format to prefab</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A free importer that converts Adobe XD files to a neutral format, then to prefabs.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/kyubuns/AkyuiUnity">Repo</a></dd><dt>Checked</dt><dd>Search summary of the README. No date shown.</dd><dt>Output</dt><dd>uGUI prefabs, no runtime cost</dd><dt>Platforms</dt><dd>Unity 2019.4+</dd><dt>License/price</dt><dd>MIT</dd><dt>Status</dt><dd>Adobe XD is in maintenance. Last commit <span class="nc">not confirmed</span>.</dd><dt>Why DEAD END</dt><dd>Adobe XD is in maintenance, so the source tool has no future. The neutral format idea is good.</dd></dl>
+        <ul><li>Good design: a neutral file format (Akyui) between tool and Unity. Diff import on the second run.</li><li>Same author made Baum2 (PSD to uGUI).</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>PSD importers <span class="sub">· layers to sprites</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">Tools that turn Photoshop layers into sprites; Baum2 also builds a uGUI tree.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://awesome.ecosyste.ms/projects/github.com%2Fkyubuns%2FBaum2">Listing</a> <span class="note">(not opened)</span></dd><dt>Checked</dt><dd>Search summary only.</dd><dt>Output</dt><dd>Sprites; Baum2 makes uGUI</dd><dt>Platforms</dt><dd>Editor</dd><dt>License/price</dt><dd>Baum2 MIT <span class="nc">not confirmed</span></dd><dt>Status</dt><dd>Low activity</dd><dt>Why DEAD END</dt><dd>Layers are bitmaps with no layout intent. HTML is not a PSD source.</dd></dl>
+        <ul><li>Bitmaps only. No layout intent. Not a fit for HTML sources.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Unity AI Assistant · Figma UI <span class="sub">· pre-release, AI output</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">The Unity AI Assistant reads a Figma link and generates Unity UI files.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.7/manual/assets/figma-ui.html">Docs</a> <a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.11/manual/reference/figma-ui-reference.html">Docs</a> <a href="https://discussions.unity.com/t/unity-ai-s-open-beta-now-live-for-unity-6/1718560">Forum</a> <span class="note">(not opened)</span></dd><dt>Checked</dt><dd>Docs 2.7.0-pre.3 and 2.11 settings, opened 2026-11-22.</dd><dt>Output</dt><dd>"UI framework of your choice". Docs show UXML.</dd><dt>Platforms</dt><dd>Unity 6 Editor, Figma token</dd><dt>License/price</dt><dd>Unity AI plan</dd><dt>Status</dt><dd>com.unity.ai.assistant 2.7.0-pre.3 to 2.11</dd><dt>Why RISK</dt><dd>AI output is not deterministic, and the docs show only UXML. It needs a Unity AI plan.</dd></dl>
+        <ul><li>A Unity forum post says it makes uGUI too. <span class="nc">Not confirmed</span> in the docs.</li><li>AI output is not deterministic. Two runs can give two trees.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>html.to.design <span class="sub">· HTML to Figma, auto layout</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A Figma plugin and Chrome extension that import a web page as Figma layers.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://html.to.design/home">Site</a> <a href="https://html.to.design/docs/pro-plan">Docs</a> <a href="https://chromewebstore.google.com/detail/htmltodesign/ldnheaepmnmbjjjahokphckbpgciiaed">Store</a></dd><dt>Checked</dt><dd>Search summary: home, PRO plan and free features pages.</dd><dt>Output</dt><dd>Figma layers, .h2d file</dd><dt>Platforms</dt><dd>Figma plugin, Chrome extension</dd><dt>License/price</dt><dd>Free 10 imports / 30 days. PRO $12–$18 per user/month.</dd><dt>Status</dt><dd>Active</dd><dt>Why RISK</dt><dd>It works, but it adds a lossy step and a paid vendor between HTML and Unity.</dd></dl>
+        <ul><li>Method (computed styles) <span class="nc">not confirmed</span> in its docs.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Builder.io html-to-figma <span class="sub">· repo archived, npm stays</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+        <p class="what">An MIT library that reads a live DOM and makes Figma layer data.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://www.npmjs.com/package/@builder.io/html-to-figma">npm</a> <span class="note">(not opened)</span> <a href="https://github.com/BuilderIO/figma-html">Repo</a></dd><dt>Checked</dt><dd>Search summary: npm page, archived README text.</dd><dt>Output</dt><dd>Figma layer JSON from a live DOM</dd><dt>Platforms</dt><dd>Browser, npm</dd><dt>License/price</dt><dd>MIT (per tofig)</dd><dt>Status</dt><dd>GitHub repo moved to a Chrome extension</dd><dt>Why INFO</dt><dd>The repo moved to a Chrome extension. The DOM reader is a good MIT reference for edge cases.</dd></dl>
+        <ul><li>Same core idea as our extractor: read the live DOM in the browser.</li><li>Good MIT source to read for edge cases (text runs, pseudo elements).</li></ul>
+        <pre>import { htmlToFigma } from "@builder.io/html-to-figma";
+const layers = htmlToFigma(document.body);</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Unity MCP servers <span class="sub">· AI builds uGUI by tool calls</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">MCP servers let an AI agent create and edit GameObjects in the Editor.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://coplaydev.github.io/unity-mcp/reference/tools/core/manage_gameobject">Docs</a> <a href="https://coplaydev.github.io/unity-mcp/reference/tools/ui/manage_ui">Docs</a> <a href="https://github.com/emeryporter/UnityMCP/">Repo</a></dd><dt>Checked</dt><dd>Search summary: CoplayDev tool docs, a mirror with v10.3.0 (2026-10-04).</dd><dt>Output</dt><dd>GameObjects and components in the open scene</dd><dt>Platforms</dt><dd>Editor + MCP client</dd><dt>License/price</dt><dd>CoplayDev unity-mcp MIT <span class="nc">not confirmed</span></dd><dt>Status</dt><dd>v10.3.0, 2026-10-04 (mirror)</dd><dt>Why RISK</dt><dd>The AI decides the layout, so two runs can differ. Use MCP to run our importer, not to do layout.</dd></dl>
+        <ul><li>CoplayDev: <code>manage_ui</code> is UI Toolkit. uGUI uses <code>manage_gameobject</code> + <code>manage_components</code> in <code>batch_execute</code>.</li><li>emeryporter/UnityMCP has a <code>manage_canvas</code> tool.</li><li>Good to drive our importer. Bad as the layout engine.</li></ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== THE GAP ===================== -->
+  <section class="tab" id="gap" hidden>
+    <figure>
+      <svg viewBox="0 0 360 170" role="img" aria-label="CSS box origin is top-left with y down; RectTransform uses anchors and pivot with y up">
+        <rect class="box" x="0.5" y="0.5" width="175" height="169" rx="8"/>
+        <text x="12" y="20" font-size="12" font-weight="600">CSS box</text>
+        <rect class="hl" x="30" y="50" width="110" height="70" rx="4"/>
+        <circle cx="30" cy="50" r="4" class="bar"/>
+        <line class="ln" x1="12" y1="34" x2="160" y2="34"/>
+        <line class="ln" x1="12" y1="34" x2="12" y2="150"/>
+        <text x="40" y="90" font-size="11">left, top, w, h</text>
+        <text x="12" y="162" font-size="10" class="muted">origin top-left, y down</text>
+        <rect class="box" x="184.5" y="0.5" width="175" height="169" rx="8"/>
+        <text x="196" y="20" font-size="12" font-weight="600">RectTransform</text>
+        <rect class="hl" x="214" y="50" width="110" height="70" rx="4"/>
+        <circle cx="214" cy="50" r="4" class="bar"/>
+        <text x="222" y="80" font-size="11">anchor (0,1)</text>
+        <text x="222" y="96" font-size="11">pivot (0,1)</text>
+        <text x="222" y="112" font-size="11">pos (x, −y)</text>
+        <text x="196" y="162" font-size="10" class="muted">anchor + pivot, y up</text>
+      </svg>
+      <figcaption>Set anchor and pivot to top-left. Then CSS px map 1:1, with y negated.</figcaption>
+    </figure>
+
+    <h3>CSS to uGUI map</h3>
+    <div class="tbl"><table>
+      <tr><th>CSS</th><th>uGUI</th><th>Gap</th></tr>
+      <tr><td>Box rect</td><td>anchoredPosition, sizeDelta</td><td><span class="chip good">none</span></td></tr>
+      <tr><td>display:flex</td><td>H/V LayoutGroup or FlexLayout</td><td><span class="chip warn">no wrap in groups</span></td></tr>
+      <tr><td>flex-grow</td><td>LayoutElement flexibleWidth</td><td><span class="chip warn">close</span></td></tr>
+      <tr><td>padding, gap</td><td>LayoutGroup padding, spacing</td><td><span class="chip good">close</span></td></tr>
+      <tr><td>background-color</td><td>Image color</td><td><span class="chip good">none</span></td></tr>
+      <tr><td>border-radius</td><td>9-slice sprite or SDF shader</td><td><span class="chip bad">not built in</span></td></tr>
+      <tr><td>border</td><td>9-slice frame sprite</td><td><span class="chip bad">Outline is not border</span></td></tr>
+      <tr><td>box-shadow</td><td>Shadow (hard) or baked sprite</td><td><span class="chip bad">no blur</span></td></tr>
+      <tr><td>linear-gradient</td><td>Texture or vertex colors</td><td><span class="chip bad">not built in</span></td></tr>
+      <tr><td>opacity</td><td>CanvasGroup alpha</td><td><span class="chip good">none</span></td></tr>
+      <tr><td>overflow:hidden</td><td>RectMask2D</td><td><span class="chip good">rect only</span></td></tr>
+      <tr><td>z-index</td><td>Sibling order</td><td><span class="chip warn">order only</span></td></tr>
+      <tr><td>font, line-height</td><td>TMP font asset, lineSpacing</td><td><span class="chip warn">metrics differ</span></td></tr>
+      <tr><td>svg, img</td><td>SVGImage or Sprite</td><td><span class="chip warn">SVG is preview</span></td></tr>
+    </table></div>
+
+    <div class="card">
+      <p><b>One Graphic per GameObject.</b> A CSS box can have a fill, a border and text. uGUI needs one child object for each.</p>
+      <p><b>Text metrics.</b> CSS line-height is px. TMP lineSpacing is a relative offset, and font ascent differs, so text can move a few px.</p>
+    </div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>Flex UI (gilzoide) <span class="sub">· Yoga flexbox for uGUI</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <p class="what">A free package that adds Yoga flexbox layout to uGUI RectTransforms.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/gilzoide/unity-flex-ui">Repo</a> <a href="https://openupm.com/packages/com.gilzoide.flex-ui/">Registry</a></dd><dt>Checked</dt><dd>README, opened 2026-11-22. v1.2.4 in the install text, no date.</dd><dt>Output</dt><dd>FlexLayout component on RectTransforms</dd><dt>Platforms</dt><dd>Windows, macOS, Linux, iOS, tvOS, visionOS, Android, WebGL</dd><dt>License/price</dt><dd>Unlicense (public domain)</dd><dt>Status</dt><dd>v1.2.4 in README, OpenUPM. 7 open issues.</dd><dt>Why VIABLE</dt><dd>CSS flex maps almost 1:1, and the Unlicense permits a vendor copy. Use it only when LayoutGroups fail.</dd></dl>
+        <ul><li>Same engine family as UI Toolkit (Yoga). CSS flex maps almost 1:1.</li><li>Native plugin. Old forum reports: crash on reparent, NaN positions, iOS build. <span class="nc">Not confirmed</span> as open.</li></ul>
+        <pre>openupm add com.gilzoide.flex-ui</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>MPUIKit <span class="sub">· procedural shapes, gradients</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A free uGUI Image component that draws rounded shapes and gradients with SDF.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/modern-procedural-ui-kit-163041">Store</a> <a href="https://discussions.unity.com/t/released-advanced-procedural-ui-generation-create-modify-animate-ui-even-at-runtime/780753">Forum</a> <span class="note">(not opened)</span></dd><dt>Checked</dt><dd>Search summary only: release thread.</dd><dt>Output</dt><dd>Image subclass with SDF shapes</dd><dt>Platforms</dt><dd>All uGUI</dd><dt>License/price</dt><dd>Free. License <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd><span class="nc">Not confirmed</span></dd><dt>Why RISK</dt><dd>It solves corners and gradients, but the license is not confirmed. Anti-alias is uneven at some sizes.</dd></dl>
+        <ul><li>Rounded corners, border, gradient in one component. Custom shader per element.</li><li>Forum notes: anti-alias looks uneven at some sizes.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Procedural UI Image <span class="sub">· rounded rect mesh</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">An Asset Store Image modifier that draws rounded corners and borders on a mesh.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/procedural-ui-image-52200">Store</a> <a href="https://github.com/gilzoide/unity-rounded-corners">Repo</a></dd><dt>Checked</dt><dd>Search summary only: store listing, alternative repo.</dd><dt>Output</dt><dd>Image modifier for corners, border</dd><dt>Platforms</dt><dd>All uGUI</dd><dt>License/price</dt><dd>Asset Store. Terms <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd><span class="nc">Not confirmed</span></dd><dt>Why RISK</dt><dd>The terms are not confirmed. A small procedural 9-slice sprite in our importer can do the same.</dd></dl>
+        <ul><li>Alternatives: gilzoide unity-rounded-corners, Unity-UI-Rounded-Corners.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Unity UI Extensions <span class="sub">· gradient, shapes, effects</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">A free community collection of extra uGUI controls, shapes and effects.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://github.com/unitycoder/unity-ui-extensions">Repo</a> <a href="https://unity-ui-extensions.github.io/About">Site</a></dd><dt>Checked</dt><dd>Search summary: BSD3 in README text, v2.3.2 (2023-11), 3.0.0-pre.1 for Unity 6.</dd><dt>Output</dt><dd>Many uGUI controls and effects</dd><dt>Platforms</dt><dd>All uGUI</dd><dt>License/price</dt><dd>BSD-3 <span class="nc">not confirmed</span></dd><dt>Status</dt><dd><span class="nc">Not confirmed</span></dd><dt>Why RISK</dt><dd>BSD3 permits a copy, but the package is large. Take one effect only after a real need.</dd></dl>
+        <ul><li>Large package. Take one effect at a time, only after a real need.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Modern UI Pack <span class="sub">· paid widget kit</span> <span class="chip bad">DEAD END</span></summary>
+      <div class="body">
+        <p class="what">A paid Michsky kit of styled uGUI widgets and prefabs.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/modern-ui-pack-201717">Store</a></dd><dt>Checked</dt><dd>Search summary of the store page: $39.99, sale $19.99, no date.</dd><dt>Output</dt><dd>Styled prefabs and widgets</dd><dt>Platforms</dt><dd>All uGUI</dd><dt>License/price</dt><dd>Paid, EULA. Price <span class="nc">not confirmed</span>.</dd><dt>Status</dt><dd><span class="nc">Not confirmed</span></dd><dt>Why DEAD END</dt><dd>It is a look kit, not a converter. The EULA blocks a copy into the package.</dd></dl>
+        <ul><li>A look kit, not a converter. EULA blocks a vendor copy.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Vector Graphics <span class="sub">· SVGImage for uGUI</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <p class="what">The Unity package that imports SVG files as sprites or SVGImage for uGUI.</p>
+        <dl class="kv"><dt>Links</dt><dd><a href="https://docs.unity3d.com/Packages/com.unity.vectorgraphics@3.0/manual/index.html">Docs</a> <a href="https://issuetracker.unity3d.com/issues/svg-importer-settings-are-lost-when-upgrading-to-unity-6-dot-3">Issue</a></dd><dt>Checked</dt><dd>Search summary: 3.0 manual, issue tracker report.</dd><dt>Output</dt><dd>SVGImage (MaskableGraphic) or sprite</dd><dt>Platforms</dt><dd>All</dd><dt>License/price</dt><dd>Unity package</dd><dt>Status</dt><dd>Unity 6.3+: module for UITK. uGUI needs 3.0.0-preview.</dd><dt>Why RISK</dt><dd>uGUI support is in a preview package. Bake icons to PNG first; add SVG after a real need.</dd></dl>
+        <ul><li>Known issue: SVG import settings lost on upgrade to 6.3.</li><li>Safer first step: rasterize icons to PNG in the browser.</li></ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== PLANS ===================== -->
+  <section class="tab" id="plans" hidden>
+    <div class="tbl"><table>
+      <tr><th>ID</th><th>Proposal</th><th>Effort (est.)</th><th>Needs</th><th>Verdict</th></tr>
+      <tr><td>P1</td><td>Snapshot importer</td><td>2–3 days est. (spike)</td><td>None</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P2</td><td>Resizable screens</td><td>3–5 days est.</td><td>P1</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P3</td><td>Style gaps</td><td>3–5 days est.</td><td>P1</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P4</td><td>Figma route (evaluate only)</td><td>1–2 days est., time box</td><td>P1 spike result</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td>P5</td><td>Runtime HTML spike (route B)</td><td>4–6 days est. (spike)</td><td>None</td><td><span class="chip warn">SPIKE</span></td></tr>
+    </table></div>
+
+    <div class="flow">
+      <div class="node hl"><b>P1 Snapshot importer</b> — Phase 1 spike</div>
+      <div class="arrow">gives data-u names</div>
+      <div class="node">Component Parity page — screen import</div>
+      <div class="arrow">after the P1 spike passes</div>
+      <div class="split">
+        <div class="node"><b>P2</b> Resizable screens</div>
+        <div class="node"><b>P3</b> Style gaps</div>
+      </div>
+      <div class="arrow">optional, compares with P1</div>
+      <div class="node"><b>P4</b> Figma route — evaluate only</div>
+      <div class="arrow">route B, independent of P1</div>
+      <div class="node hl"><b>P5</b> Runtime HTML spike — compares with P1</div>
+    </div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <!-- P1 -->
+    <details>
+      <summary>P1 · Snapshot importer <span class="sub">· 2–3 days est. (spike)</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>Make one uGUI prefab from one HTML screen, with the same px boxes as Edge.</dd>
+          <dt>Needs</dt><dd>None. P1 gives the <code>data-u</code> names to the Component Parity page (its screen import).</dd>
+        </dl>
+        <h3>Phase 1 (spike)</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Write the CounterView screen in HTML</td><td>counter.html</td><td>Edge shows panel, count, button</td></tr>
+          <tr><td>2</td><td>Add <code>data-u</code> names to bound nodes</td><td>data-u attributes</td><td>Names match CounterView fields</td></tr>
+          <tr><td>3</td><td>Run snapshot.ps1 (headless Edge, 1080×1920)</td><td>layout.json, browser.png</td><td>One node per element</td></tr>
+          <tr><td>4</td><td>Import layout.json in the open Editor</td><td>CounterScreen.prefab</td><td>Prefab opens, no console errors</td></tr>
+          <tr><td>5</td><td>Add an Editor test with fixed JSON</td><td>LayoutImporterTests</td><td>Passes; fails when y sign breaks</td></tr>
+          <tr><td>6</td><td>Take a Game view screenshot, 1080×1920</td><td>unity.png</td><td>Same size as browser.png</td></tr>
+          <tr><td>7</td><td>Record px drift for each node</td><td>Drift table in the PR</td><td>Text rows first</td></tr>
+        </table></div>
+        <ul>
+          <li>Zero install: Edge and PowerShell are on this computer. No Node, no Playwright.</li>
+          <li>Keep one Editor open. Recompile between import runs.</li>
+          <li>Step 5: break the importer in the test project itself, see the test fail, then restore.</li>
+        </ul>
+        <details>
+          <summary>Step 3 · extract.js and the Edge command</summary>
+          <div class="body">
+        <pre><span class="c">// Runs in the page after fonts load. Writes JSON into the DOM.</span>
+<span class="k">const</span> rgba = c =&gt; (c.match(/[\d.]+/g) || [0,0,0,0]).map(Number);
+<span class="k">const</span> nodes = [];
+<span class="k">function</span> walk(el, parent) {
+  <span class="k">const</span> s = getComputedStyle(el), r = el.getBoundingClientRect();
+  <span class="k">if</span> (s.display === "none") <span class="k">return</span>;
+  <span class="k">const</span> i = nodes.push({
+    name: el.dataset.u || el.tagName.toLowerCase(), parent,
+    x: r.left, y: r.top, w: r.width, h: r.height,
+    bg: rgba(s.backgroundColor), radius: parseFloat(s.borderTopLeftRadius),
+    text: el.children.length ? "" : el.textContent.trim(),
+    font: s.fontFamily, size: parseFloat(s.fontSize),
+    color: rgba(s.color), align: s.textAlign,
+    flex: s.display.includes("flex") ? s.flexDirection : ""
+  }) - 1;
+  <span class="k">for</span> (<span class="k">const</span> c <span class="k">of</span> el.children) walk(c, i);
+}
+document.fonts.ready.then(() =&gt; {
+  walk(document.querySelector("[data-u-root]"), -1);
+  <span class="k">const</span> out = document.createElement("pre");
+  out.id = "layout"; out.textContent = JSON.stringify({ nodes });
+  document.body.append(out);
+});</pre>
+        <pre>msedge --headless=new --window-size=1080,1920 --virtual-time-budget=5000 --dump-dom file:///C:/ui/screen.html &gt; dom.html</pre>
+        <ul><li>Read the <code>#layout</code> text from <code>dom.html</code>. Timing with <code>--virtual-time-budget</code> is <span class="nc">not tested</span>.</li></ul>
+            <pre>msedge --headless=new --window-size=1080,1920 --screenshot=browser.png file:///C:/ui/screen.html</pre>
+          </div>
+        </details>
+        <details>
+          <summary>Step 4 · LayoutImporter.cs</summary>
+          <div class="body">
+        <pre><span class="c">// Flat list keeps JsonUtility happy (no recursive types).</span>
+[System.Serializable] <span class="k">class</span> Node { <span class="k">public string</span> name, text, font, align, flex;
+  <span class="k">public int</span> parent; <span class="k">public float</span> x, y, w, h, radius, size;
+  <span class="k">public float</span>[] bg, color; }
+[System.Serializable] <span class="k">class</span> Layout { <span class="k">public</span> Node[] nodes; }
+
+<span class="k">static</span> GameObject Import(<span class="k">string</span> json) {
+  <span class="k">var</span> nodes = JsonUtility.FromJson&lt;Layout&gt;(json).nodes;
+  <span class="k">var</span> rts = <span class="k">new</span> RectTransform[nodes.Length];
+  <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; nodes.Length; i++) {
+    <span class="k">var</span> n = nodes[i];
+    <span class="k">var</span> p = n.parent &lt; 0 ? <span class="k">null</span> : nodes[n.parent];
+    <span class="k">var</span> rt = <span class="k">new</span> GameObject(n.name, <span class="k">typeof</span>(RectTransform)).GetComponent&lt;RectTransform&gt;();
+    <span class="k">if</span> (p != <span class="k">null</span>) rt.SetParent(rts[n.parent], <span class="k">false</span>);
+    rt.anchorMin = rt.anchorMax = rt.pivot = <span class="k">new</span> Vector2(0, 1);
+    rt.anchoredPosition = <span class="k">new</span> Vector2(n.x - (p?.x ?? 0), -(n.y - (p?.y ?? 0)));
+    rt.sizeDelta = <span class="k">new</span> Vector2(n.w, n.h);
+    <span class="k">if</span> (n.bg.Length == 4 &amp;&amp; n.bg[3] &gt; 0)
+      rt.gameObject.AddComponent&lt;Image&gt;().color = Rgba(n.bg);
+    <span class="k">if</span> (n.text != "") AddText(rt, n); <span class="c">// child object: one Graphic per GameObject</span>
+    rts[i] = rt;
+  }
+  <span class="k">return</span> rts[0].gameObject;
+}
+<span class="c">// Then: PrefabUtility.SaveAsPrefabAsset(root, "Assets/DiceGame/App/Views/CounterScreen.prefab");</span></pre>
+        <ul><li>Parents come before children in the list, so one pass is enough.</li><li>The prefab factory then adds the <code>PresenterComponent</code> by the <code>data-u</code> name.</li></ul>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/ui-snapshot/</code> (folder name is a proposal): <code>extract.js</code>, <code>snapshot.ps1</code>, <code>screens/counter.html</code></li>
+          <li><code>Packages/com.vsa.core/Editor/UiImport/LayoutImporter.cs</code> (asmdef <code>Umpire.Unity.Editor</code>)</li>
+          <li><code>Packages/com.vsa.core/Tests/Editor/UiImport/LayoutImporterTests.cs</code> + <code>counter.layout.json</code></li>
+          <li><code>Assets/DiceGame/App/Views/CounterScreen.prefab</code></li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The Editor test passes in <code>run-tests.ps1</code>.</li>
+          <li>Box drift is 2 px or less for each node (target, est.).</li>
+          <li>Two imports of one layout.json give the same prefab file.</li>
+          <li>CounterView binds to the prefab by the <code>data-u</code> names.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>Box drift stays above 4 px after one fix round: stop and examine CanvasScaler and DPI.</li>
+          <li>Headless Edge cannot write layout.json: stop and select a different runner.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Importer in the package <code>Editor/</code>, or in the dice sample first?</li>
+          <li>Importer adds the view component, or the developer adds it?</li>
+        </ul>
+        <h3>Later phases</h3>
+        <ul>
+          <li>Phase 2: <code>img</code> nodes become imported sprites.</li>
+          <li>Phase 3: a second import keeps manual edits (diff import, Akyui idea).</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- P2 -->
+    <details>
+      <summary>P2 · Resizable screens <span class="sub">· 3–5 days est.</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>Keep the imported layout correct at more than one screen size.</dd>
+          <dt>Needs</dt><dd>P1 Phase 1 passes.</dd>
+        </dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Snapshot counter.html at 1080 and 1440 wide</td><td>Two layout.json files</td><td>Same node count</td></tr>
+          <tr><td>2</td><td>Derive anchors per axis from the two files</td><td>Anchor rule in importer</td><td>Fixed edge → pin; ratio → stretch</td></tr>
+          <tr><td>3</td><td>Add a test with two fixture files</td><td>AnchorRulesTests</td><td>Passes; fails when rule breaks</td></tr>
+          <tr><td>4</td><td>Compare Game view at 9:16 and 3:4</td><td>Screenshots</td><td>Drift 2 px or less (est.)</td></tr>
+          <tr><td>5</td><td>Map flex lists to H/V LayoutGroup</td><td>RollList prefab with group</td><td>1 and 10 entries match Edge</td></tr>
+          <tr><td>6</td><td>Vendor Flex UI only for wrap or grow</td><td>FlexLayout components</td><td><code>il2cpp-check.ps1</code> passes</td></tr>
+        </table></div>
+        <details>
+          <summary>Step 2 · anchor rule</summary>
+          <div class="body">
+            <pre><span class="c">// a = node at width 1080, b = same node at width 1440 (px, parent-relative)</span>
+<span class="k">bool</span> pinLeft  = Mathf.Abs(a.x - b.x) &lt; 0.5f;
+<span class="k">bool</span> pinRight = Mathf.Abs((a.pw - a.x - a.w) - (b.pw - b.x - b.w)) &lt; 0.5f;
+<span class="k">if</span> (pinLeft &amp;&amp; pinRight) { rt.anchorMin.x = 0; rt.anchorMax.x = 1; } <span class="c">// stretch</span>
+<span class="k">else if</span> (pinRight) { rt.anchorMin.x = rt.anchorMax.x = 1; }</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/ui-snapshot/snapshot.ps1</code> (width argument)</li>
+          <li><code>Packages/com.vsa.core/Editor/UiImport/AnchorRules.cs</code></li>
+          <li><code>Packages/com.vsa.core/Tests/Editor/UiImport/AnchorRulesTests.cs</code></li>
+          <li><code>Assets/DiceGame/App/Views/</code> (RollListView screen)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The anchor test passes in <code>run-tests.ps1</code>.</li>
+          <li>Screenshots at two aspect ratios match Edge within 2 px (est.).</li>
+          <li>RollListView with 10 entries matches the browser list.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>The rule reads more than one node wrong per screen: stop; use a <code>data-u-anchor</code> attribute.</li>
+          <li>Flex UI fails IL2CPP or crashes on reparent: drop it; keep LayoutGroups.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Anchors from the two-width rule, or from attributes only?</li>
+          <li>LayoutGroups or Flex UI as the default for flex?</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- P3 -->
+    <details>
+      <summary>P3 · Style gaps <span class="sub">· 3–5 days est.</span> <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>Close the visual gaps that the P1 drift table shows, one style at a time.</dd>
+          <dt>Needs</dt><dd>P1 Phase 1 passes. Do only the styles that a real screen uses.</dd>
+        </dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Select the worst style from the drift table</td><td>One style to fix</td><td>Shown in a screenshot</td></tr>
+          <tr><td>2</td><td>Use the same font files in HTML and Unity</td><td>TMP font assets</td><td>Text drift 2 px or less (est.)</td></tr>
+          <tr><td>3</td><td>Make a 9-slice sprite per radius and border</td><td>Cached rounded sprites</td><td>Corners match at 1x and 0.5x</td></tr>
+          <tr><td>4</td><td>Bake shadows and gradients to PNG in Edge</td><td>Baked sprites</td><td>Screenshot compare passes</td></tr>
+          <tr><td>5</td><td>Add one test for each style mapping</td><td>StyleMapTests</td><td>Fails when a mapping breaks</td></tr>
+          <tr><td>6</td><td>Write a custom Graphic only if 9-slice fails</td><td>RoundedRectGraphic</td><td>Small sizes look correct</td></tr>
+        </table></div>
+        <details>
+          <summary>Step 3 · 9-slice sprite from a radius</summary>
+          <div class="body">
+            <pre><span class="c">// tex: (2r+1) x (2r+1) rounded rect, drawn once per (radius, border, color) key</span>
+<span class="k">var</span> s = Sprite.Create(tex, <span class="k">new</span> Rect(0, 0, tex.width, tex.height),
+  <span class="k">new</span> Vector2(.5f, .5f), 100, 0, SpriteMeshType.FullRect, <span class="k">new</span> Vector4(r, r, r, r));
+image.sprite = s; image.type = Image.Type.Sliced;</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/ui-snapshot/extract.js</code> (radius, border, shadow, gradient, bake list)</li>
+          <li><code>Packages/com.vsa.core/Editor/UiImport/RoundedSprites.cs</code>, <code>BakedImages.cs</code></li>
+          <li><code>Packages/com.vsa.core/Tests/Editor/UiImport/StyleMapTests.cs</code></li>
+          <li><code>Assets/DiceGame/App/Views/Generated/</code> and <code>Assets/DiceGame/Fonts/</code> (proposals)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>Text drift is 2 px or less with the same font files (est.).</li>
+          <li>Corner screenshots match Edge at 1x and 0.5x scale.</li>
+          <li>Sprite count equals the count of unique style keys.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>Text drift stays above 4 px with the same font files: stop; record it as a known limit.</li>
+          <li>More than 20 baked PNGs per screen (est.): stop; examine a shader Graphic.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Font license for the dice sample.</li>
+          <li>Sprite atlas or loose sprites.</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- P4 -->
+    <details>
+      <summary>P4 · Figma route <span class="sub">· 1–2 days est., time box</span> <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>Measure if HTML → Figma → UnityFigmaBridge is better than P1 for one screen.</dd>
+          <dt>Needs</dt><dd>P1 Phase 1: browser.png and the drift method. A Figma account.</dd>
+        </dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Import counter.html with html.to.design</td><td>Figma frame</td><td>Auto layout on the frame</td></tr>
+          <tr><td>2</td><td>Import the frame with UnityFigmaBridge</td><td>Prefab, scratch branch</td><td>Import ends without errors</td></tr>
+          <tr><td>3</td><td>Take a Game view screenshot, 1080×1920</td><td>figma-unity.png</td><td>Same size as browser.png</td></tr>
+          <tr><td>4</td><td>Record px drift and manual fixes</td><td>Drift table, fix count</td><td>Same method as P1</td></tr>
+          <tr><td>5</td><td>Write the verdict in the P1 issue</td><td>Decision note</td><td>Both routes in one table</td></tr>
+        </table></div>
+        <ul>
+          <li>This route is outside zero install (Figma account, plugin). Use it for evaluation only.</li>
+          <li>html.to.design free tier: 10 imports in 30 days. That is enough for the time box.</li>
+        </ul>
+        <h3>Files</h3>
+        <ul><li>None in <code>main</code>. The scratch branch is not merged.</li></ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>One table shows drift and fix count for P1 and P4.</li>
+          <li>The issue records a decision: keep P4 or drop it.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>The time box ends, or UnityFigmaBridge fails on Unity 6000.6: stop and record it.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul><li>Will designers work in Figma at all, or only in HTML?</li></ul>
+      </div>
+    </details>
+
+        <!-- P5 -->
+    <details>
+      <summary>P5 · Runtime HTML spike <span class="sub">· 4–6 days est. (spike)</span> <span class="chip warn">SPIKE</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>Show the Dice counter screen from one HTML UI at runtime on Android, bound to CounterPresenter.</dd>
+          <dt>Needs</dt><dd>None for Phase 1. Phase 2 needs a Mako UI evaluation build and a URP decision.</dd>
+        </dl>
+        <h3>Phase 1 (spike, ReactUnity)</h3>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Add ReactUnity on a scratch branch</td><td>Package in manifest</td><td>Editor compiles, no errors</td></tr>
+          <tr><td>2</td><td>Write the counter screen in JSX with the same tokens</td><td>counter.tsx, bundle</td><td>Play Mode shows count and Roll</td></tr>
+          <tr><td>3</td><td>Write <code>CounterRuntimeView</code></td><td>CounterRuntimeView.cs</td><td>Render pushes Count and Last</td></tr>
+          <tr><td>4</td><td>Send the Roll click to <code>RollAsync()</code></td><td>Bridge call</td><td>Count changes after a click</td></tr>
+          <tr><td>5</td><td>Add a Play Mode test: click Roll, read Count</td><td>CounterRuntimeTests</td><td>Passes; fails when the bridge breaks</td></tr>
+          <tr><td>6</td><td>Build to the orch-phone emulator</td><td>APK</td><td>Roll and the back button work</td></tr>
+          <tr><td>7</td><td>Record frame time, APK size and start time</td><td>Table in the PR</td><td>Same numbers for route A (P1)</td></tr>
+        </table></div>
+        <ul>
+          <li>Phase 2: do steps 2–7 again with a Mako UI evaluation build, on a URP copy. Start only when a build arrives.</li>
+          <li>Phase 3: choose route A, route B or both, from the two tables.</li>
+        </ul>
+        <ul>
+          <li>Zero install: the player needs only the bundle. The bundle build uses Node and npm, which this computer has.</li>
+          <li>Keep one Editor open. Recompile between runs.</li>
+          <li>Step 5: break the bridge call in the test project itself, see the test fail, then restore.</li>
+          <li>Build on a seen need: one bridge view for one screen. Make a generator only after a second screen.</li>
+        </ul>
+        <details>
+          <summary>Step 3 · CounterRuntimeView sketch</summary>
+          <div class="body">
+        <pre><span class="c">// Sketch. The ReactUnity member names are not confirmed.</span>
+public sealed class CounterRuntimeView : PresenterComponent&lt;CounterPresenter&gt;
+{
+    [SerializeField] ReactRendererUGUI react;
+
+    protected override void OnBind()
+    {
+        base.OnBind();
+        <span class="c">// UI → C#: the JSX calls Globals.roll()</span>
+        react.Globals["roll"] = (Action)(() => _ = Presenter.RollAsync());
+    }
+
+    <span class="c">// C# → UI: runs on each Changed</span>
+    protected override void Render()
+    {
+        react.Globals["count"] = Presenter.Count;
+        react.Globals["last"]  = Presenter.Last;
+    }
+}</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li>Scratch branch only: <code>Assets/DiceGame/App/Views/Runtime/CounterRuntimeView.cs</code></li>
+          <li><code>Assets/DiceGame/App/Views/Runtime/ui/</code> (proposal): JSX and bundle</li>
+          <li><code>Assets/Tests/DiceGame/CounterRuntimeTests.cs</code></li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The Play Mode test passes, and it fails when the bridge call breaks.</li>
+          <li>The APK on the emulator shows the screen, and Roll changes the count.</li>
+          <li>One table compares routes A and B: frame time, APK size, manual fixes.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If the emulator cannot show the screen after 1 day, stop and record the reason.</li>
+          <li>If each field needs hand-written glue that a generator cannot make, stop.</li>
+        </ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Can Dice and the package move to URP? Mako UI and Loom need it.</li>
+          <li>Is a paid engine acceptable if each user must buy it?</li>
+          <li>Does the design side accept JSX in place of plain HTML?</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Use, copy, avoid <span class="sub">· license notes</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Action</th><th>License note</th></tr>
+      <tr><td>Headless Edge/Chrome</td><td>Use</td><td>Edge ships with Windows</td></tr>
+      <tr><td>Flex UI (Yoga)</td><td>Vendor later, if needed</td><td>Unlicense, no terms</td></tr>
+      <tr><td>FigForge 9-slice corners</td><td>Copy idea or code</td><td>MIT, keep notice</td></tr>
+      <tr><td>UnityFigmaBridge font import</td><td>Copy idea or code</td><td>MIT, keep notice</td></tr>
+      <tr><td>Builder.io html-to-figma</td><td>Read for edge cases</td><td>MIT</td></tr>
+      <tr><td>Akyui format, diff import</td><td>Copy idea</td><td>MIT</td></tr>
+      <tr><td>HTML-to-UGUI-Baker</td><td>Idea only</td><td>No license, no copy</td></tr>
+      <tr><td>Asset Store converters</td><td>Avoid in package</td><td>EULA, per seat</td></tr>
+      <tr><td>ReactUnity</td><td>Spike (P5)</td><td>MIT, keep notice</td></tr>
+      <tr><td>Mako UI</td><td>Watch, evaluate</td><td>Commercial, per user</td></tr>
+      <tr><td>xploit_game_ui bridge</td><td>Copy idea or code</td><td>Apache-2.0, keep notice</td></tr>
+      <tr><td>Desktop-only browsers</td><td>Avoid</td><td>No Android</td></tr>
+      <tr><td>AI as layout engine</td><td>Avoid</td><td>Not deterministic</td></tr>
+    </table></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Sources <span class="sub">· 48 links</span> <span class="chip info">INFO</span></summary>
+      <div class="body">
+    <ul class="sources">
+      <li><a href="https://mako-ui.com/">Mako UI (site)</a></li>
+      <li><a href="https://discussions.unity.com/t/mako-ui-game-ui-in-html-css-javascript-for-unity-6/1741005">Mako UI forum post</a></li>
+      <li><a href="https://loomgui.com/">Loom (site)</a></li>
+      <li><a href="https://github.com/Rovniy/xploit_game_ui">xploit_game_ui (GitHub)</a></li>
+      <li><a href="https://github.com/endink/MarkupUI">MarkupUI (GitHub)</a></li>
+      <li><a href="https://github.com/StarrDream/HTML-to-UGUI-Baker">HTML-to-UGUI-Baker (GitHub)</a></li>
+      <li><a href="https://github.com/codedeefmd/HtmlToUGUI">HtmlToUGUI (GitHub, codedeefmd)</a></li>
+      <li><a href="https://context7.com/jixinhaoqi/htmltougui">HtmlToUGUI (jixinhaoqi, Context7)</a></li>
+      <li><a href="https://github.com/xzzhuu/html-to-unity-ugui-workflow">html-to-unity-ugui-workflow (GitHub)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/htmltounitycanvas-381380">HtmlToUnityCanvas (Asset Store)</a></li>
+      <li><a href="https://github.com/sassembla/UUebView">UUebView (GitHub)</a></li>
+      <li><a href="https://www.npmjs.com/package/html2uuitk">html2uuitk (npm)</a></li>
+      <li><a href="https://discussions.unity.com/t/html-css-converter-to-ui-toolkit/1655030">html2uuitk forum thread</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/utilities/figma-converter-for-unity-198134">Figma Converter for Unity (Asset Store)</a></li>
+      <li><a href="https://da-assets.github.io/site/files/fcu/FCU_Manual_for_designers.pdf">FCU manual for designers</a></li>
+      <li><a href="https://github.com/simonoliver/UnityFigmaBridge">UnityFigmaBridge (GitHub)</a></li>
+      <li><a href="https://github.com/havokentity/FigForge">FigForge (GitHub)</a></li>
+      <li><a href="https://github.com/kyubuns/AkyuiUnity">AkyuiUnity (GitHub)</a></li>
+      <li><a href="https://github.com/natsu1211/FigmaToUnity">FigmaToUnity, natsu1211 (GitHub)</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.7/manual/assets/figma-ui.html">Unity AI Assistant: Create UI from Figma</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.11/manual/reference/figma-ui-reference.html">Unity AI Assistant: UI settings</a></li>
+      <li><a href="https://discussions.unity.com/t/experimental-ui-toolkit-connector-for-figma-design/1736969">Unity UI Toolkit Figma connector (forum)</a></li>
+      <li><a href="https://discussions.unity.com/t/unity-ai-s-open-beta-now-live-for-unity-6/1718560">Unity AI open beta (forum)</a></li>
+      <li><a href="https://html.to.design/docs/pro-plan">html.to.design PRO plan</a></li>
+      <li><a href="https://html.to.design/docs/free-features">html.to.design free features</a></li>
+      <li><a href="https://www.npmjs.com/package/@builder.io/html-to-figma">@builder.io/html-to-figma (npm)</a></li>
+      <li><a href="https://github.com/aca-so/tofig">tofig (GitHub)</a></li>
+      <li><a href="https://coplaydev.github.io/unity-mcp/reference/tools/core/manage_gameobject">CoplayDev unity-mcp: manage_gameobject</a></li>
+      <li><a href="https://coplaydev.github.io/unity-mcp/reference/tools/ui/manage_ui">CoplayDev unity-mcp: manage_ui</a></li>
+      <li><a href="https://github.com/emeryporter/UnityMCP/">emeryporter UnityMCP (GitHub)</a></li>
+      <li><a href="https://github.com/gilzoide/unity-flex-ui">Flex UI, gilzoide (GitHub)</a></li>
+      <li><a href="https://openupm.com/packages/com.gilzoide.flex-ui/">Flex UI (OpenUPM)</a></li>
+      <li><a href="https://discussions.unity.com/t/flexbox-in-unity-ui/934362">Flexbox in Unity UI (forum)</a></li>
+      <li><a href="https://discussions.unity.com/t/released-advanced-procedural-ui-generation-create-modify-animate-ui-even-at-runtime/780753">MPUIKit release (forum)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/procedural-ui-image-52200">Procedural UI Image (Asset Store)</a></li>
+      <li><a href="https://github.com/gilzoide/unity-rounded-corners">unity-rounded-corners, gilzoide (GitHub)</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.vectorgraphics@3.0/manual/index.html">Vector Graphics 3.0 manual</a></li>
+      <li><a href="https://issuetracker.unity3d.com/issues/svg-importer-settings-are-lost-when-upgrading-to-unity-6-dot-3">SVG importer settings lost (issue)</a></li>
+      <li><a href="https://coherent-labs.com/frequently-asked-questions">Coherent Labs FAQ</a></li>
+      <li><a href="https://assets.coherent-labs.com/pricing">Coherent Labs pricing</a></li>
+      <li><a href="https://developer.vuplex.com/webview/overview">Vuplex 3D WebView overview</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/3d-webview-for-windows-and-macos-web-browser-154144">Vuplex Windows/macOS (Asset Store)</a></li>
+      <li><a href="https://ultralig.ht/">Ultralight</a></li>
+      <li><a href="https://www.nuget.org/packages/UltralightNet/">UltralightNet (NuGet)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/embedded-browser-55459/reviews">Embedded Browser reviews (Asset Store)</a></li>
+      <li><a href="https://github.com/gree/unity-webview">gree unity-webview (GitHub)</a></li>
+      <li><a href="https://teamdev.com/dotnetbrowser/blog/how-to-render-web-content-as-a-texture-in-unity3d/">DotNetBrowser in Unity (TeamDev)</a></li>
+      <li><a href="https://relatedrepos.com/gh/Kulestar/powerui">PowerUI (Kulestar listing)</a></li>
+    </ul>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

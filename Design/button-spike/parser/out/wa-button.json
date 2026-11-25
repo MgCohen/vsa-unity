@@ -1,0 +1,3327 @@
+{
+  "tag": "wa-button",
+  "properties": [
+    {
+      "name": "title",
+      "attribute": "title",
+      "type": "String",
+      "reflect": false,
+      "default": "\"\""
+    },
+    {
+      "name": "variant",
+      "attribute": "variant",
+      "type": "String",
+      "reflect": true,
+      "default": "\"neutral\""
+    },
+    {
+      "name": "appearance",
+      "attribute": "appearance",
+      "type": "String",
+      "reflect": true,
+      "default": "\"accent\""
+    },
+    {
+      "name": "size",
+      "attribute": "size",
+      "type": "String",
+      "reflect": true,
+      "default": "\"m\""
+    },
+    {
+      "name": "withCaret",
+      "attribute": "with-caret",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "false"
+    },
+    {
+      "name": "withStart",
+      "attribute": "with-start",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    },
+    {
+      "name": "withEnd",
+      "attribute": "with-end",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    },
+    {
+      "name": "disabled",
+      "attribute": "disabled",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    },
+    {
+      "name": "loading",
+      "attribute": "loading",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "false"
+    },
+    {
+      "name": "pill",
+      "attribute": "pill",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "false"
+    },
+    {
+      "name": "type",
+      "attribute": "type",
+      "type": "String",
+      "reflect": false,
+      "default": "\"button\""
+    },
+    {
+      "name": "name",
+      "attribute": "name",
+      "type": "String",
+      "reflect": true,
+      "default": null
+    },
+    {
+      "name": "value",
+      "attribute": "value",
+      "type": "String",
+      "reflect": true,
+      "default": null
+    },
+    {
+      "name": "href",
+      "attribute": "href",
+      "type": "String",
+      "reflect": true,
+      "default": null
+    },
+    {
+      "name": "target",
+      "attribute": "target",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "rel",
+      "attribute": "rel",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "download",
+      "attribute": "download",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "formAction",
+      "attribute": "formaction",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "formEnctype",
+      "attribute": "formenctype",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "formMethod",
+      "attribute": "formmethod",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "formNoValidate",
+      "attribute": "formnovalidate",
+      "type": "Boolean",
+      "reflect": false,
+      "default": null
+    },
+    {
+      "name": "formTarget",
+      "attribute": "formtarget",
+      "type": "String",
+      "reflect": false,
+      "default": null
+    }
+  ],
+  "events": [
+    {
+      "name": "wa-invalid",
+      "source": "new WaInvalidEvent()"
+    }
+  ],
+  "anatomy": [
+    {
+      "tag": "a|button",
+      "attrs": {
+        "part": "base button",
+        "?disabled": "${ifDefined(isLink ? void 0 : this.disabled)}",
+        "type": "${ifDefined(isLink ? void 0 : this.type)}",
+        "title": "${this.title}",
+        "name": "${ifDefined(isLink ? void 0 : this.name)}",
+        "value": "${ifDefined(isLink ? void 0 : this.value)}",
+        "href": "${ifDefined(isLink ? this.href : void 0)}",
+        "target": "${ifDefined(isLink ? this.target : void 0)}",
+        "download": "${ifDefined(isLink ? this.download : void 0)}",
+        "rel": "${ifDefined(isLink && this.rel ? this.rel : void 0)}",
+        "role": "${ifDefined(isLink ? void 0 : \"button\")}",
+        "aria-disabled": "${ifDefined(isLink && this.disabled ? \"true\" : void 0)}",
+        "aria-busy": "${this.loading ? \"true\" : \"false\"}",
+        "tabindex": "${this.disabled ? \"-1\" : \"0\"}",
+        "@invalid": "${this.isButton() ? this.handleInvalid : null}",
+        "@click": "${this.handleClick}"
+      },
+      "children": [
+        {
+          "tag": "slot",
+          "attrs": {
+            "name": "start",
+            "part": "start",
+            "class": "start"
+          }
+        },
+        {
+          "tag": "slot",
+          "attrs": {
+            "part": "label",
+            "class": "label",
+            "@slotchange": "${this.handleLabelSlotChange}"
+          }
+        },
+        {
+          "tag": "slot",
+          "attrs": {
+            "name": "end",
+            "part": "end",
+            "class": "end"
+          }
+        },
+        {
+          "tag": "wa-icon",
+          "attrs": {
+            "part": "caret",
+            "class": "caret",
+            "library": "system",
+            "name": "chevron-down",
+            "variant": "solid"
+          },
+          "when": "this.withCaret"
+        },
+        {
+          "tag": "wa-spinner",
+          "attrs": {
+            "part": "spinner"
+          },
+          "when": "this.loading"
+        }
+      ],
+      "classMap": [
+        {
+          "name": "button",
+          "when": "always"
+        },
+        {
+          "name": "caret",
+          "when": "this.withCaret"
+        },
+        {
+          "name": "disabled",
+          "when": "this.disabled"
+        },
+        {
+          "name": "loading",
+          "when": "this.loading"
+        },
+        {
+          "name": "rtl",
+          "when": "this.localize.dir() === \"rtl\""
+        },
+        {
+          "name": "has-label",
+          "when": "this.hasSlotController.test(\"[default]\")"
+        },
+        {
+          "name": "has-start",
+          "when": "this.hasSlotController.test(\"start\", \"withStart\")"
+        },
+        {
+          "name": "has-end",
+          "when": "this.hasSlotController.test(\"end\", \"withEnd\")"
+        },
+        {
+          "name": "is-icon-button",
+          "when": "this.isIconButton"
+        }
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "part": "base",
+      "tag": "a|button",
+      "path": "a|button"
+    },
+    {
+      "part": "button",
+      "tag": "a|button",
+      "path": "a|button"
+    },
+    {
+      "part": "start",
+      "tag": "slot",
+      "path": "a|button[base] > slot"
+    },
+    {
+      "part": "label",
+      "tag": "slot",
+      "path": "a|button[base] > slot"
+    },
+    {
+      "part": "end",
+      "tag": "slot",
+      "path": "a|button[base] > slot"
+    },
+    {
+      "part": "caret",
+      "tag": "wa-icon",
+      "path": "a|button[base] > wa-icon",
+      "when": "this.withCaret"
+    },
+    {
+      "part": "spinner",
+      "tag": "wa-spinner",
+      "path": "a|button[base] > wa-spinner",
+      "when": "this.loading"
+    }
+  ],
+  "slots": [
+    {
+      "name": "start",
+      "parts": [
+        "start"
+      ]
+    },
+    {
+      "name": "(default)",
+      "parts": [
+        "label"
+      ]
+    },
+    {
+      "name": "end",
+      "parts": [
+        "end"
+      ]
+    }
+  ],
+  "dependencies": [
+    "wa-icon",
+    "wa-spinner"
+  ],
+  "states": [
+    ".is-icon-button (this.isIconButton)",
+    ".loading (this.loading)",
+    ":active",
+    ":focus",
+    ":focus-visible",
+    ":hover",
+    "host[appearance=accent]",
+    "host[appearance=filled-outlined]",
+    "host[appearance=filled]",
+    "host[appearance=outlined]",
+    "host[appearance=plain]",
+    "host[disabled]",
+    "host[pill]",
+    "host[size=l]",
+    "host[size=large]",
+    "host[size=m]",
+    "host[size=medium]",
+    "host[size=s]",
+    "host[size=small]",
+    "host[size=xl]",
+    "host[size=xs]",
+    "host[variant=brand]",
+    "host[variant=danger]",
+    "host[variant=neutral]",
+    "host[variant=success]",
+    "host[variant=warning]",
+    "not .disabled",
+    "not .loading",
+    "not .visually-hidden-label"
+  ],
+  "definedTokens": {
+    "--indicator-color": [
+      {
+        "selector": ".loading wa-spinner",
+        "value": "currentColor"
+      }
+    ],
+    "--track-color": [
+      {
+        "selector": ".loading wa-spinner",
+        "value": "color-mix(in oklab, currentColor, transparent 90%)"
+      }
+    ],
+    "--wa-color-fill-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-loud)"
+      }
+    ],
+    "--wa-color-fill-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-normal)"
+      }
+    ],
+    "--wa-color-fill-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-quiet)"
+      }
+    ],
+    "--wa-color-border-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-loud)"
+      }
+    ],
+    "--wa-color-border-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-normal)"
+      }
+    ],
+    "--wa-color-border-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-quiet)"
+      }
+    ],
+    "--wa-color-on-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-loud)"
+      }
+    ],
+    "--wa-color-on-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-normal)"
+      }
+    ],
+    "--wa-color-on-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-quiet)"
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host:has(wa-badge)",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "position",
+          "value": "relative",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-block",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host(:has(wa-badge))",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "position",
+          "value": "relative",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "justify-content",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "text-decoration",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "user-select",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "-webkit-user-select",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "white-space",
+          "value": "nowrap",
+          "tokens": []
+        },
+        {
+          "prop": "vertical-align",
+          "value": "middle",
+          "tokens": []
+        },
+        {
+          "prop": "transition-property",
+          "value": "background, border, box-shadow, color, opacity, transform",
+          "tokens": []
+        },
+        {
+          "prop": "transition-duration",
+          "value": "var(--wa-transition-fast)",
+          "tokens": [
+            "--wa-transition-fast"
+          ]
+        },
+        {
+          "prop": "transition-timing-function",
+          "value": "var(--wa-transition-easing)",
+          "tokens": [
+            "--wa-transition-easing"
+          ]
+        },
+        {
+          "prop": "transform-origin",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "cursor",
+          "value": "pointer",
+          "tokens": []
+        },
+        {
+          "prop": "padding",
+          "value": "0 var(--wa-form-control-padding-inline)",
+          "tokens": [
+            "--wa-form-control-padding-inline"
+          ]
+        },
+        {
+          "prop": "font-family",
+          "value": "inherit",
+          "tokens": []
+        },
+        {
+          "prop": "font-size",
+          "value": "inherit",
+          "tokens": []
+        },
+        {
+          "prop": "font-weight",
+          "value": "var(--wa-font-weight-action)",
+          "tokens": [
+            "--wa-font-weight-action"
+          ]
+        },
+        {
+          "prop": "height",
+          "value": "var(--wa-form-control-height)",
+          "tokens": [
+            "--wa-form-control-height"
+          ]
+        },
+        {
+          "prop": "width",
+          "value": "100%",
+          "tokens": []
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud))",
+          "tokens": [
+            "--wa-color-fill-loud",
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-loud, var(--wa-color-neutral-on-loud))",
+          "tokens": [
+            "--wa-color-on-loud",
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "border-start-start-radius",
+          "value": "var(--_button-start-start-radius, var(--wa-form-control-border-radius))",
+          "tokens": [
+            "--_button-start-start-radius",
+            "--wa-form-control-border-radius"
+          ]
+        },
+        {
+          "prop": "border-start-end-radius",
+          "value": "var(--_button-start-end-radius, var(--wa-form-control-border-radius))",
+          "tokens": [
+            "--_button-start-end-radius",
+            "--wa-form-control-border-radius"
+          ]
+        },
+        {
+          "prop": "border-end-start-radius",
+          "value": "var(--_button-end-start-radius, var(--wa-form-control-border-radius))",
+          "tokens": [
+            "--_button-end-start-radius",
+            "--wa-form-control-border-radius"
+          ]
+        },
+        {
+          "prop": "border-end-end-radius",
+          "value": "var(--_button-end-end-radius, var(--wa-form-control-border-radius))",
+          "tokens": [
+            "--_button-end-end-radius",
+            "--wa-form-control-border-radius"
+          ]
+        },
+        {
+          "prop": "border-style",
+          "value": "var(--wa-form-control-border-style)",
+          "tokens": [
+            "--wa-form-control-border-style"
+          ]
+        },
+        {
+          "prop": "border-width",
+          "value": "var(--wa-form-control-border-width)",
+          "tokens": [
+            "--wa-form-control-border-width"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "transform",
+          "value": "var(--wa-button-transform-hover)",
+          "tokens": [
+            "--wa-button-transform-hover"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "transform",
+          "value": "var(--wa-button-transform-active)",
+          "tokens": [
+            "--wa-button-transform-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "transform",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:not(.disabled):not(.loading):active",
+      "media": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "transform",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='plain']) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=plain]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='plain']) .button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=plain]",
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet))",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='plain']) .button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=plain]",
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet)), var(--wa-color-mix-active) )",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet",
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='plain'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=plain]"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--_button-horizontal-indent)",
+          "tokens": [
+            "--_button-horizontal-indent"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "var(--_button-vertical-indent)",
+          "tokens": [
+            "--_button-vertical-indent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='outlined']) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-border-loud, var(--wa-color-neutral-border-loud))",
+          "tokens": [
+            "--wa-color-border-loud",
+            "--wa-color-neutral-border-loud"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='outlined']) .button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=outlined]",
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet))",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='outlined']) .button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=outlined]",
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet)), var(--wa-color-mix-active) )",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet",
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='outlined'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--_button-horizontal-indent-outlined)",
+          "tokens": [
+            "--_button-horizontal-indent-outlined"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "var(--_button-vertical-indent-outlined)",
+          "tokens": [
+            "--_button-vertical-indent-outlined"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled']) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal))",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled']) .button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled]",
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal)), var(--wa-color-mix-hover) )",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal",
+            "--wa-color-mix-hover"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled']) .button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled]",
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal)), var(--wa-color-mix-active) )",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal",
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=filled]"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--_button-horizontal-indent)",
+          "tokens": [
+            "--_button-horizontal-indent"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "var(--_button-vertical-indent)",
+          "tokens": [
+            "--_button-vertical-indent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled-outlined']) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled-outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal))",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-border-normal, var(--wa-color-neutral-border-normal))",
+          "tokens": [
+            "--wa-color-border-normal",
+            "--wa-color-neutral-border-normal"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled-outlined']) .button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled-outlined]",
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal)), var(--wa-color-mix-hover) )",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal",
+            "--wa-color-mix-hover"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled-outlined']) .button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=filled-outlined]",
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-normal, var(--wa-color-neutral-on-normal))",
+          "tokens": [
+            "--wa-color-on-normal",
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-normal, var(--wa-color-neutral-fill-normal)), var(--wa-color-mix-active) )",
+          "tokens": [
+            "--wa-color-fill-normal",
+            "--wa-color-neutral-fill-normal",
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='filled-outlined'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=filled-outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--_button-horizontal-indent-outlined)",
+          "tokens": [
+            "--_button-horizontal-indent-outlined"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "var(--_button-vertical-indent-outlined)",
+          "tokens": [
+            "--_button-vertical-indent-outlined"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='accent']) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=accent]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-loud, var(--wa-color-neutral-on-loud))",
+          "tokens": [
+            "--wa-color-on-loud",
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud))",
+          "tokens": [
+            "--wa-color-fill-loud",
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='accent']) .button:not(.disabled):not(.loading):hover",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=accent]",
+        "not .disabled",
+        "not .loading",
+        ":hover"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud)), var(--wa-color-mix-hover) )",
+          "tokens": [
+            "--wa-color-fill-loud",
+            "--wa-color-neutral-fill-loud",
+            "--wa-color-mix-hover"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='accent']) .button:not(.disabled):not(.loading):active",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[appearance=accent]",
+        "not .disabled",
+        "not .loading",
+        ":active"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "color-mix( in oklab, var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud)), var(--wa-color-mix-active) )",
+          "tokens": [
+            "--wa-color-fill-loud",
+            "--wa-color-neutral-fill-loud",
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([appearance='accent'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=accent]"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "var(--_button-horizontal-indent)",
+          "tokens": [
+            "--_button-horizontal-indent"
+          ]
+        },
+        {
+          "prop": "margin-block-start",
+          "value": "var(--_button-vertical-indent)",
+          "tokens": [
+            "--_button-vertical-indent"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:focus",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        ":focus"
+      ],
+      "decls": [
+        {
+          "prop": "outline",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:focus-visible",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        ":focus-visible"
+      ],
+      "decls": [
+        {
+          "prop": "outline",
+          "value": "var(--wa-focus-ring)",
+          "tokens": [
+            "--wa-focus-ring"
+          ]
+        },
+        {
+          "prop": "outline-offset",
+          "value": "var(--wa-focus-ring-offset)",
+          "tokens": [
+            "--wa-focus-ring-offset"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([disabled]) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[disabled]"
+      ],
+      "decls": [
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([disabled])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[disabled]"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0.5",
+          "tokens": []
+        },
+        {
+          "prop": "cursor",
+          "value": "not-allowed",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button::-moz-focus-inner",
+      "targets": [
+        "part:base"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "border",
+          "value": "0",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button.is-icon-button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        ".is-icon-button (this.isIconButton)"
+      ],
+      "decls": [
+        {
+          "prop": "outline-offset",
+          "value": "2px",
+          "tokens": []
+        },
+        {
+          "prop": "width",
+          "value": "var(--wa-form-control-height)",
+          "tokens": [
+            "--wa-form-control-height"
+          ]
+        },
+        {
+          "prop": "aspect-ratio",
+          "value": "1",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button.is-icon-button.caret",
+      "targets": [
+        "part:base",
+        "part:caret"
+      ],
+      "states": [
+        ".is-icon-button (this.isIconButton)"
+      ],
+      "decls": [
+        {
+          "prop": "width",
+          "value": "auto",
+          "tokens": []
+        },
+        {
+          "prop": "aspect-ratio",
+          "value": "auto",
+          "tokens": []
+        },
+        {
+          "prop": "min-width",
+          "value": "var(--wa-form-control-height)",
+          "tokens": [
+            "--wa-form-control-height"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host([pill]) .button",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        "host[pill]"
+      ],
+      "decls": [
+        {
+          "prop": "border-start-start-radius",
+          "value": "var(--_button-start-start-radius, var(--wa-border-radius-pill))",
+          "tokens": [
+            "--_button-start-start-radius",
+            "--wa-border-radius-pill"
+          ]
+        },
+        {
+          "prop": "border-start-end-radius",
+          "value": "var(--_button-start-end-radius, var(--wa-border-radius-pill))",
+          "tokens": [
+            "--_button-start-end-radius",
+            "--wa-border-radius-pill"
+          ]
+        },
+        {
+          "prop": "border-end-start-radius",
+          "value": "var(--_button-end-start-radius, var(--wa-border-radius-pill))",
+          "tokens": [
+            "--_button-end-start-radius",
+            "--wa-border-radius-pill"
+          ]
+        },
+        {
+          "prop": "border-end-end-radius",
+          "value": "var(--_button-end-end-radius, var(--wa-border-radius-pill))",
+          "tokens": [
+            "--_button-end-end-radius",
+            "--wa-border-radius-pill"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".start",
+      "targets": [
+        "part:start"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "flex",
+          "value": "0 0 auto",
+          "tokens": []
+        },
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".end",
+      "targets": [
+        "part:end"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "flex",
+          "value": "0 0 auto",
+          "tokens": []
+        },
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".label",
+      "targets": [
+        "part:label"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-block",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".is-icon-button .label",
+      "targets": [
+        "part:label"
+      ],
+      "states": [
+        ".is-icon-button (this.isIconButton)"
+      ],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "justify-content",
+          "value": "center",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".label::slotted(wa-icon)",
+      "targets": [
+        "slotted content: wa-icon"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "align-self",
+          "value": "center",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": "wa-icon[part='caret']::part(svg)",
+      "targets": [
+        "part:caret"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "width",
+          "value": "0.875em",
+          "tokens": []
+        },
+        {
+          "prop": "height",
+          "value": "0.875em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:has(wa-icon[part='caret']) .end",
+      "targets": [
+        "part:end"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": "wa-icon[part='caret']",
+      "targets": [
+        "part:caret"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "flex",
+          "tokens": []
+        },
+        {
+          "prop": "align-self",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading .start",
+      "targets": [
+        "part:start"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading .label",
+      "targets": [
+        "part:label"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading .end",
+      "targets": [
+        "part:end"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading .caret",
+      "targets": [
+        "part:base",
+        "part:caret"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "opacity",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading wa-spinner",
+      "targets": [
+        "part:spinner"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "--indicator-color",
+          "value": "currentColor",
+          "tokens": []
+        },
+        {
+          "prop": "--track-color",
+          "value": "color-mix(in oklab, currentColor, transparent 90%)",
+          "tokens": []
+        },
+        {
+          "prop": "position",
+          "value": "absolute",
+          "tokens": []
+        },
+        {
+          "prop": "font-size",
+          "value": "1em",
+          "tokens": []
+        },
+        {
+          "prop": "height",
+          "value": "1em",
+          "tokens": []
+        },
+        {
+          "prop": "width",
+          "value": "1em",
+          "tokens": []
+        },
+        {
+          "prop": "top",
+          "value": "calc(50% - 0.5em)",
+          "tokens": []
+        },
+        {
+          "prop": "left",
+          "value": "calc(50% - 0.5em)",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".loading",
+      "targets": [
+        "part:base"
+      ],
+      "states": [
+        ".loading (this.loading)"
+      ],
+      "decls": [
+        {
+          "prop": "position",
+          "value": "relative",
+          "tokens": []
+        },
+        {
+          "prop": "cursor",
+          "value": "wait",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button ::slotted(wa-badge)",
+      "targets": [
+        "slotted content: wa-badge"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-surface-default)",
+          "tokens": [
+            "--wa-color-surface-default"
+          ]
+        },
+        {
+          "prop": "position",
+          "value": "absolute",
+          "tokens": []
+        },
+        {
+          "prop": "inset-block-start",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "inset-inline-end",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "translate",
+          "value": "50% -50%",
+          "tokens": []
+        },
+        {
+          "prop": "pointer-events",
+          "value": "none",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ":host(:dir(rtl)) ::slotted(wa-badge)",
+      "targets": [
+        "slotted content: wa-badge"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "translate",
+          "value": "-50% -50%",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": "slot[name='start']::slotted(*)",
+      "targets": [
+        "slotted content: *"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "margin-inline-end",
+          "value": "0.75em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": "slot[name='end']::slotted(*)",
+      "targets": [
+        "slotted content: *"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "0.75em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-button_styles_default.js",
+      "selector": ".button:not(.visually-hidden-label) [part='caret']",
+      "targets": [
+        "part:caret"
+      ],
+      "states": [
+        "not .visually-hidden-label"
+      ],
+      "decls": [
+        {
+          "prop": "margin-inline-start",
+          "value": "0.75em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":where(:root)",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-neutral",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='neutral'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=neutral]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-brand",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-brand-fill-loud)",
+          "tokens": [
+            "--wa-color-brand-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-brand-fill-normal)",
+          "tokens": [
+            "--wa-color-brand-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-brand-fill-quiet)",
+          "tokens": [
+            "--wa-color-brand-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-brand-border-loud)",
+          "tokens": [
+            "--wa-color-brand-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-brand-border-normal)",
+          "tokens": [
+            "--wa-color-brand-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-brand-border-quiet)",
+          "tokens": [
+            "--wa-color-brand-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-brand-on-loud)",
+          "tokens": [
+            "--wa-color-brand-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-brand-on-normal)",
+          "tokens": [
+            "--wa-color-brand-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-brand-on-quiet)",
+          "tokens": [
+            "--wa-color-brand-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='brand'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=brand]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-brand-fill-loud)",
+          "tokens": [
+            "--wa-color-brand-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-brand-fill-normal)",
+          "tokens": [
+            "--wa-color-brand-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-brand-fill-quiet)",
+          "tokens": [
+            "--wa-color-brand-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-brand-border-loud)",
+          "tokens": [
+            "--wa-color-brand-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-brand-border-normal)",
+          "tokens": [
+            "--wa-color-brand-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-brand-border-quiet)",
+          "tokens": [
+            "--wa-color-brand-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-brand-on-loud)",
+          "tokens": [
+            "--wa-color-brand-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-brand-on-normal)",
+          "tokens": [
+            "--wa-color-brand-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-brand-on-quiet)",
+          "tokens": [
+            "--wa-color-brand-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-success",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-success-fill-loud)",
+          "tokens": [
+            "--wa-color-success-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-success-fill-normal)",
+          "tokens": [
+            "--wa-color-success-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-success-fill-quiet)",
+          "tokens": [
+            "--wa-color-success-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-success-border-loud)",
+          "tokens": [
+            "--wa-color-success-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-success-border-normal)",
+          "tokens": [
+            "--wa-color-success-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-success-border-quiet)",
+          "tokens": [
+            "--wa-color-success-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-success-on-loud)",
+          "tokens": [
+            "--wa-color-success-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-success-on-normal)",
+          "tokens": [
+            "--wa-color-success-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-success-on-quiet)",
+          "tokens": [
+            "--wa-color-success-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='success'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=success]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-success-fill-loud)",
+          "tokens": [
+            "--wa-color-success-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-success-fill-normal)",
+          "tokens": [
+            "--wa-color-success-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-success-fill-quiet)",
+          "tokens": [
+            "--wa-color-success-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-success-border-loud)",
+          "tokens": [
+            "--wa-color-success-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-success-border-normal)",
+          "tokens": [
+            "--wa-color-success-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-success-border-quiet)",
+          "tokens": [
+            "--wa-color-success-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-success-on-loud)",
+          "tokens": [
+            "--wa-color-success-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-success-on-normal)",
+          "tokens": [
+            "--wa-color-success-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-success-on-quiet)",
+          "tokens": [
+            "--wa-color-success-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-warning",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-warning-fill-loud)",
+          "tokens": [
+            "--wa-color-warning-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-warning-fill-normal)",
+          "tokens": [
+            "--wa-color-warning-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-warning-fill-quiet)",
+          "tokens": [
+            "--wa-color-warning-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-warning-border-loud)",
+          "tokens": [
+            "--wa-color-warning-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-warning-border-normal)",
+          "tokens": [
+            "--wa-color-warning-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-warning-border-quiet)",
+          "tokens": [
+            "--wa-color-warning-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-warning-on-loud)",
+          "tokens": [
+            "--wa-color-warning-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-warning-on-normal)",
+          "tokens": [
+            "--wa-color-warning-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-warning-on-quiet)",
+          "tokens": [
+            "--wa-color-warning-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='warning'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=warning]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-warning-fill-loud)",
+          "tokens": [
+            "--wa-color-warning-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-warning-fill-normal)",
+          "tokens": [
+            "--wa-color-warning-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-warning-fill-quiet)",
+          "tokens": [
+            "--wa-color-warning-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-warning-border-loud)",
+          "tokens": [
+            "--wa-color-warning-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-warning-border-normal)",
+          "tokens": [
+            "--wa-color-warning-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-warning-border-quiet)",
+          "tokens": [
+            "--wa-color-warning-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-warning-on-loud)",
+          "tokens": [
+            "--wa-color-warning-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-warning-on-normal)",
+          "tokens": [
+            "--wa-color-warning-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-warning-on-quiet)",
+          "tokens": [
+            "--wa-color-warning-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-danger",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-danger-fill-loud)",
+          "tokens": [
+            "--wa-color-danger-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-danger-fill-normal)",
+          "tokens": [
+            "--wa-color-danger-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-danger-fill-quiet)",
+          "tokens": [
+            "--wa-color-danger-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-danger-border-loud)",
+          "tokens": [
+            "--wa-color-danger-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-danger-border-normal)",
+          "tokens": [
+            "--wa-color-danger-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-danger-border-quiet)",
+          "tokens": [
+            "--wa-color-danger-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-danger-on-loud)",
+          "tokens": [
+            "--wa-color-danger-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-danger-on-normal)",
+          "tokens": [
+            "--wa-color-danger-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-danger-on-quiet)",
+          "tokens": [
+            "--wa-color-danger-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='danger'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=danger]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-danger-fill-loud)",
+          "tokens": [
+            "--wa-color-danger-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-danger-fill-normal)",
+          "tokens": [
+            "--wa-color-danger-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-danger-fill-quiet)",
+          "tokens": [
+            "--wa-color-danger-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-danger-border-loud)",
+          "tokens": [
+            "--wa-color-danger-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-danger-border-normal)",
+          "tokens": [
+            "--wa-color-danger-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-danger-border-quiet)",
+          "tokens": [
+            "--wa-color-danger-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-danger-on-loud)",
+          "tokens": [
+            "--wa-color-danger-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-danger-on-normal)",
+          "tokens": [
+            "--wa-color-danger-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-danger-on-quiet)",
+          "tokens": [
+            "--wa-color-danger-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xs'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xs]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xs)",
+          "tokens": [
+            "--wa-font-size-xs"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='s'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=s]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='small'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=small]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='m'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=m]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='medium'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=medium]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='l'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=l]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='large'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=large]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xl'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xl]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xl)",
+          "tokens": [
+            "--wa-font-size-xl"
+          ]
+        }
+      ]
+    }
+  ],
+  "unmapped": []
+}

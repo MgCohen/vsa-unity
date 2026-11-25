@@ -1,0 +1,1892 @@
+{
+  "tag": "wa-tag",
+  "properties": [
+    {
+      "name": "variant",
+      "attribute": "variant",
+      "type": "String",
+      "reflect": true,
+      "default": "\"neutral\""
+    },
+    {
+      "name": "appearance",
+      "attribute": "appearance",
+      "type": "String",
+      "reflect": true,
+      "default": "\"filled-outlined\""
+    },
+    {
+      "name": "size",
+      "attribute": "size",
+      "type": "String",
+      "reflect": true,
+      "default": "\"m\""
+    },
+    {
+      "name": "pill",
+      "attribute": "pill",
+      "type": "Boolean",
+      "reflect": true,
+      "default": "false"
+    },
+    {
+      "name": "withRemove",
+      "attribute": "with-remove",
+      "type": "Boolean",
+      "reflect": false,
+      "default": "false"
+    }
+  ],
+  "events": [
+    {
+      "name": "wa-remove",
+      "source": "new WaRemoveEvent()"
+    }
+  ],
+  "anatomy": [
+    {
+      "tag": "slot",
+      "attrs": {
+        "part": "content",
+        "class": "content"
+      }
+    },
+    {
+      "tag": "wa-button",
+      "attrs": {
+        "part": "remove-button",
+        "exportparts": "base:remove-button__base, button:remove-button__button",
+        "class": "remove",
+        "appearance": "plain",
+        "size": "${this.size}",
+        "@click": "${this.handleRemoveClick}",
+        "tabindex": "-1"
+      },
+      "children": [
+        {
+          "tag": "wa-icon",
+          "attrs": {
+            "name": "xmark",
+            "library": "system",
+            "variant": "solid",
+            "label": "${this.localize.term(\"remove\")}"
+          }
+        }
+      ],
+      "when": "this.withRemove"
+    }
+  ],
+  "parts": [
+    {
+      "part": "content",
+      "tag": "slot",
+      "path": "slot"
+    },
+    {
+      "part": "remove-button",
+      "tag": "wa-button",
+      "path": "wa-button",
+      "when": "this.withRemove"
+    }
+  ],
+  "slots": [
+    {
+      "name": "(default)",
+      "parts": [
+        "content"
+      ]
+    }
+  ],
+  "dependencies": [
+    "wa-button",
+    "wa-icon"
+  ],
+  "states": [
+    "host:active",
+    "host:hover",
+    "host[appearance=accent]",
+    "host[appearance=filled-outlined]",
+    "host[appearance=filled]",
+    "host[appearance=outlined]",
+    "host[pill]",
+    "host[size=l]",
+    "host[size=large]",
+    "host[size=m]",
+    "host[size=medium]",
+    "host[size=s]",
+    "host[size=small]",
+    "host[size=xl]",
+    "host[size=xs]",
+    "host[variant=brand]",
+    "host[variant=danger]",
+    "host[variant=neutral]",
+    "host[variant=success]",
+    "host[variant=warning]"
+  ],
+  "definedTokens": {
+    "--wa-color-fill-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-loud)"
+      }
+    ],
+    "--wa-color-fill-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-normal)"
+      }
+    ],
+    "--wa-color-fill-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-fill-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-fill-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-fill-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-fill-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-fill-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-fill-quiet)"
+      }
+    ],
+    "--wa-color-border-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-loud)"
+      }
+    ],
+    "--wa-color-border-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-normal)"
+      }
+    ],
+    "--wa-color-border-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-border-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-border-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-border-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-border-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-border-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-border-quiet)"
+      }
+    ],
+    "--wa-color-on-loud": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-loud)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-loud)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-loud)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-loud)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-loud)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-loud)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-loud)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-loud)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-loud)"
+      }
+    ],
+    "--wa-color-on-normal": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-normal)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-normal)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-normal)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-normal)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-normal)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-normal)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-normal)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-normal)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-normal)"
+      }
+    ],
+    "--wa-color-on-quiet": [
+      {
+        "selector": ":where(:root)",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ".wa-neutral",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='neutral'])",
+        "value": "var(--wa-color-neutral-on-quiet)"
+      },
+      {
+        "selector": ".wa-brand",
+        "value": "var(--wa-color-brand-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='brand'])",
+        "value": "var(--wa-color-brand-on-quiet)"
+      },
+      {
+        "selector": ".wa-success",
+        "value": "var(--wa-color-success-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='success'])",
+        "value": "var(--wa-color-success-on-quiet)"
+      },
+      {
+        "selector": ".wa-warning",
+        "value": "var(--wa-color-warning-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='warning'])",
+        "value": "var(--wa-color-warning-on-quiet)"
+      },
+      {
+        "selector": ".wa-danger",
+        "value": "var(--wa-color-danger-on-quiet)"
+      },
+      {
+        "selector": ":host([variant='danger'])",
+        "value": "var(--wa-color-danger-on-quiet)"
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host",
+      "targets": [
+        "host"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "display",
+          "value": "inline-flex",
+          "tokens": []
+        },
+        {
+          "prop": "gap",
+          "value": "0.5em",
+          "tokens": []
+        },
+        {
+          "prop": "border-radius",
+          "value": "var(--wa-border-radius-m)",
+          "tokens": [
+            "--wa-border-radius-m"
+          ]
+        },
+        {
+          "prop": "align-items",
+          "value": "center",
+          "tokens": []
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet))",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-border-normal, var(--wa-color-neutral-border-normal))",
+          "tokens": [
+            "--wa-color-border-normal",
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "border-style",
+          "value": "var(--wa-border-style)",
+          "tokens": [
+            "--wa-border-style"
+          ]
+        },
+        {
+          "prop": "border-width",
+          "value": "var(--wa-border-width-s)",
+          "tokens": [
+            "--wa-border-width-s"
+          ]
+        },
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "font-size",
+          "value": "inherit",
+          "tokens": []
+        },
+        {
+          "prop": "line-height",
+          "value": "1",
+          "tokens": []
+        },
+        {
+          "prop": "white-space",
+          "value": "nowrap",
+          "tokens": []
+        },
+        {
+          "prop": "user-select",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "-webkit-user-select",
+          "value": "none",
+          "tokens": []
+        },
+        {
+          "prop": "height",
+          "value": "calc(var(--wa-form-control-height) * 0.8)",
+          "tokens": [
+            "--wa-form-control-height"
+          ]
+        },
+        {
+          "prop": "line-height",
+          "value": "calc(var(--wa-form-control-height) - var(--wa-form-control-border-width) * 2)",
+          "tokens": [
+            "--wa-form-control-height",
+            "--wa-form-control-border-width"
+          ]
+        },
+        {
+          "prop": "padding",
+          "value": "0 0.75em",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host([appearance='outlined'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-border-loud, var(--wa-color-neutral-border-loud))",
+          "tokens": [
+            "--wa-color-border-loud",
+            "--wa-color-neutral-border-loud"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host([appearance='filled'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=filled]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet))",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host([appearance='filled-outlined'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=filled-outlined]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-quiet, var(--wa-color-neutral-on-quiet))",
+          "tokens": [
+            "--wa-color-on-quiet",
+            "--wa-color-neutral-on-quiet"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-quiet, var(--wa-color-neutral-fill-quiet))",
+          "tokens": [
+            "--wa-color-fill-quiet",
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "var(--wa-color-border-normal, var(--wa-color-neutral-border-normal))",
+          "tokens": [
+            "--wa-color-border-normal",
+            "--wa-color-neutral-border-normal"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host([appearance='accent'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[appearance=accent]"
+      ],
+      "decls": [
+        {
+          "prop": "color",
+          "value": "var(--wa-color-on-loud, var(--wa-color-neutral-on-loud))",
+          "tokens": [
+            "--wa-color-on-loud",
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "background-color",
+          "value": "var(--wa-color-fill-loud, var(--wa-color-neutral-fill-loud))",
+          "tokens": [
+            "--wa-color-fill-loud",
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "border-color",
+          "value": "transparent",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ".content",
+      "targets": [
+        "part:content"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-smaller)",
+          "tokens": [
+            "--wa-font-size-smaller"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": "[part='remove-button']",
+      "targets": [
+        "part:remove-button"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "line-height",
+          "value": "1",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": "[part='remove-button']::part(button)",
+      "targets": [
+        "part:remove-button"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "padding",
+          "value": "0",
+          "tokens": []
+        },
+        {
+          "prop": "height",
+          "value": "1em",
+          "tokens": []
+        },
+        {
+          "prop": "width",
+          "value": "1em",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "currentColor",
+          "tokens": []
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host(:hover) > [part='remove-button']::part(button)",
+      "media": [
+        "@media (hover: hover)"
+      ],
+      "targets": [
+        "part:remove-button"
+      ],
+      "states": [
+        "host:hover"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "color-mix(in oklab, currentColor, var(--wa-color-mix-hover))",
+          "tokens": [
+            "--wa-color-mix-hover"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host(:active) > [part='remove-button']::part(button)",
+      "targets": [
+        "part:remove-button"
+      ],
+      "states": [
+        "host:active"
+      ],
+      "decls": [
+        {
+          "prop": "background-color",
+          "value": "transparent",
+          "tokens": []
+        },
+        {
+          "prop": "color",
+          "value": "color-mix(in oklab, currentColor, var(--wa-color-mix-active))",
+          "tokens": [
+            "--wa-color-mix-active"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-tag_styles_default.js",
+      "selector": ":host([pill])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[pill]"
+      ],
+      "decls": [
+        {
+          "prop": "border-radius",
+          "value": "var(--wa-border-radius-pill)",
+          "tokens": [
+            "--wa-border-radius-pill"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":where(:root)",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-neutral",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='neutral'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=neutral]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-neutral-fill-loud)",
+          "tokens": [
+            "--wa-color-neutral-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-neutral-fill-normal)",
+          "tokens": [
+            "--wa-color-neutral-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-neutral-fill-quiet)",
+          "tokens": [
+            "--wa-color-neutral-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-neutral-border-loud)",
+          "tokens": [
+            "--wa-color-neutral-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-neutral-border-normal)",
+          "tokens": [
+            "--wa-color-neutral-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-neutral-border-quiet)",
+          "tokens": [
+            "--wa-color-neutral-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-neutral-on-loud)",
+          "tokens": [
+            "--wa-color-neutral-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-neutral-on-normal)",
+          "tokens": [
+            "--wa-color-neutral-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-neutral-on-quiet)",
+          "tokens": [
+            "--wa-color-neutral-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-brand",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-brand-fill-loud)",
+          "tokens": [
+            "--wa-color-brand-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-brand-fill-normal)",
+          "tokens": [
+            "--wa-color-brand-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-brand-fill-quiet)",
+          "tokens": [
+            "--wa-color-brand-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-brand-border-loud)",
+          "tokens": [
+            "--wa-color-brand-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-brand-border-normal)",
+          "tokens": [
+            "--wa-color-brand-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-brand-border-quiet)",
+          "tokens": [
+            "--wa-color-brand-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-brand-on-loud)",
+          "tokens": [
+            "--wa-color-brand-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-brand-on-normal)",
+          "tokens": [
+            "--wa-color-brand-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-brand-on-quiet)",
+          "tokens": [
+            "--wa-color-brand-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='brand'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=brand]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-brand-fill-loud)",
+          "tokens": [
+            "--wa-color-brand-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-brand-fill-normal)",
+          "tokens": [
+            "--wa-color-brand-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-brand-fill-quiet)",
+          "tokens": [
+            "--wa-color-brand-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-brand-border-loud)",
+          "tokens": [
+            "--wa-color-brand-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-brand-border-normal)",
+          "tokens": [
+            "--wa-color-brand-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-brand-border-quiet)",
+          "tokens": [
+            "--wa-color-brand-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-brand-on-loud)",
+          "tokens": [
+            "--wa-color-brand-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-brand-on-normal)",
+          "tokens": [
+            "--wa-color-brand-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-brand-on-quiet)",
+          "tokens": [
+            "--wa-color-brand-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-success",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-success-fill-loud)",
+          "tokens": [
+            "--wa-color-success-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-success-fill-normal)",
+          "tokens": [
+            "--wa-color-success-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-success-fill-quiet)",
+          "tokens": [
+            "--wa-color-success-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-success-border-loud)",
+          "tokens": [
+            "--wa-color-success-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-success-border-normal)",
+          "tokens": [
+            "--wa-color-success-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-success-border-quiet)",
+          "tokens": [
+            "--wa-color-success-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-success-on-loud)",
+          "tokens": [
+            "--wa-color-success-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-success-on-normal)",
+          "tokens": [
+            "--wa-color-success-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-success-on-quiet)",
+          "tokens": [
+            "--wa-color-success-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='success'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=success]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-success-fill-loud)",
+          "tokens": [
+            "--wa-color-success-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-success-fill-normal)",
+          "tokens": [
+            "--wa-color-success-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-success-fill-quiet)",
+          "tokens": [
+            "--wa-color-success-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-success-border-loud)",
+          "tokens": [
+            "--wa-color-success-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-success-border-normal)",
+          "tokens": [
+            "--wa-color-success-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-success-border-quiet)",
+          "tokens": [
+            "--wa-color-success-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-success-on-loud)",
+          "tokens": [
+            "--wa-color-success-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-success-on-normal)",
+          "tokens": [
+            "--wa-color-success-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-success-on-quiet)",
+          "tokens": [
+            "--wa-color-success-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-warning",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-warning-fill-loud)",
+          "tokens": [
+            "--wa-color-warning-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-warning-fill-normal)",
+          "tokens": [
+            "--wa-color-warning-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-warning-fill-quiet)",
+          "tokens": [
+            "--wa-color-warning-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-warning-border-loud)",
+          "tokens": [
+            "--wa-color-warning-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-warning-border-normal)",
+          "tokens": [
+            "--wa-color-warning-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-warning-border-quiet)",
+          "tokens": [
+            "--wa-color-warning-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-warning-on-loud)",
+          "tokens": [
+            "--wa-color-warning-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-warning-on-normal)",
+          "tokens": [
+            "--wa-color-warning-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-warning-on-quiet)",
+          "tokens": [
+            "--wa-color-warning-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='warning'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=warning]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-warning-fill-loud)",
+          "tokens": [
+            "--wa-color-warning-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-warning-fill-normal)",
+          "tokens": [
+            "--wa-color-warning-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-warning-fill-quiet)",
+          "tokens": [
+            "--wa-color-warning-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-warning-border-loud)",
+          "tokens": [
+            "--wa-color-warning-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-warning-border-normal)",
+          "tokens": [
+            "--wa-color-warning-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-warning-border-quiet)",
+          "tokens": [
+            "--wa-color-warning-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-warning-on-loud)",
+          "tokens": [
+            "--wa-color-warning-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-warning-on-normal)",
+          "tokens": [
+            "--wa-color-warning-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-warning-on-quiet)",
+          "tokens": [
+            "--wa-color-warning-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ".wa-danger",
+      "targets": [
+        "global (page theme)"
+      ],
+      "states": [],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-danger-fill-loud)",
+          "tokens": [
+            "--wa-color-danger-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-danger-fill-normal)",
+          "tokens": [
+            "--wa-color-danger-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-danger-fill-quiet)",
+          "tokens": [
+            "--wa-color-danger-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-danger-border-loud)",
+          "tokens": [
+            "--wa-color-danger-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-danger-border-normal)",
+          "tokens": [
+            "--wa-color-danger-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-danger-border-quiet)",
+          "tokens": [
+            "--wa-color-danger-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-danger-on-loud)",
+          "tokens": [
+            "--wa-color-danger-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-danger-on-normal)",
+          "tokens": [
+            "--wa-color-danger-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-danger-on-quiet)",
+          "tokens": [
+            "--wa-color-danger-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-variants_styles_default.js",
+      "selector": ":host([variant='danger'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[variant=danger]"
+      ],
+      "decls": [
+        {
+          "prop": "--wa-color-fill-loud",
+          "value": "var(--wa-color-danger-fill-loud)",
+          "tokens": [
+            "--wa-color-danger-fill-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-normal",
+          "value": "var(--wa-color-danger-fill-normal)",
+          "tokens": [
+            "--wa-color-danger-fill-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-fill-quiet",
+          "value": "var(--wa-color-danger-fill-quiet)",
+          "tokens": [
+            "--wa-color-danger-fill-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-loud",
+          "value": "var(--wa-color-danger-border-loud)",
+          "tokens": [
+            "--wa-color-danger-border-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-normal",
+          "value": "var(--wa-color-danger-border-normal)",
+          "tokens": [
+            "--wa-color-danger-border-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-border-quiet",
+          "value": "var(--wa-color-danger-border-quiet)",
+          "tokens": [
+            "--wa-color-danger-border-quiet"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-loud",
+          "value": "var(--wa-color-danger-on-loud)",
+          "tokens": [
+            "--wa-color-danger-on-loud"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-normal",
+          "value": "var(--wa-color-danger-on-normal)",
+          "tokens": [
+            "--wa-color-danger-on-normal"
+          ]
+        },
+        {
+          "prop": "--wa-color-on-quiet",
+          "value": "var(--wa-color-danger-on-quiet)",
+          "tokens": [
+            "--wa-color-danger-on-quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xs'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xs]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xs)",
+          "tokens": [
+            "--wa-font-size-xs"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='s'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=s]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='small'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=small]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-s)",
+          "tokens": [
+            "--wa-font-size-s"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='m'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=m]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='medium'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=medium]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-m)",
+          "tokens": [
+            "--wa-font-size-m"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='l'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=l]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='large'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=large]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-l)",
+          "tokens": [
+            "--wa-font-size-l"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "style-size_styles_default.js",
+      "selector": ":host([size='xl'])",
+      "targets": [
+        "host"
+      ],
+      "states": [
+        "host[size=xl]"
+      ],
+      "decls": [
+        {
+          "prop": "font-size",
+          "value": "var(--wa-font-size-xl)",
+          "tokens": [
+            "--wa-font-size-xl"
+          ]
+        }
+      ]
+    }
+  ],
+  "unmapped": []
+}

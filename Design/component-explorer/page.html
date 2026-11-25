@@ -1,0 +1,272 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Button Breakdown</title>
+<!-- The Web Awesome 3.15.0 source in this page: Copyright (c) 2023 Fonticons, Inc., MIT license. -->
+<style>
+:root { --bg: #f4f5f2; --card: #ffffff; --fg: #1d2320; --soft: #5f6963; --line: #dfe3dd; --accent: #0b6b57; --hl: #d6336c; --ui: system-ui, "Segoe UI", sans-serif; --mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141815; --card: #1c221e; --fg: #e8ece8; --soft: #9aa59e; --line: #303832; --accent: #5cc9ae; --hl: #ff7aa8; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141815; --card: #1c221e; --fg: #e8ece8; --soft: #9aa59e; --line: #303832; --accent: #5cc9ae; --hl: #ff7aa8; color-scheme: dark }
+* { box-sizing: border-box }
+:where(#stage.ds *) { box-sizing: content-box }
+body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--ui) }
+button:where(:not(#stage *)) { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: pointer }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px }
+#app { max-width: 1360px; margin: 0 auto; padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start }
+#left { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; gap: 12px; min-width: 0; height: calc(100vh - 32px) }
+#right { min-width: 0 }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--line); border-radius: 10px; padding: 3px; flex: none }
+.seg button { text-align: center; min-height: 40px; border-radius: 8px; font: 14px var(--mono); color: var(--soft) }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--fg) }
+#stage { line-height: normal; font-size: 16px; position: relative; background: #fff; border: 1px solid var(--line); border-radius: 12px; height: 180px; flex: none; display: grid; place-items: center; overflow: hidden }
+#stage.ds { background: radial-gradient(circle at center, #5b3cc4, #2a2166 60%, #0d0b24) }
+.mark { box-sizing: border-box; position: absolute; border: 2px solid #d6336c; border-radius: 4px; pointer-events: none }
+#stage.ds .mark { border-color: #7fe0ff }
+#what { position: absolute; left: 0; bottom: 0; background: #1d2320; color: #fff; font: 12.5px var(--mono); padding: 3px 8px; border-radius: 0 6px 0 0; pointer-events: none }
+#what:empty { display: none }
+#src { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden }
+#srcbar { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; font: 600 13px var(--mono); border-bottom: 1px solid var(--line); flex: none }
+#srcbar i { display: none }
+#code { position: relative; overflow: auto; flex: 1; min-height: 0; font: 12.5px/1.6 var(--mono); padding-block: 6px }
+.ln { display: grid; grid-template-columns: 4.5ch minmax(0, 1fr); column-gap: 12px; padding-right: 12px }
+.ln u { text-decoration: none; color: var(--soft); text-align: right; user-select: none; opacity: .7 }
+.ln span { white-space: pre-wrap; overflow-wrap: anywhere }
+.ln.on { background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: inset 3px 0 var(--accent) }
+#path { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; flex-wrap: wrap; align-items: center; min-height: 46px; padding-block: 2px 6px; font: 13.5px var(--mono) }
+.lv { font: 600 12px var(--ui); color: var(--bg); background: var(--accent); border-radius: 20px; padding: 2px 9px; margin-right: 8px }
+.cr { display: inline-flex; align-items: center; max-width: 100% }
+.cr i { font-style: normal; color: var(--soft); margin-inline: 6px }
+.cr button { color: var(--accent); min-height: 40px; overflow-wrap: anywhere }
+.cr b { overflow-wrap: anywhere }
+#tree { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden }
+.kids { margin-left: 20px; border-left: 2px solid var(--line) }
+.kids .kids { margin-left: 16px }
+.row { display: flex; align-items: center; min-height: 44px; border-top: 1px solid var(--line); padding-right: 10px }
+#tree > .node:first-child > .row { border-top: 0 }
+.row .nm { flex: 1; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; padding-left: 12px }
+.row code { font: 13.5px/1.4 var(--mono); overflow-wrap: anywhere; min-width: 0; padding-block: 6px }
+.row.grp code { font: 15px var(--ui) }
+.row.file code { font-weight: 600; font-size: 15px }
+.row small { margin-left: auto; padding-left: 8px; flex: 0 1 auto; max-width: 55%; font: 12.5px/1.3 var(--mono); color: var(--soft); text-align: right; overflow-wrap: anywhere }
+.row.none { color: var(--soft) }
+.ch { flex: none; width: 8px; height: 8px; border: solid var(--soft); border-width: 0 2px 2px 0; transform: rotate(-45deg) }
+[aria-expanded="true"] > .ch { transform: rotate(45deg) }
+.ch.no { visibility: hidden }
+.row:hover { background: color-mix(in srgb, var(--accent) 7%, transparent) }
+.row.hit { background: color-mix(in srgb, var(--hl) 14%, transparent); box-shadow: inset 3px 0 var(--hl) }
+.row.sel { background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: inset 3px 0 var(--accent) }
+.go { flex: none; margin-left: 6px; min-height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--accent); font-size: 13px }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line); vertical-align: -1px; margin-right: 6px }
+.tip { flex: none; width: 32px; height: 44px; display: grid; place-items: center; opacity: .5 }
+.tip:hover, .tip:focus { opacity: 1 }
+.tip::before { content: "i"; width: 18px; height: 18px; border: 1.5px solid var(--soft); border-radius: 50%; display: grid; place-items: center; font: italic 600 12px/1 Georgia, serif; color: var(--soft) }
+#pop { position: fixed; z-index: 20; max-width: min(320px, calc(100vw - 32px)); background: var(--fg); color: var(--bg); padding: 9px 12px; border-radius: 8px; font-size: 14px; pointer-events: none; overflow-wrap: anywhere }
+@media (max-width: 760px) {
+  #app { grid-template-columns: minmax(0, 1fr); gap: 4px; padding-block: 10px calc(34vh + 24px) }
+  #left { display: contents }
+  #stage { height: 132px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6 }
+  #stage, .seg { margin-bottom: 4px }
+  #path { top: calc(132px + env(safe-area-inset-top, 0px)); min-height: 40px }
+  .cr button { min-height: 36px }
+  #src { position: fixed; inset: auto 0 0 0; height: 34vh; z-index: 8; border-radius: 12px 12px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -4px 16px #0003 }
+  .nosrc #src { height: auto }
+  .nosrc #code { display: none }
+  #srcbar { min-height: 44px; padding-inline: max(16px, env(safe-area-inset-left, 0px)) }
+  #srcbar i { display: block; margin-left: auto; width: 9px; height: 9px; border: solid var(--soft); border-width: 0 2px 2px 0; transform: rotate(45deg) }
+  .nosrc #srcbar i { transform: rotate(-135deg) }
+  .kids { margin-left: 12px }
+  .kids .kids { margin-left: 10px }
+  .row .nm { padding-left: 10px }
+  .tip { width: 28px }
+}
+@media (min-width: 761px) { #srcbar { cursor: default } .nosrc #code { display: block } }
+</style>
+<div id="app">
+  <div id="left"><div class="seg" id="seg" role="group" aria-label="Button"></div><div id="stage"></div>
+    <section id="src" aria-label="Source"><button type="button" id="srcbar" aria-expanded="true"><span id="where"></span><i></i></button><div id="code" tabindex="0"></div></section></div>
+  <div id="right"><nav id="path" aria-label="Path"></nav><div id="tree"></div></div>
+</div>
+<div id="pop" role="tooltip" hidden></div>
+<script>
+/*DATA*/
+const $ = id => document.getElementById(id), F = DATA.files;
+const h = (t, a, ...k) => { const e = document.createElement(t); for (const x in a || {}) { if (a[x] == null || a[x] === false) continue; if (x.startsWith("on")) e[x] = a[x]; else e.setAttribute(x, a[x]); } e.append(...k.flat(9).filter(x => x != null && x !== "")); return e; };
+const HELP = {
+  structure: "Defines what the button is made of.", style: "Defines how the button looks.",
+  Elements: "The HTML elements, with their slots and parts. Unfold an element to see the elements inside it. In a style file: the basic look of each element.",
+  Properties: "The values that you can set. Members marked private, static, field or element are for the code of the file only. In a style file: rules for a property value.",
+  States: "Conditions such as hover or disabled. Entries marked internal are used by the code only. In a style file: the look in that state.",
+  Events: "What the file sends out, or documents as sent.", Methods: "The functions in this file.",
+  Styles: "The style files that this file names.",
+  Uses: "What these lines refer to. Select Open to go to the place that defines it. Imports from npm packages are not listed.",
+  Types: "TypeScript types in this file.", Values: "The values in the source.",
+  Defined: "Each place that sets this token for the default light theme.", Other: "Places that set this token for another theme, color or variant."
+};
+let subject = "wa-button";
+// ---------- Tooltip ----------
+const pop = $("pop");
+function tip(text) {
+  if (!text) return null;
+  const show = e => { pop.textContent = text; pop.hidden = false; const r = e.currentTarget.getBoundingClientRect(), p = pop.getBoundingClientRect(); pop.style.left = Math.max(16, Math.min(innerWidth - p.width - 16, r.left + r.width / 2 - p.width / 2)) + "px"; pop.style.top = (r.top > p.height + 12 ? r.top - p.height - 2 : r.bottom + 2) + "px"; };
+  const b = h("button", { class: "tip", type: "button", "aria-label": text, onclick: e => { e.stopPropagation(); show(e); } });
+  b.onmouseenter = show; b.onmouseleave = b.onblur = () => { pop.hidden = true; };
+  return b;
+}
+addEventListener("scroll", () => { pop.hidden = true; }, { passive: true, capture: true });
+addEventListener("pointerdown", e => { if (!e.target.closest(".tip")) pop.hidden = true; });
+// ---------- Preview ----------
+const cssOf = f => { const t = F[f].text, a = t.indexOf("css`"); return a < 0 ? t.replace(/@import[^;]+;/g, "") : t.slice(a + 4, t.lastIndexOf("`")); };
+const THEME = ["styles/layers.css", "styles/color/palettes/base.css", "styles/color/palettes/default.css", ...["brand", "neutral", "success", "warning", "danger"].map(x => `styles/color/variants/${x}.css`), "styles/themes/default.css"];
+document.head.append(h("style", {}, THEME.map(f => cssOf(f).replaceAll(":where(:root)", "#stage.wa")).join("\n")));
+document.head.append(h("style", {}, `@font-face{font-family:"Inter";font-weight:600;src:url(data:font/ttf;base64,${FONT})}` + cssOf("ds/tokens.css").replace(/@font-face\s*\{[^}]*\}/, "").replace(":root", "#stage.ds") + cssOf("ds/button.css")));
+let host, rootNode;
+function drawStage() {
+  const st = $("stage"); st.className = subject === "wa-button" ? "wa" : "ds"; st.replaceChildren();
+  if (subject === "wa-button") {
+    host = h("wa-button", { variant: "neutral", appearance: "accent", size: "m" }, "Button"); rootNode = host.attachShadow({ mode: "open" });
+    rootNode.innerHTML = `<style>${["styles/component/host.styles.ts", "components/button/button.styles.ts", "styles/component/variants.styles.ts", "styles/component/size.styles.ts"].map(cssOf).join("\n")}</style><button part="base button" class="button has-label" type="button" title="" role="button" aria-busy="false" tabindex="0"><slot name="start" part="start" class="start"></slot><slot part="label" class="label"></slot><slot name="end" part="end" class="end"></slot></button>`;
+  } else { host = h("button", { class: "ds-button", type: "button" }, h("span", { class: "ds-button__face" }, h("span", { class: "ds-button__label" }, "Button"))); rootNode = st; }
+  st.append(host, h("output", { id: "what" }));
+  $("seg").replaceChildren(...["wa-button", "ds-button"].map(c => h("button", { "aria-pressed": String(c === subject), onclick: () => { const r = rootOf({ c }); r.sel = null; go([r]); } }, c)));
+}
+function rectOf(x) {
+  if (x.localName === "slot") { const n = x.assignedNodes(); if (!n.length) return null; const g = document.createRange(); g.selectNodeContents(n[0]); return g.getBoundingClientRect(); }
+  const r = x.getBoundingClientRect(); return r.width ? r : null;
+}
+// The preview elements that the selectors of an entry apply to. Pseudo-classes and conditions on the host are left out.
+function matchEls(f, hl) {
+  const els = new Set(); if (!hl || !DATA.comps[subject].includes(f)) return els;
+  for (let s of [].concat(hl)) {
+    s = s.replace(/::slotted\([^()]*\)/g, "::x"); if (s.endsWith("::x")) continue;
+    s = s.replace(/::[\w-]+/g, "").replace(/:(hover|active|focus-visible|focus|disabled)(?![\w-])/g, "").replace(/:not\((\.|:)[^()]*\)/g, "").trim();
+    if (s.startsWith(":host")) { const m = s.match(/^:host(\((?:[^()]|\([^()]*\))*\))?/); s = s.slice(m[0].length).trim(); if (/:has|:dir/.test(m[0] + s)) continue; if (!s) { els.add(host); continue; } }
+    s = s.replace(/\.(is-(hover|pressed|focus|disabled|icon-button)|no-label|loading|disabled|caret)\b/g, "").trim(); if (!s) continue;
+    try { rootNode.querySelectorAll(s).forEach(x => els.add(x)); } catch { /* not a selector of this preview */ }
+  }
+  return els;
+}
+function mark(els) {
+  document.querySelectorAll(".mark").forEach(x => x.remove());
+  const st = $("stage"), b = st.getBoundingClientRect();
+  for (const x of els || []) { const r = rectOf(x); if (r) st.append(h("div", { class: "mark", style: `left:${r.left - b.left - 4}px;top:${r.top - b.top - 4}px;width:${r.width + 8}px;height:${r.height + 8}px` })); }
+}
+// ---------- Tree nodes ----------
+const item = t => F[t.f].g[t.g][t.i];
+const isColor = v => v && /^(#[0-9a-f]{3,8}|(rgb|hsl|oklch|oklab)a?\([^()]*\)|white|black)$/i.test(v);
+const node = (name, o) => ({ name, value: "", kids: [], ...o });
+const link = (p, n) => { p.kids.push(n); n.up = p; return n; };
+const short = (x, g) => x.tag || (g === "Uses" ? "" : x.v) || (g === "Elements" && x.parts ? "part " + x.parts[x.parts.length - 1] : "") || (g === "Properties" && x.type && !x.vals ? x.type : "");
+const refName = t => t.c || t.t || (t.g ? item(t).n : F[t.f].name);
+function refNode(t, f, l) {
+  const d = t.t && (DATA.tokens[t.t] || [])[0];
+  return node(refName(t), { value: t.t ? (d ? (d.v.length < 40 ? d.v : "") : "not set here") : t.g || "", tip: t.g ? item(t).d : "", f, l, open2: t.t && !d ? null : t });
+}
+function itemNode(f, g, i) {
+  const x = F[f].g[g][i], n = node(x.n, { value: short(x, g).slice(0, 60), tip: x.d, f, l: x.l, hl: x.hl, id: f + "|" + g + "|" + i });
+  if ((g === "Styles" || g === "Uses" || g === "Properties") && x.to) { n.open2 = x.to; return n; }
+  const facts = [["type", x.vals ? null : x.type], ["default", g === "Properties" ? x.v : null], ["attribute", x.attr], ["part", x.parts && x.parts.join(", ")], ["shown if", x.cond], ["condition", /^@/.test(x.tag || "") ? x.tag : null]];
+  for (const [k, v] of facts) if (v) link(n, node(k, { value: v, f, l: x.l, fact: 1 }));
+  if (x.vals) { const v = link(n, node("Values", { tip: HELP.Values, value: String(x.vals.length), f, l: x.l })); x.vals.forEach(y => link(v, node(y, { f, l: x.l, fact: 1 }))); }
+  if (g === "Elements" && x.depth != null) { const L = F[f].g.Elements; for (let k = i + 1; k < L.length && L[k].depth > x.depth; k++) if (L[k].depth === x.depth + 1) link(n, itemNode(f, g, k)); }
+  if (x.use) { const u = link(n, node("Uses", { tip: HELP.Uses, value: String(x.use.length), f, l: x.u || x.l, hl: x.hl })); x.use.forEach(t => link(u, refNode(t, f, x.u || x.l))); }
+  return n;
+}
+function fileGroups(p, f, std) {
+  const all = F[f].g, names = [...(std ? F[f].std : F[f].std.filter(g => all[g])), ...Object.keys(all).filter(g => !F[f].std.includes(g))];
+  for (const g of names) { const L = all[g] || [], n = link(p, node(g, { tip: HELP[g], value: String(L.length), f, none: !L.length, grp: 1 })); L.forEach((x, i) => { if (!(g === "Elements" && x.depth)) link(n, itemNode(f, g, i)); }); }
+}
+const roots = new Map();
+function rootOf(t) {
+  const k = JSON.stringify(t); if (roots.has(k)) return roots.get(k);
+  const r = node(refName(t), { t, isRoot: 1, open: true });
+  if (t.c) { r.tip = DATA.sum[t.c]; const pg = "page/" + t.c; r.f = F[pg] ? pg : DATA.comps[t.c][0]; if (F[pg]) r.l = F[pg].l; for (const f of DATA.comps[t.c]) { const n = link(r, node(F[f].name, { value: F[f].kind, tip: HELP[F[f].kind], f, file: 1, open: true })); fileGroups(n, f, true); } }
+  else if (t.t) {
+    const all = DATA.tokens[t.t], main = x => /:root|:host/.test(x.sel), A = all.filter(main).length ? all.filter(main) : all, B = all.filter(x => !A.includes(x));
+    r.f = A[0].f; r.l = A[0].l;
+    const grp = (name, L) => { if (!L.length) return; const n = link(r, node(name, { tip: HELP[name], value: String(L.length), f: L[0].f, l: L[0].l, open: name === "Defined" })); for (const x of L) { const d = link(n, node(x.v, { value: F[x.f].name + ":" + x.l[0], tip: x.sel, f: x.f, l: x.l })); for (const m of new Set([...x.v.matchAll(/var\(\s*(--[\w-]+)/g)].map(y => y[1]))) link(d, refNode({ t: m }, x.f, x.l)); } };
+    grp("Defined", A); grp("Other", B);
+  } else { r.f = t.f; r.tip = F[t.f].path; fileGroups(r, t.f, false); }
+  roots.set(k, r); return r;
+}
+// ---------- Tree rows ----------
+const up = n => n.up ? [...up(n.up), n] : [n];
+function render(n) {
+  const can = n.kids.length > 0;
+  const main = h("button", { type: "button", class: "nm", "aria-expanded": can ? String(!!n.open) : null, onclick: () => { if (can && (n === sel() || !n.open)) toggle(n); select(n); } },
+    h("span", { class: "ch" + (can ? "" : " no") }), h("code", {}, n.name), n.value && h("small", {}, isColor(n.value) ? h("span", { class: "sw", style: "background:" + n.value }) : "", n.value));
+  n.row = h("div", { class: "row" + (n.file ? " file" : n.grp ? " grp" : "") + (n.none ? " none" : "") }, main, tip(n.tip), n.open2 && h("button", { type: "button", class: "go", onclick: () => follow(n.open2) }, "Open"));
+  if (n.hl) { n.row.onmouseenter = () => mark(matchEls(n.f, n.hl)); n.row.onmouseleave = rest; }
+  n.box = h("div", { class: "kids" }); n.el = h("div", { class: "node" }, n.row, n.box); n.done = false; fill(n);
+  return n.el;
+}
+function fill(n) { n.box.hidden = !n.open; if (n.open && !n.done) { n.done = true; n.box.append(...n.kids.map(render)); } if (n.row && n.kids.length) n.row.firstChild.setAttribute("aria-expanded", String(!!n.open)); }
+function toggle(n, v) { n.open = v ?? !n.open; if (n.box) fill(n); }
+const rest = () => { const s = sel(); mark(s && s.hl ? matchEls(s.f, s.hl) : []); };
+// ---------- Selection, path and navigation ----------
+let over = null, hist = [], cur = -1;
+const chain = () => hist[cur], root = () => chain()[chain().length - 1], sel = () => root().sel || root();
+function select(n, show) {
+  root().sel = n; const p = up(n);
+  for (const x of p.slice(0, -1)) if (!x.open) toggle(x, true);
+  document.querySelectorAll(".row.sel").forEach(x => x.classList.remove("sel"));
+  if (n.row) { n.row.classList.add("sel"); if (show) n.row.scrollIntoView({ block: "center" }); }
+  over = null; clearHits(); $("what").textContent = ""; drawPath(); drawSource(n); rest();
+}
+function drawPath() {
+  const c = chain(), list = [];
+  c.forEach((r, i) => { const last = i === c.length - 1; for (const n of up(r.sel || r)) list.push([n, () => last ? select(n, true) : (r.sel = n, go(c.slice(0, i + 1)))]); });
+  $("path").replaceChildren(h("span", { class: "lv" }, "Level " + list.length), ...list.map(([n, f], i) => h("span", { class: "cr" + (n.isRoot ? " rt" : "") }, i ? h("i", {}, n.isRoot ? "→" : "›") : "", i === list.length - 1 ? h("b", {}, n.name) : h("button", { type: "button", onclick: f }, n.name))));
+}
+function follow(t) {
+  if (t.g) {
+    const f = t.f, r = root(), find = n => n.id === t.f + "|" + t.g + "|" + t.i ? n : n.kids.map(find).find(Boolean), hit = find(r);
+    if (hit) return select(hit, true);
+    const q = rootOf({ f }), z = find(q); q.sel = z || q; return go([...chain(), q]);
+  }
+  const r = rootOf(t), k = chain().indexOf(r); if (k < 0) r.sel = null; go(k >= 0 ? chain().slice(0, k + 1) : [...chain(), r]);
+}
+function go(c) { hist = hist.slice(0, cur + 1); hist.push(c); cur = hist.length - 1; location.hash = "n" + cur; draw(); }
+addEventListener("hashchange", () => { const k = +location.hash.slice(2); if (hist[k] && k !== cur) { cur = k; draw(); } });
+function draw() {
+  const was = subject, r = root(); subject = chain()[0].t.c; if (subject !== was || !host) drawStage();
+  $("tree").replaceChildren(...(r.kids.length ? r.kids : []).map(render)); scrollTo(0, 0);
+  select(sel(), sel() !== r);
+}
+// ---------- Source panel ----------
+let shown = null;
+function drawSource(n) {
+  const f = n.f, l = n.l || null, box = $("code"); if (!f) return;
+  if (shown !== f) { shown = f; const lines = F[f].text.split("\n"); if (!lines[lines.length - 1]) lines.pop(); box.replaceChildren(...lines.map((x, i) => h("div", { class: "ln" }, h("u", {}, String(i + 1)), h("span", {}, x || " ")))); }
+  box.querySelectorAll(".on").forEach(x => x.classList.remove("on"));
+  $("where").textContent = F[f].name + (l && F[f].kind !== "page" ? ":" + (l[1] > l[0] ? l[0] + "–" + l[1] : l[0]) : "");
+  if (l) { for (let i = l[0]; i <= l[1]; i++) box.children[i - 1].classList.add("on"); box.scrollTop = F[f].kind === "page" && box.scrollHeight < 900 && innerWidth > 760 ? 0 : Math.max(0, box.children[l[0] - 1].offsetTop - 28); } else box.scrollTop = 0;
+}
+$("srcbar").onclick = () => { const c = document.body.classList.toggle("nosrc"); $("srcbar").setAttribute("aria-expanded", String(!c)); };
+// ---------- Preview hover: the element, and each entry that acts on it ----------
+const ownItems = () => DATA.comps[subject].flatMap(f => Object.keys(F[f].g).flatMap(g => F[f].g[g].map((x, i) => ({ f, g, i, x })).filter(y => y.x.hl)));
+function under(e) {
+  let best = null, area = Infinity;
+  for (const y of ownItems()) if (y.g === "Elements" && F[y.f].kind === "structure") for (const x of matchEls(y.f, y.x.hl)) { const r = rectOf(x); if (r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && r.width * r.height <= area) { area = r.width * r.height; best = { ...y, el: x }; } }
+  return best;
+}
+
+const clearHits = () => document.querySelectorAll(".hit").forEach(x => x.classList.remove("hit"));
+function hover(b) {
+  if ((b && b.el) === (over && over.el)) return; over = b; clearHits(); const w = $("what");
+  if (!b) { w.textContent = ""; rest(); return; }
+  mark([b.el]);
+  const acts = ownItems().filter(y => matchEls(y.f, y.x.hl).has(b.el)), ids = new Set(acts.map(y => y.f + "|" + y.g + "|" + y.i));
+  w.textContent = b.x.n + " · " + acts.filter(y => F[y.f].kind === "style").length + " style rules";
+  const base = chain()[0]; if (root() !== base) return;
+  const visible = n => up(n).slice(0, -1).every(x => x.open);
+  const walk = n => { if (ids.has(n.id)) { let v = n; while (v && !(v.row && visible(v))) v = v.up; if (v && v.row) v.row.classList.add("hit"); } n.kids.forEach(walk); };
+  walk(base);
+}
+$("stage").addEventListener("pointermove", e => hover(under(e)));
+$("stage").addEventListener("pointerleave", () => hover(null));
+$("stage").addEventListener("click", e => {
+  const b = under(e); if (!b) return; const base = chain()[0]; if (root() !== base) go([base]);
+  follow({ f: b.f, g: b.g, i: b.i }); over = null; hover(b);
+});
+go([rootOf({ c: "wa-button" })]);
+addEventListener("resize", rest);
+document.fonts && document.fonts.ready.then(rest);
+</script>

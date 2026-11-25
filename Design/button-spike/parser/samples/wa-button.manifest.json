@@ -1,0 +1,129 @@
+{
+  "$comment": "Sample manifest entry for wa-button (Web Awesome 3.15.0). Hand-made from the source and the CEM. Level 0 is standard CEM 2.1. The 'ui' field holds levels 1 and 2 and the token scopes. Shortened: 8 of 26 attributes, 12 of about 40 style patches.",
+  "schemaVersion": "2.1.0",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "components/button/button.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "WaButton",
+          "tagName": "wa-button",
+          "customElement": true,
+          "superclass": { "name": "WebAwesomeFormAssociatedElement" },
+
+          "attributes": [
+            { "name": "variant", "fieldName": "variant", "type": { "text": "'neutral' | 'brand' | 'success' | 'warning' | 'danger'" }, "default": "'neutral'" },
+            { "name": "appearance", "fieldName": "appearance", "type": { "text": "'accent' | 'filled' | 'outlined' | 'filled-outlined' | 'plain'" }, "default": "'accent'" },
+            { "name": "size", "fieldName": "size", "type": { "text": "'xs' | 's' | 'm' | 'l' | 'xl'" }, "default": "'m'" },
+            { "name": "with-caret", "fieldName": "withCaret", "type": { "text": "boolean" }, "default": "false" },
+            { "name": "disabled", "fieldName": "disabled", "type": { "text": "boolean" }, "default": "false" },
+            { "name": "loading", "fieldName": "loading", "type": { "text": "boolean" }, "default": "false" },
+            { "name": "pill", "fieldName": "pill", "type": { "text": "boolean" }, "default": "false" },
+            { "name": "href", "fieldName": "href", "type": { "text": "string" } }
+          ],
+          "events": [
+            { "name": "wa-invalid", "type": { "text": "WaInvalidEvent" } },
+            { "name": "focus" },
+            { "name": "blur" }
+          ],
+          "slots": [
+            { "name": "", "description": "The label." },
+            { "name": "start", "description": "An element before the label." },
+            { "name": "end", "description": "An element after the label." }
+          ],
+          "cssParts": [
+            { "name": "button" }, { "name": "start" }, { "name": "label" },
+            { "name": "end" }, { "name": "caret" }, { "name": "spinner" }
+          ],
+          "cssStates": [
+            { "name": "disabled" }, { "name": "icon-button" }, { "name": "link" }, { "name": "loading" }
+          ],
+
+          "ui": {
+            "anatomy": {
+              "id": "button",
+              "element": { "if": "href", "then": "a", "else": "button" },
+              "parts": ["base", "button"],
+              "classes": {
+                "caret": "withCaret",
+                "disabled": "disabled",
+                "loading": "loading",
+                "rtl": "dir:rtl",
+                "has-label": "slot:",
+                "has-start": "slot:start | withStart",
+                "has-end": "slot:end | withEnd",
+                "is-icon-button": "isIconButton"
+              },
+              "children": [
+                { "id": "start", "slot": "start", "part": "start" },
+                { "id": "label", "slot": "", "part": "label" },
+                { "id": "end", "slot": "end", "part": "end" },
+                { "id": "caret", "component": "wa-icon", "part": "caret", "if": "withCaret",
+                  "props": { "library": "system", "name": "chevron-down", "variant": "solid" } },
+                { "id": "spinner", "component": "wa-spinner", "part": "spinner", "if": "loading" }
+              ]
+            },
+            "derived": {
+              "isIconButton": "slot: holds only wa-icon"
+            },
+            "hostStates": {
+              "disabled": "disabled",
+              "loading": "loading",
+              "link": "href",
+              "icon-button": "isIconButton"
+            },
+            "behavior": {
+              "focus": { "delegates": true, "tabindex": { "if": "disabled", "then": -1, "else": 0 } },
+              "click": { "blockedIf": "disabled | loading" },
+              "form": { "submitIf": "type = submit", "resetIf": "type = reset" }
+            },
+
+            "tokenScopes": {
+              "variant": {
+                "inheritsFrom": "ancestor class .wa-<variant>, else :root (neutral)",
+                "values": {
+                  "neutral": { "wa-color-fill-loud": "{wa-color-neutral-fill-loud}", "wa-color-on-loud": "{wa-color-neutral-on-loud}" },
+                  "brand":   { "wa-color-fill-loud": "{wa-color-brand-fill-loud}",   "wa-color-on-loud": "{wa-color-brand-on-loud}" }
+                }
+              }
+            },
+
+            "styles": [
+              { "on": "host", "set": { "display": "inline-block" } },
+              { "on": "button", "set": {
+                  "height": "{wa-form-control-height}",
+                  "padding-inline": "{wa-form-control-padding-inline}",
+                  "font-weight": "{wa-font-weight-action}",
+                  "border-radius": "{wa-form-control-border-radius}",
+                  "border-width": "{wa-form-control-border-width}" } },
+              { "on": "host", "if": { "size": "m" }, "set": { "font-size": "{wa-font-size-m}" } },
+              { "on": "button", "if": { "appearance": "accent" }, "set": {
+                  "background-color": "{wa-color-fill-loud}",
+                  "color": "{wa-color-on-loud}",
+                  "border-color": "transparent" } },
+              { "on": "button", "if": { "appearance": "outlined" }, "set": {
+                  "background-color": "transparent",
+                  "color": "{wa-color-on-quiet}",
+                  "border-color": "{wa-color-border-loud}" } },
+              { "on": "button", "if": { "pointer": "hover", "not": ["disabled", "loading"], "media": "hover" }, "set": {
+                  "transform": "{wa-button-transform-hover}" } },
+              { "on": "button", "if": { "appearance": "accent", "pointer": "hover", "not": ["disabled", "loading"], "media": "hover" }, "set": {
+                  "background-color": "mix(oklab, {wa-color-fill-loud}, {wa-color-mix-hover})" } },
+              { "on": "button", "if": { "focus": "visible" }, "set": {
+                  "outline": "{wa-focus-ring}",
+                  "outline-offset": "{wa-focus-ring-offset}" } },
+              { "on": "host", "if": { "flag": "disabled" }, "set": { "opacity": "0.5" } },
+              { "on": "button", "if": { "flag": "pill" }, "set": { "border-radius": "{wa-border-radius-pill}" } },
+              { "on": ["start", "label", "end", "caret"], "if": { "flag": "loading" }, "set": { "opacity": "0" } },
+              { "on": "spinner", "if": { "flag": "loading" }, "set": {
+                  "width": "1em", "height": "1em", "place": "center",
+                  "--indicator-color": "currentColor" } }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,530 @@
+<title>UI Parity Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, each context in its own tab, detail in foldables. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 24px 0 8px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-head); margin: 16px 0 6px; }
+p { margin: 0 0 10px; max-width: 65ch; }
+.lead { color: var(--muted); }
+a { color: var(--accent); }
+
+/* Tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+
+/* Cards, verdict chips */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.verdict { display: grid; gap: 8px; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+
+/* Foldables */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+details details { background: var(--bg); }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+
+/* Code: lines wrap, never scroll sideways */
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12.5px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .92em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+
+/* Tables: scroll in their own box */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { overflow-wrap: normal; white-space: nowrap; }
+
+/* Flow diagram: vertical, always fits the width */
+.flow { display: grid; gap: 0; justify-items: stretch; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1 var(--f-mono); padding: 4px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+
+/* SVG figures: scale down to the width */
+figure { margin: 0; }
+figure svg { display: block; width: 100%; height: auto; max-width: 100%; }
+figure figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+svg text { fill: var(--fg); font-family: var(--f-body); }
+svg .muted { fill: var(--muted); }
+svg .box { fill: var(--surface); stroke: var(--line); }
+svg .hl { fill: var(--accent-soft); stroke: var(--accent); }
+svg .ln { stroke: var(--muted); fill: none; }
+svg .ln.chk { stroke-dasharray: 4 3; stroke: var(--good); }
+svg .ln.later { stroke-dasharray: 2 3; }
+svg .arrowhead { fill: var(--muted); }
+svg .arrowhead.chk { fill: var(--good); }
+svg .lbl { fill: var(--muted); font-family: var(--f-mono); font-size: 8.5px; }
+svg .lbl.chk { fill: var(--good); }
+svg .col { fill: var(--accent); font-family: var(--f-mono); font-size: 9px; letter-spacing: .06em; }
+
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11.5px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · A8 · UI parity</span>
+    <h1>UI Parity Plan</h1>
+    <p class="lead">Two design systems with the same component IDs. Screens move from HTML to Unity as JSON, and the JSON names components, not pixels.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="topology">Topology</button>
+    <button role="tab" aria-selected="false" data-tab="flows">Flows</button>
+    <button role="tab" aria-selected="false" data-tab="contract">Screen JSON</button>
+    <button role="tab" aria-selected="false" data-tab="steps">Steps</button>
+    <button role="tab" aria-selected="false" data-tab="questions">Questions</button>
+  </nav>
+
+  <!-- ============ SUMMARY ============ -->
+  <section class="tab" id="summary">
+    <div class="card verdict">
+      <div><span class="chip info">TARGET</span> <span class="chip good">PHASE 1 NEXT</span></div>
+      <p>HTML and Unity each have a design system: tokens, components and a gallery. A shared component ID (for example <code>ds-button</code>) connects the two implementations.</p>
+      <p>A screen exists one time, in HTML. A parser writes it as <code>screen.json</code>. A Unity builder and an HTML preview make the screen from that JSON.</p>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>Layer</th><th>HTML</th><th>Link</th><th>Unity</th></tr>
+      <tr><td>Tokens</td><td><code>tokens.css</code></td><td>Token import (generated)</td><td>Token asset</td></tr>
+      <tr><td>Components</td><td><code>ds-button</code> CSS</td><td>Same ID + parity test</td><td><code>DsButton</code> prefab</td></tr>
+      <tr><td>Screens</td><td><code>screen.html</code></td><td><code>screen.json</code></td><td>Screen prefab (generated)</td></tr>
+    </table></div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Phase 1, the next step</h3>
+      <ol>
+        <li>Make the Unity design system by hand: one <code>DsButton</code> prefab.</li>
+        <li>Parse an HTML screen to <code>screen.json</code>: tree, node IDs, component IDs, sizes, anchors.</li>
+        <li>Build the Unity screen from the JSON. Render a preview image from the JSON.</li>
+        <li>Compare the three captures.</li>
+      </ol>
+      <p style="margin:8px 0 0">No token sync in phase 1. See the Steps tab.</p>
+    </div>
+  </section>
+
+  <!-- ============ TOPOLOGY ============ -->
+  <section class="tab" id="topology" hidden>
+    <figure>
+      <svg viewBox="0 0 360 380" role="img" aria-label="Topology: HTML design system, shared contracts, Unity design system">
+        <defs>
+          <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L8,4 L0,8 z"/></marker>
+          <marker id="ahc" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="arrowhead chk" d="M0,0 L8,4 L0,8 z"/></marker>
+        </defs>
+        <text class="col" x="66" y="14" text-anchor="middle">HTML</text>
+        <text class="col" x="180" y="14" text-anchor="middle">SHARED</text>
+        <text class="col" x="294" y="14" text-anchor="middle">UNITY</text>
+
+        <!-- Row A: tokens -->
+        <rect class="box" x="8.5" y="26.5" width="116" height="44" rx="7"/>
+        <text x="66" y="45" font-size="11" font-weight="600" text-anchor="middle">tokens.css</text>
+        <text class="muted" x="66" y="60" font-size="9" text-anchor="middle">source of truth</text>
+        <rect class="box" x="138.5" y="26.5" width="83" height="44" rx="7"/>
+        <text x="180" y="45" font-size="10.5" font-weight="600" text-anchor="middle">tokens.json</text>
+        <text class="muted" x="180" y="60" font-size="9" text-anchor="middle">phase 2</text>
+        <rect class="box" x="235.5" y="26.5" width="116" height="44" rx="7"/>
+        <text x="294" y="45" font-size="11" font-weight="600" text-anchor="middle">Token asset</text>
+        <text class="muted" x="294" y="60" font-size="9" text-anchor="middle">generated</text>
+        <path class="ln later" d="M125,48 H136" marker-end="url(#ah)"/>
+        <path class="ln later" d="M222,48 H233" marker-end="url(#ah)"/>
+
+        <!-- vertical uses A->B -->
+        <path class="ln" d="M66,71 V116" marker-end="url(#ah)"/>
+        <text class="lbl" x="70" y="97">uses</text>
+        <path class="ln" d="M294,71 V116" marker-end="url(#ah)"/>
+        <text class="lbl" x="298" y="97">uses</text>
+
+        <!-- Row B: components -->
+        <rect class="box" x="8.5" y="118.5" width="116" height="44" rx="7"/>
+        <text x="66" y="137" font-size="11" font-weight="600" text-anchor="middle">ds-button (CSS)</text>
+        <text class="muted" x="66" y="152" font-size="9" text-anchor="middle">+ gallery.html</text>
+        <rect class="hl" x="138.5" y="118.5" width="83" height="44" rx="7"/>
+        <text x="180" y="137" font-size="10.5" font-weight="600" text-anchor="middle">Component IDs</text>
+        <text class="muted" x="180" y="152" font-size="9" text-anchor="middle">ds-button, …</text>
+        <rect class="box" x="235.5" y="118.5" width="116" height="44" rx="7"/>
+        <text x="294" y="137" font-size="11" font-weight="600" text-anchor="middle">DsButton prefab</text>
+        <text class="muted" x="294" y="152" font-size="9" text-anchor="middle">+ gallery scene</text>
+        <path class="ln chk" d="M66,163 V180 H294 V165" marker-end="url(#ahc)" marker-start="url(#ahc)"/>
+        <text class="lbl chk" x="180" y="191" text-anchor="middle">parity test: captures + input</text>
+
+        <!-- vertical uses B->C -->
+        <path class="ln" d="M40,163 V236" marker-end="url(#ah)"/>
+        <text class="lbl" x="44" y="215">uses</text>
+        <path class="ln" d="M320,163 V236" marker-end="url(#ah)"/>
+        <text class="lbl" x="315" y="215" text-anchor="end">builds with</text>
+
+        <!-- Row C: screens -->
+        <rect class="box" x="8.5" y="238.5" width="116" height="44" rx="7"/>
+        <text x="66" y="257" font-size="11" font-weight="600" text-anchor="middle">screen.html</text>
+        <text class="muted" x="66" y="272" font-size="9" text-anchor="middle">source of truth</text>
+        <rect class="hl" x="138.5" y="238.5" width="83" height="44" rx="7"/>
+        <text x="180" y="257" font-size="10.5" font-weight="600" text-anchor="middle">screen.json</text>
+        <text class="muted" x="180" y="272" font-size="9" text-anchor="middle">tree + rects</text>
+        <rect class="box" x="235.5" y="238.5" width="116" height="44" rx="7"/>
+        <text x="294" y="257" font-size="11" font-weight="600" text-anchor="middle">Screen prefab</text>
+        <text class="muted" x="294" y="272" font-size="9" text-anchor="middle">generated</text>
+        <path class="ln" d="M125,260 H136" marker-end="url(#ah)"/>
+        <text class="lbl" x="130" y="232" text-anchor="middle">parse</text>
+        <path class="ln" d="M222,260 H233" marker-end="url(#ah)"/>
+        <text class="lbl" x="229" y="232" text-anchor="middle">build</text>
+
+        <!-- Row D: preview -->
+        <path class="ln" d="M180,283 V316" marker-end="url(#ah)"/>
+        <text class="lbl" x="184" y="303">render</text>
+        <rect class="box" x="130.5" y="318.5" width="99" height="36" rx="7"/>
+        <text x="180" y="334" font-size="10.5" font-weight="600" text-anchor="middle">Preview image</text>
+        <text class="muted" x="180" y="347" font-size="9" text-anchor="middle">from JSON only</text>
+        <path class="ln chk" d="M66,283 V336 H128" marker-end="url(#ahc)"/>
+        <path class="ln chk" d="M294,283 V336 H232" marker-end="url(#ahc)"/>
+        <text class="lbl chk" x="70" y="366">screen parity test: 3 captures</text>
+      </svg>
+      <figcaption>Solid: automatic. Dotted: later phase. Green dashed: check. Highlighted boxes are the contracts between the two sides.</figcaption>
+    </figure>
+
+    <h2>Parts</h2>
+    <div class="tbl"><table>
+      <tr><th>Part</th><th>Side</th><th>Made by</th><th>Job</th></tr>
+      <tr><td><code>tokens.css</code></td><td>HTML</td><td>Designer</td><td>All design values, in 3 layers</td></tr>
+      <tr><td>Component CSS + gallery</td><td>HTML</td><td>Designer</td><td>Look and states of each component</td></tr>
+      <tr><td>Component IDs</td><td>Shared</td><td>Designer + developer</td><td>The list of components that both sides must have</td></tr>
+      <tr><td>Token asset</td><td>Unity</td><td>Token import</td><td>The same values as <code>tokens.css</code></td></tr>
+      <tr><td>Component prefabs + gallery scene</td><td>Unity</td><td>Developer (or agent)</td><td>Same look and states, plus game feel</td></tr>
+      <tr><td><code>screen.html</code></td><td>HTML</td><td>Designer</td><td>Screen layout, made only from components</td></tr>
+      <tr><td>Parser</td><td>Tool</td><td>—</td><td>HTML screen → <code>screen.json</code></td></tr>
+      <tr><td><code>screen.json</code></td><td>Shared</td><td>Parser</td><td>Tree, node IDs, component IDs, rects, properties</td></tr>
+      <tr><td>Unity builder</td><td>Tool</td><td>—</td><td><code>screen.json</code> → screen prefab</td></tr>
+      <tr><td>Preview renderer</td><td>Tool</td><td>—</td><td><code>screen.json</code> → image, with the HTML components</td></tr>
+      <tr><td>Screen prefab</td><td>Unity</td><td>Builder</td><td>Runtime screen. Game code binds to node IDs.</td></tr>
+    </table></div>
+
+    <details>
+      <summary>Source of truth rules</summary>
+      <div class="body">
+        <ul>
+          <li><b>Values:</b> <code>tokens.css</code>. Unity never has its own value for a token.</li>
+          <li><b>Component look:</b> the HTML component is the reference. The Unity component follows it, and the parity test measures the difference.</li>
+          <li><b>Component behavior that HTML cannot show</b> (sound, haptics, animation curves): Unity only.</li>
+          <li><b>Screen layout:</b> <code>screen.html</code>. The Unity screen prefab is output. Do not edit it by hand.</li>
+          <li><b>Game logic:</b> neither. Presenters attach to node IDs in the screen prefab.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ FLOWS ============ -->
+  <section class="tab" id="flows" hidden>
+    <p class="lead">Each flow starts with one edit. The table shows what updates by itself and what needs a person.</p>
+    <div class="tbl"><table>
+      <tr><th>Edit</th><th>Updates by itself</th><th>Needs a person</th><th>Check</th></tr>
+      <tr><td>Change a token</td><td>HTML gallery and screens. Unity token asset after the import (phase 2).</td><td>Nothing</td><td>Component parity test</td></tr>
+      <tr><td>Change a component look</td><td>HTML gallery and screens</td><td>Change the Unity component</td><td>Component parity test fails until both match</td></tr>
+      <tr><td>Add a component</td><td>Nothing</td><td>Add the ID, the HTML component and the Unity component</td><td>Each ID has a gallery entry on both sides</td></tr>
+      <tr><td>Make or change a screen</td><td><code>screen.json</code>, preview image, Unity screen prefab</td><td>Write <code>screen.html</code> with components</td><td>Screen parity test: 3 captures</td></tr>
+      <tr><td>Use a component that Unity does not have</td><td>Nothing</td><td>Add the Unity component</td><td>The builder stops with the missing ID</td></tr>
+    </table></div>
+
+    <details open>
+      <summary>Flow: make a screen <span class="sub">· the main flow</span></summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node"><b>screen.html</b> — layout from <code>ds-*</code> components</div>
+          <div class="arrow">parse (headless Edge, computed layout)</div>
+          <div class="node hl"><b>screen.json</b> — tree, IDs, rects, properties</div>
+          <div class="arrow">build and render</div>
+          <div class="split">
+            <div class="node"><b>Screen prefab</b><br>Unity builder</div>
+            <div class="node"><b>Preview image</b><br>HTML renderer</div>
+          </div>
+          <div class="arrow">capture and compare</div>
+          <div class="node">HTML capture = preview capture = Unity capture</div>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Flow: change a token <span class="sub">· phase 2</span></summary>
+      <div class="body">
+        <div class="flow">
+          <div class="node"><b>tokens.css</b> — edit one primitive</div>
+          <div class="arrow">token import</div>
+          <div class="node hl"><b>tokens.json</b> → Unity token asset</div>
+          <div class="arrow">components read tokens</div>
+          <div class="split">
+            <div class="node">HTML gallery</div>
+            <div class="node">Unity gallery scene</div>
+          </div>
+          <div class="arrow">capture each state</div>
+          <div class="node">Component parity test</div>
+        </div>
+        <p>Sprites that come from tokens (for example the button face) also need an export again. Phase 2 decides which values are sprites and which are live (see Questions).</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Flow: change a component <span class="sub">· a person on the Unity side</span></summary>
+      <div class="body">
+        <ol>
+          <li>Change the component CSS. The HTML gallery shows the result.</li>
+          <li>Run the component parity test. It fails for that component.</li>
+          <li>Change the Unity component until the test passes.</li>
+          <li>All screens that use the component update on both sides. No screen parse is necessary.</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ CONTRACT ============ -->
+  <section class="tab" id="contract" hidden>
+    <p class="lead">The JSON carries structure only. The look comes from the components on each side.</p>
+
+    <div class="tbl"><table>
+      <tr><th>Field</th><th>From HTML</th><th>To Unity</th></tr>
+      <tr><td><code>id</code></td><td><code>id</code> attribute</td><td>GameObject name</td></tr>
+      <tr><td><code>component</code></td><td><code>ds-*</code> class</td><td>Prefab from the component list</td></tr>
+      <tr><td><code>kind</code></td><td>Component, image or group</td><td>Prefab, Image, or empty RectTransform</td></tr>
+      <tr><td><code>anchorMin/Max</code>, <code>pivot</code></td><td>Which of left, right, top, bottom are set</td><td>RectTransform anchors and pivot</td></tr>
+      <tr><td><code>pos</code>, <code>size</code></td><td>Computed box, relative to the parent</td><td><code>anchoredPosition</code>, <code>sizeDelta</code></td></tr>
+      <tr><td><code>props</code></td><td>Text, <code>disabled</code>, <code>data-*</code></td><td>Component fields (label, interactable)</td></tr>
+      <tr><td><code>image</code></td><td>Exported PNG for non-component art</td><td>Sprite path</td></tr>
+      <tr><td><code>children</code></td><td>DOM children that are nodes</td><td>Child transforms, same order</td></tr>
+    </table></div>
+
+    <details open>
+      <summary>Example <span class="sub">· the corner button screen</span></summary>
+      <div class="body">
+<pre>{
+  <span class="k">"screen"</span>: { "id": "main-menu", "size": [1920, 1080] },
+  <span class="k">"root"</span>: {
+    "id": "stage", "kind": "image", "image": "bg.png",
+    "anchorMin": [0, 0], "anchorMax": [1, 1],
+    "children": [
+      {
+        "id": "play", "kind": "component", "component": "ds-button",
+        "anchorMin": [1, 0], "anchorMax": [1, 0], "pivot": [1, 0],
+        "pos": [-64, 64], "size": [320, 108],
+        "props": { "label": "Play", "disabled": false }
+      }
+    ]
+  }
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Rules for the parser in phase 1</summary>
+      <div class="body">
+        <ul>
+          <li>A node is an element with an <code>id</code>. Other elements are ignored, but their children are examined.</li>
+          <li>A <code>ds-*</code> class makes a component node. The parser does not examine its inside.</li>
+          <li>Absolute positions only. If a node uses flex or grid layout, the parser stops with an error.</li>
+          <li>Units are CSS px = canvas units, for a 1920 × 1080 reference size.</li>
+          <li>The parser never reads colors, fonts or shadows.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ STEPS ============ -->
+  <section class="tab" id="steps" hidden>
+    <div class="tbl"><table>
+      <tr><th>Phase</th><th>Goal</th><th>Status</th></tr>
+      <tr><td>0</td><td>Button spike: HTML button, manual Unity copy, captures, input</td><td><span class="chip good">DONE</span></td></tr>
+      <tr><td>1</td><td>Unity design system by hand, screen parser, builder, preview</td><td><span class="chip info">NEXT</span></td></tr>
+      <tr><td>2</td><td>Token import: <code>tokens.css</code> → Unity token asset</td><td><span class="chip warn">LATER</span></td></tr>
+      <tr><td>3</td><td>Component parity test for each state, automatic</td><td><span class="chip warn">LATER</span></td></tr>
+      <tr><td>4</td><td>More components and layout groups (flex → LayoutGroup)</td><td><span class="chip warn">LATER</span></td></tr>
+    </table></div>
+
+    <details open>
+      <summary>Phase 1 · Screen parser and builder <span class="chip info">NEXT</span></summary>
+      <div class="body">
+        <dl class="kv">
+          <dt>Goal</dt><dd>One HTML screen becomes <code>screen.json</code>, and the JSON builds the same screen in Unity and in a preview image.</dd>
+          <dt>Needs</dt><dd>Phase 0 files in <code>Design/button-spike/</code> and <code>Assets/UISpike/</code></dd>
+        </dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Make <code>DsButton</code> by hand: prefab, label, the 3 state fixes</td><td><code>DsButton.prefab</code>, <code>DsButton.cs</code></td><td>Captures of 5 states against HTML</td></tr>
+          <tr><td>2</td><td>Make the component list: ID → prefab</td><td>Component list asset</td><td><code>ds-button</code> gives the prefab</td></tr>
+          <tr><td>3</td><td>Write an anchor test screen: buttons at 4 corners, a stretched top bar</td><td><code>screens/anchors.html</code></td><td>Opens in the gallery server</td></tr>
+          <tr><td>4</td><td>Write the parser</td><td><code>parse-screen.mjs</code> → <code>*.json</code></td><td>JSON of both screens, read by eye</td></tr>
+          <tr><td>5</td><td>Write the Unity builder</td><td><code>BuildScreen.cs</code> → screen prefab</td><td>Capture against the HTML capture</td></tr>
+          <tr><td>6</td><td>Write the preview renderer</td><td><code>preview.html?json=…</code></td><td>Capture against the HTML capture</td></tr>
+          <tr><td>7</td><td>Resize test: build at 2560 × 1080 and 1280 × 1024</td><td>Captures</td><td>Anchored nodes keep their margins</td></tr>
+        </table></div>
+        <h3>Done when</h3>
+        <ul>
+          <li>Both screens parse to JSON with no manual edit.</li>
+          <li>For each screen, the HTML, preview and Unity captures have the same node boxes (±1 px).</li>
+          <li>The resize captures keep the corner margins on all sides.</li>
+          <li>The Unity <code>DsButton</code> shows the disabled label color, the pressed label offset, and no focus ring after a click.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul>
+          <li>If the parser cannot get anchors from the computed style of the anchor test screen, stop and decide Q1.</li>
+        </ul>
+        <details>
+          <summary>Files <span class="sub">· proposal</span></summary>
+          <div class="body">
+<pre>Design/button-spike/
+├─ screens/anchors.html        screen    anchor test
+├─ parser/parse-screen.mjs     tool      HTML → JSON (headless Edge, CDP)
+├─ parser/preview.html         tool      JSON → image
+├─ screens/*.json              output    one for each screen
+└─ unity/BuildScreen.cs        tool      JSON → screen prefab
+Assets/UISpike/DesignSystem/
+├─ DsButton.cs                 component states, label, focus rule
+├─ DsButton.prefab             component
+└─ Components.asset            list      component ID → prefab</pre>
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <details>
+      <summary>Working rules for all phases</summary>
+      <div class="body">
+        <ul>
+          <li>Zero install: Unity needs only the Editor. Tools use what this computer has (Edge, Node, PowerShell).</li>
+          <li>Build on a seen need: no helper or framework before a step needs it.</li>
+          <li>Each phase starts only after the earlier phase passes.</li>
+          <li>Send screenshots, the interactive HTML and a Unity touch video for each result.</li>
+          <li>Keep the Unity Editor open across the spikes.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ QUESTIONS ============ -->
+  <section class="tab" id="questions" hidden>
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>Q1 · Where do anchors come from? <span class="chip info">PHASE 1</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. From the computed style (right + bottom set → anchor 1,0)</td><td>The designer writes normal CSS</td><td>Some CSS has no clear anchor (centered with transform)</td></tr>
+          <tr><td>B. A <code>data-anchor</code> attribute</td><td>Exact, simple parser</td><td>Extra work, and it can disagree with the CSS</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A, and the parser stops on a case that it cannot read. Add B only for those cases.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q2 · What is the component ID? <span class="chip info">PHASE 1</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. The block class (<code>ds-button</code>)</td><td>Already in the HTML, no duplicate</td><td>A style class also carries meaning</td></tr>
+          <tr><td>B. A <code>data-component</code> attribute</td><td>Clear meaning</td><td>Two names for one thing</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A. Each <code>ds-*</code> block class is a component ID.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q3 · Can a person edit the generated Unity screen? <span class="chip warn">PHASE 1</span></summary>
+      <div class="body">
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. No. The prefab is output, the builder replaces it.</td><td>The HTML stays the source of truth</td><td>Unity-only additions need another place</td></tr>
+          <tr><td>B. Yes, with a merge on each build</td><td>Flexible</td><td>Hard merge rules, screens drift</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> A. Game code and Unity-only parts attach by node ID, outside the generated prefab (for example a prefab variant).</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q4 · Which values are sprites and which are live? <span class="chip warn">PHASE 2</span></summary>
+      <div class="body">
+        <p>Phase 0 baked the button face into sprites. A token change then needs an export again.</p>
+        <div class="tbl"><table>
+          <tr><th>Option</th><th>For</th><th>Against</th></tr>
+          <tr><td>A. Sprites from HTML for each state</td><td>Exact look</td><td>Export on each token change</td></tr>
+          <tr><td>B. Unity draws from tokens (colors, radius, text)</td><td>Live token change</td><td>Gradients and shadows need a shader or a mesh</td></tr>
+        </table></div>
+        <p><b>Recommendation:</b> decide in phase 2. Probably B for colors and text, A for complex art.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Q5 · Flex layout: LayoutGroup or fixed positions? <span class="chip warn">PHASE 4</span></summary>
+      <div class="body">
+        <p><b>Recommendation:</b> phase 1 supports only absolute positions. Phase 4 maps flex rows and columns to <code>HorizontalLayoutGroup</code> and <code>VerticalLayoutGroup</code>, so lists can grow at runtime.</p>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

@@ -1,0 +1,1096 @@
+<title>Component Parity</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, sticky tab bar, each context in its own tab, detail in foldables. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2330; --muted: #5b6676; --line: #dde2ea;
+  --accent: #2a62c9; --accent-soft: #e5edfb; --code-bg: #eef1f6;
+  --good: #1f7a4d; --good-soft: #e2f3ea; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --f-head: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e27; --fg: #e4e8ee; --muted: #9aa5b5; --line: #2a3340;
+  --accent: #7aa7ff; --accent-soft: #1d2a42; --code-bg: #0d1117;
+  --good: #5fd39a; --good-soft: #12301f; --warn: #f0b45a; --warn-soft: #33260f; --bad: #ff8a80; --bad-soft: #3a1714;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+header.top { display: grid; gap: 4px; padding-block: 8px 12px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 26px/1.15 var(--f-head); margin: 0; text-wrap: balance; }
+h2 { font: 600 19px/1.25 var(--f-head); margin: 24px 0 8px; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--f-head); margin: 16px 0 6px; }
+p { margin: 0 0 10px; max-width: 65ch; }
+.lead { color: var(--muted); }
+a { color: var(--accent); }
+
+/* Tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -4px 16px; padding: 6px 4px 0; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; font: 600 13px/1 var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 10px 11px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section.tab { display: grid; gap: 12px; min-width: 0; }
+section.tab > * { min-width: 0; }
+
+/* Cards, verdict chips */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.verdict { display: grid; gap: 8px; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 7px; border-radius: 5px; letter-spacing: .03em; white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+
+/* Foldables */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 600; display: block; padding-left: 30px; text-indent: -16px; }
+details > summary .chip { text-indent: 0; margin-left: 4px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; display: inline-block; width: 16px; text-indent: 0; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .sub { font-weight: 400; color: var(--muted); font-size: 13px; }
+details > .body { padding: 0 14px 14px; display: grid; gap: 10px; min-width: 0; }
+details details { background: var(--bg); }
+.foldbar { display: flex; gap: 8px; justify-content: flex-end; }
+.foldbar button { font: 500 12px/1 var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+
+/* Code: lines wrap, never scroll sideways */
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 12.5px/1.5 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+code { font-family: var(--f-mono); font-size: .92em; overflow-wrap: anywhere; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--accent); }
+
+/* Tables: scroll in their own box */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px/1.3 var(--f-body); color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+
+/* Flow diagram: vertical, always fits the width */
+.flow { display: grid; gap: 0; justify-items: stretch; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+.flow .node b { font-family: var(--f-head); }
+.flow .node.hl { border-color: var(--accent); background: var(--accent-soft); }
+.flow .arrow { text-align: center; color: var(--muted); font: 500 11px/1 var(--f-mono); padding: 4px 0; }
+.flow .arrow::before { content: "↓ "; color: var(--accent); }
+.flow .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+
+/* SVG figures: scale down to the width */
+figure { margin: 0; }
+figure svg { display: block; width: 100%; height: auto; max-width: 100%; }
+figure figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+svg text { fill: var(--fg); font-family: var(--f-body); }
+svg .muted { fill: var(--muted); }
+svg .box { fill: var(--surface); stroke: var(--line); }
+svg .hl { fill: var(--accent-soft); stroke: var(--accent); }
+svg .ln { stroke: var(--muted); fill: none; }
+svg .bar { fill: var(--accent); }
+
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 2px 0; }
+.sources { font-size: 13px; }
+.sources li { overflow-wrap: anywhere; }
+@media (max-width: 420px) { body { font-size: 14.5px; } h1 { font-size: 23px; } pre { font-size: 11.5px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>
+/* Page additions: template tokens only. */
+svg .s-good { fill: var(--good); }
+svg .s-warn { fill: var(--warn); }
+svg .s-bad { fill: var(--bad); }
+svg .b-good { fill: var(--good-soft); stroke: var(--good); }
+svg .b-bad { fill: var(--bad-soft); stroke: var(--bad); }
+td .chip { font-size: 10px; padding: 3px 5px; }
+h2:first-child { margin-top: 4px; }
+.what { margin: 0; color: var(--fg); }
+.kv a + a { margin-left: 10px; }
+.flow .node small { color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">vsa-unity · A8 research</span>
+    <h1>Component Parity</h1>
+    <p class="lead">One contract for each component can keep HTML and uGUI in parity, with known gaps in states, focus and layout.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="summary">Summary</button>
+    <button role="tab" aria-selected="false" data-tab="html">HTML model</button>
+    <button role="tab" aria-selected="false" data-tab="ugui">uGUI model</button>
+    <button role="tab" aria-selected="false" data-tab="prior">Prior art</button>
+    <button role="tab" aria-selected="false" data-tab="tokens">Tokens</button>
+    <button role="tab" aria-selected="false" data-tab="plans">Plans</button>
+  </nav>
+
+  <!-- ============ SUMMARY ============ -->
+  <section class="tab" id="summary">
+    <div class="card verdict">
+      <div><span class="chip good">VIABLE</span> contract + prefab parity <span class="chip warn">RISK</span> states, Tab focus, flex layout <span class="chip bad">DEAD END</span> a JS runtime as the Unity path</div>
+      <p>A design system of about 12 components can have one-to-one parity in uGUI. Most DOM elements and events have a uGUI match, but states, Tab focus and flexbox have gaps. ReactUnity (MIT) shows a tested map that vsa-unity can copy as contracts and prefabs.</p>
+    </div>
+
+    <div class="flow" aria-label="Parity flow">
+      <div class="node hl"><b>Contract</b> — Button.json <small>props, states, events</small></div>
+      <div class="arrow">feeds</div>
+      <div class="split">
+        <div class="node"><b>HTML</b> <small>CSS class + data-ui</small></div>
+        <div class="node"><b>Unity</b> <small>DsButton + prefab</small></div>
+      </div>
+      <div class="arrow">compose</div>
+      <div class="node"><b>HTML screen</b> <small>data-ui tree</small></div>
+      <div class="arrow">import</div>
+      <div class="node hl"><b>Screen prefab</b> <small>prefab copies</small></div>
+      <div class="arrow">data-on-click</div>
+      <div class="node"><b>Presenter</b> <small>Roll(); Changed → Render</small></div>
+    </div>
+  </section>
+
+  <!-- ============ HTML MODEL ============ -->
+  <section class="tab" id="html" hidden>
+    <h2>Event propagation in the DOM</h2>
+    <div class="flow">
+      <div class="node"><b>Capture</b> <small>window → parent → target</small></div>
+      <div class="arrow">then</div>
+      <div class="node hl"><b>Target</b> <small>listeners on the target</small></div>
+      <div class="arrow">then</div>
+      <div class="node"><b>Bubble</b> <small>target → parent → window</small></div>
+    </div>
+    <p>Each listener can call <code>stopPropagation()</code> or <code>preventDefault()</code>. Some events do not bubble: <code>focus</code>, <code>blur</code>, <code>pointerenter</code>, <code>pointerleave</code>.</p>
+
+    <h2>Interactive elements</h2>
+    <div class="tbl"><table>
+      <tr><th>Element</th><th>Value</th><th>Main event</th></tr>
+      <tr><td><code>button</code></td><td>None</td><td>click</td></tr>
+      <tr><td><code>a href</code></td><td>URL</td><td>click, navigation</td></tr>
+      <tr><td><code>input text</code></td><td>string</td><td>input, change</td></tr>
+      <tr><td><code>input checkbox</code></td><td>checked, indeterminate</td><td>change</td></tr>
+      <tr><td><code>input radio</code></td><td>checked in name group</td><td>change</td></tr>
+      <tr><td><code>input range</code></td><td>number, min, max, step</td><td>input, change</td></tr>
+      <tr><td><code>select</code></td><td>option or options</td><td>change</td></tr>
+      <tr><td><code>textarea</code></td><td>multi-line string</td><td>input, change</td></tr>
+      <tr><td><code>details</code></td><td>open</td><td>toggle</td></tr>
+      <tr><td><code>dialog</code></td><td>open, modal</td><td>close, cancel</td></tr>
+      <tr><td><code>form</code></td><td>field values</td><td>submit, reset</td></tr>
+    </table></div>
+
+    <h2>States</h2>
+    <div class="tbl"><table>
+      <tr><th>State</th><th>True when</th><th>Combines</th></tr>
+      <tr><td><code>:hover</code></td><td>pointer over element</td><td>yes</td></tr>
+      <tr><td><code>:active</code></td><td>pointer press on element</td><td>yes</td></tr>
+      <tr><td><code>:focus</code></td><td>element has focus</td><td>yes</td></tr>
+      <tr><td><code>:focus-visible</code></td><td>focus from keyboard</td><td>yes</td></tr>
+      <tr><td><code>:focus-within</code></td><td>a child has focus</td><td>yes</td></tr>
+      <tr><td><code>:disabled</code></td><td>disabled attribute</td><td>yes</td></tr>
+      <tr><td><code>:checked</code></td><td>checkbox, radio, option on</td><td>yes</td></tr>
+      <tr><td><code>aria-pressed</code>, <code>aria-expanded</code></td><td>author sets it</td><td>yes</td></tr>
+    </table></div>
+    <p>CSS states combine: one button can be <code>:hover:focus-visible:active</code> at the same time.</p>
+
+    <h2>Event groups</h2>
+    <div class="tbl"><table>
+      <tr><th>Group</th><th>Events</th></tr>
+      <tr><td>Pointer</td><td>pointerdown, pointerup, pointermove, click, dblclick, contextmenu</td></tr>
+      <tr><td>Hover</td><td>pointerenter, pointerleave (no bubble), pointerover, pointerout</td></tr>
+      <tr><td>Drag</td><td>dragstart, drag, dragend, drop; wheel</td></tr>
+      <tr><td>Focus</td><td>focus, blur (no bubble); focusin, focusout</td></tr>
+      <tr><td>Keyboard</td><td>keydown, keyup; Tab moves focus</td></tr>
+      <tr><td>Value</td><td>input (each edit), change (commit)</td></tr>
+      <tr><td>Form</td><td>submit, reset, invalid</td></tr>
+    </table></div>
+  </section>
+
+  <!-- ============ uGUI MODEL ============ -->
+  <section class="tab" id="ugui" hidden>
+    <h2>Selectable has one state at a time</h2>
+    <figure>
+      <svg viewBox="0 0 360 214" role="img" aria-label="Selectable state priority: Disabled, Pressed, Selected, Highlighted, Normal">
+        <rect class="box" x="0.5" y="0.5" width="359" height="213" rx="8"/>
+        <text x="14" y="22" font-size="12" class="muted">First true test wins (Selectable.cs)</text>
+        <rect class="b-bad" x="14" y="34" width="150" height="28" rx="5"/><text x="24" y="52" font-size="12">1 Disabled</text>
+        <text x="176" y="52" font-size="11" class="muted">!interactable → :disabled</text>
+        <rect class="hl" x="14" y="70" width="150" height="28" rx="5"/><text x="24" y="88" font-size="12">2 Pressed</text>
+        <text x="176" y="88" font-size="11" class="muted">pointer down → :active</text>
+        <rect class="hl" x="14" y="106" width="150" height="28" rx="5"/><text x="24" y="124" font-size="12">3 Selected</text>
+        <text x="176" y="124" font-size="11" class="muted">EventSystem selection → :focus</text>
+        <rect class="hl" x="14" y="142" width="150" height="28" rx="5"/><text x="24" y="160" font-size="12">4 Highlighted</text>
+        <text x="176" y="160" font-size="11" class="muted">pointer inside → :hover</text>
+        <rect class="b-good" x="14" y="178" width="150" height="28" rx="5"/><text x="24" y="196" font-size="12">5 Normal</text>
+        <text x="176" y="196" font-size="11" class="muted">none of the above</text>
+      </svg>
+      <figcaption>A selected button under the pointer shows Selected, not Highlighted. CSS shows both.</figcaption>
+    </figure>
+    <dl class="kv card">
+      <dt>Transition</dt><dd>None, ColorTint, SpriteSwap, Animation</dd>
+      <dt>Navigation</dt><dd>None, Horizontal, Vertical, Automatic, Explicit</dd>
+      <dt>Package</dt><dd><code>com.unity.ugui</code> 2.6.0 in this repo (6000.6.6f1)</dd>
+    </dl>
+
+    <h2>Event propagation in uGUI</h2>
+    <div class="flow">
+      <div class="node"><b>Raycast</b> <small>GraphicRaycaster finds top Graphic</small></div>
+      <div class="arrow">then</div>
+      <div class="node hl"><b>GetEventHandler&lt;T&gt;</b> <small>walk up to first T</small></div>
+      <div class="arrow">then</div>
+      <div class="node"><b>Execute</b> <small>one object gets it; walk stops</small></div>
+    </div>
+    <p>uGUI has no capture phase and no full bubble. <code>ExecuteEvents.ExecuteHierarchy</code> stops at the first object that handles the event.</p>
+
+    <h2>Element map</h2>
+    <h3>Input</h3>
+    <div class="tbl"><table>
+      <tr><th>HTML</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td><code>button</code></td><td>Button</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>a href</code></td><td>Button; TMP link tag</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td><code>input text</code></td><td>TMP_InputField Standard</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>input password</code></td><td>TMP_InputField Password</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>input email</code></td><td>TMP_InputField EmailAddress</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>input number</code></td><td>TMP_InputField IntegerNumber; no step</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td><code>textarea</code></td><td>TMP_InputField MultiLine</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>input range</code></td><td>Slider</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>input file, date, color</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>label for</code></td><td>TMP_Text; no link</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>form</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+    </table></div>
+
+    <h3>Selection</h3>
+    <div class="tbl"><table>
+      <tr><th>HTML</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td><code>checkbox</code></td><td>Toggle</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>radio</code> + name</td><td>Toggle + ToggleGroup</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>radio, none checked</td><td>ToggleGroup.allowSwitchOff</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td><code>select</code></td><td>TMP_Dropdown</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>select multiple</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>optgroup</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td>checkbox indeterminate</td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+    </table></div>
+
+    <h3>Containers</h3>
+    <div class="tbl"><table>
+      <tr><th>HTML</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td><code>div</code></td><td>RectTransform + Image</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>overflow: auto</code></td><td>ScrollRect + Scrollbar + RectMask2D</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>img</code></td><td>Image, RawImage</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>p</code>, <code>span</code></td><td>TMP_Text</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>progress</code>, <code>meter</code></td><td>Image Filled; Slider off</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td>flex row, column</td><td>Horizontal, VerticalLayoutGroup</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td>CSS grid</td><td>GridLayoutGroup, fixed cells</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td><code>details</code></td><td>None; Toggle + child active</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>dialog</code></td><td>None; prefab + CanvasGroup</td><td><span class="chip bad">GAP</span></td></tr>
+    </table></div>
+
+    <h2>Event map</h2>
+    <h3>Pointer</h3>
+    <div class="tbl"><table>
+      <tr><th>DOM</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td>pointerenter</td><td>IPointerEnterHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>pointerleave</td><td>IPointerExitHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>pointerdown</td><td>IPointerDownHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>pointerup</td><td>IPointerUpHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>pointermove</td><td>IPointerMoveHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>click</td><td>IPointerClickHandler; Button.onClick</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>dblclick</td><td>clickCount == 2</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td>contextmenu</td><td>click with InputButton.Right</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td>dragstart</td><td>IBeginDragHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>drag</td><td>IDragHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>dragend</td><td>IEndDragHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>drop</td><td>IDropHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>wheel</td><td>IScrollHandler</td><td><span class="chip good">MATCH</span></td></tr>
+    </table></div>
+
+    <h3>Focus</h3>
+    <div class="tbl"><table>
+      <tr><th>DOM</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td>focus</td><td>ISelectHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>blur</td><td>IDeselectHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>autofocus</code></td><td>EventSystem.firstSelectedGameObject</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td><code>tabindex</code> order</td><td>Navigation Explicit</td><td><span class="chip warn">PART</span></td></tr>
+      <tr><td>Tab key moves focus</td><td>None in input modules</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td>focusin, focusout</td><td>None (no bubble)</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>:focus-visible</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+    </table></div>
+
+    <h3>Keyboard</h3>
+    <div class="tbl"><table>
+      <tr><th>DOM</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td>Enter or Space on button</td><td>ISubmitHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>Escape</td><td>ICancelHandler</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>Arrow keys</td><td>IMoveHandler (AxisEventData)</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>Enter in text field</td><td>TMP_InputField.onSubmit</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>keydown, keyup</td><td>None; poll in IUpdateSelectedHandler</td><td><span class="chip bad">GAP</span></td></tr>
+      <tr><td><code>accesskey</code></td><td>None</td><td><span class="chip bad">GAP</span></td></tr>
+    </table></div>
+
+    <h3>Value</h3>
+    <div class="tbl"><table>
+      <tr><th>DOM</th><th>uGUI</th><th>Fit</th></tr>
+      <tr><td>input (text)</td><td>TMP_InputField.onValueChanged</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>change (text)</td><td>TMP_InputField.onEndEdit</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>input (range)</td><td>Slider.onValueChanged</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>change (checkbox)</td><td>Toggle.onValueChanged</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>change (select)</td><td>TMP_Dropdown.onValueChanged</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>scroll</td><td>ScrollRect.onValueChanged</td><td><span class="chip good">MATCH</span></td></tr>
+      <tr><td>invalid</td><td>TMP_InputField.onValidateInput</td><td><span class="chip warn">PART</span></td></tr>
+    </table></div>
+
+    <figure>
+      <svg viewBox="0 0 360 214" role="img" aria-label="Map rows by fit for each group">
+        <rect class="box" x="0.5" y="0.5" width="359" height="213" rx="8"/>
+        <rect class="s-good" x="14" y="12" width="10" height="10"/><text x="28" y="21" font-size="11">match</text>
+        <rect class="s-warn" x="78" y="12" width="10" height="10"/><text x="92" y="21" font-size="11">part</text>
+        <rect class="s-bad" x="134" y="12" width="10" height="10"/><text x="148" y="21" font-size="11">gap</text>
+        <g font-size="11">
+          <text x="14" y="47">Input</text>
+          <rect class="s-good" x="90" y="36" width="96" height="14"/><rect class="s-warn" x="186" y="36" width="32" height="14"/><rect class="s-bad" x="218" y="36" width="48" height="14"/><text x="272" y="47" class="muted">6 / 2 / 3</text>
+          <text x="14" y="71">Selection</text>
+          <rect class="s-good" x="90" y="60" width="48" height="14"/><rect class="s-warn" x="138" y="60" width="16" height="14"/><rect class="s-bad" x="154" y="60" width="48" height="14"/><text x="208" y="71" class="muted">3 / 1 / 3</text>
+          <text x="14" y="95">Containers</text>
+          <rect class="s-good" x="90" y="84" width="64" height="14"/><rect class="s-warn" x="154" y="84" width="48" height="14"/><rect class="s-bad" x="202" y="84" width="32" height="14"/><text x="240" y="95" class="muted">4 / 3 / 2</text>
+          <text x="14" y="119">Pointer</text>
+          <rect class="s-good" x="90" y="108" width="176" height="14"/><rect class="s-warn" x="266" y="108" width="32" height="14"/><text x="304" y="119" class="muted">11 / 2 / 0</text>
+          <text x="14" y="143">Focus</text>
+          <rect class="s-good" x="90" y="132" width="48" height="14"/><rect class="s-warn" x="138" y="132" width="16" height="14"/><rect class="s-bad" x="154" y="132" width="48" height="14"/><text x="208" y="143" class="muted">3 / 1 / 3</text>
+          <text x="14" y="167">Keyboard</text>
+          <rect class="s-good" x="90" y="156" width="64" height="14"/><rect class="s-bad" x="154" y="156" width="32" height="14"/><text x="192" y="167" class="muted">4 / 0 / 2</text>
+          <text x="14" y="191">Value</text>
+          <rect class="s-good" x="90" y="180" width="96" height="14"/><rect class="s-warn" x="186" y="180" width="16" height="14"/><text x="208" y="191" class="muted">6 / 1 / 0</text>
+        </g>
+      </svg>
+      <figcaption>Pointer and value events fit well. Focus, keyboard and selection have the most gaps.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ PRIOR ART ============ -->
+  <section class="tab" id="prior" hidden>
+    <h2>HTML-like UI in Unity</h2>
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>Renders to</th><th>License</th><th>Last release</th></tr>
+      <tr><td><a href="https://github.com/ReactUnity/core">ReactUnity</a></td><td>uGUI, UI Toolkit</td><td>MIT</td><td>0.27.1, 2026-11-02</td></tr>
+      <tr><td><a href="https://github.com/Singtaa/OneJS">OneJS</a></td><td>UI Toolkit</td><td>MIT</td><td>v3.9.19, 2026-11-18</td></tr>
+      <tr><td><a href="https://docs.unity.com/en-us/engine/6000.6/manual/uitoolkits/uielements/uie-events/dispatching">UI Toolkit events</a></td><td>UI Toolkit</td><td>Unity</td><td>in 6000.6</td></tr>
+      <tr><td><a href="https://github.com/Kulestar/powerui">PowerUI</a></td><td>own mesh engine</td><td>README says MIT; no file</td><td>last push 2023-09-16</td></tr>
+      <tr><td><a href="https://novaui.io/manual/Events.html">Nova</a></td><td>own mesh engine</td><td>paid asset</td><td>trial 2.1.3, 2023-12-12</td></tr>
+      <tr><td><a href="https://github.com/tasharen/ngui">NGUI</a></td><td>own mesh engine</td><td>MIT (repo)</td><td>store deprecated; push 2026-04-27</td></tr>
+      <tr><td><a href="https://github.com/simonoliver/UnityFigmaBridge">UnityFigmaBridge</a></td><td>uGUI prefabs</td><td>MIT</td><td>1.0.8, 2023-07-27</td></tr>
+      <tr><td><a href="https://da-assets.github.io/site">D.A. Assets FCU</a></td><td>uGUI; UI Toolkit add-on</td><td>paid asset</td><td>UITK add-on 2.0.7, 2026-06-20</td></tr>
+    </table></div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>ReactUnity <span class="sub">· HTML tags become uGUI components</span> <span class="chip good">COPY IDEA</span></summary>
+      <div class="body">
+        <p class="what">React and CSS framework that renders HTML-like tags as uGUI or UI Toolkit objects.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/ReactUnity/core">Repo</a> <a href="https://reactunity.github.io/">Docs</a> <a href="https://github.com/ReactUnity/core/blob/main/unity/core/Runtime/Frameworks/UGUI/General/EventHandlerMap.cs">Event map</a></dd>
+          <dt>Checked</dt><dd>GitHub API (push 2026-11-20), release 0.27.1 (2026-11-02), EventHandlerMap.cs, uGUI component sources, docs component index</dd>
+          <dt>Renders to</dt><dd>uGUI, UI Toolkit, Editor windows</dd><dt>Elements</dt><dd>view, button, toggle, input, scroll, image, text, anchor, prefab, svg, video, portal</dd><dt>License</dt><dd>MIT (docs CC-BY-4.0)</dd><dt>Status</dt><dd>active; 904 stars</dd>
+          <dt>Why COPY IDEA</dt><dd>Its MIT code maps HTML tags and DOM events to uGUI components. We copy the map, not the JS runtime.</dd>
+        </dl>
+        <ul>
+          <li><code>button</code> adds <code>Button</code>; <code>toggle</code> adds <code>Toggle</code>; <code>input</code> adds <code>TMP_InputField</code>; <code>scroll</code> adds a ScrollRect subclass.</li>
+          <li>uGUI state handlers give CSS <code>:hover</code>, <code>:active</code>, <code>:focus</code>, <code>:focus-visible</code>, <code>:focus-within</code>.</li>
+          <li>Layout uses Yoga flexbox. JS engines: QuickJS, Jint, ClearScript.</li>
+        </ul>
+        <pre><span class="c">// EventHandlerMap.cs (uGUI): DOM name → handler</span>
+{ "onClick",       typeof(PointerClickHandler) },
+{ "onMouseEnter",  typeof(PointerEnterHandler) },
+{ "onFocus",       typeof(SelectHandler) },
+{ "onBlur",        typeof(DeselectHandler) },
+{ "onSubmit",      typeof(SubmitHandler) },
+{ "onBeginDrag",   typeof(BeginDragHandler) },
+{ "onDoubleClick", typeof(DoubleClickHandler) },</pre>
+        <p>Full DOM bubble in the uGUI renderer: not confirmed. It has a <code>ScrollEventBubbling</code> component for scroll only.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>OneJS <span class="sub">· React 19 on UI Toolkit</span> <span class="chip warn">UITK ONLY</span></summary>
+      <div class="body">
+        <p class="what">JavaScript runtime that renders React or Preact components as UI Toolkit elements.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Singtaa/OneJS">Repo</a> <a href="https://assetstore.unity.com/packages/tools/gui/onejs-221317">Store</a> <a href="https://v2.onejs.com/docs/changelog">Docs (V2)</a></dd>
+          <dt>Checked</dt><dd>GitHub API: v3.9.19 (2026-11-18), MIT; V2 changelog (v2.3.0, 2025-10-20); store page via search</dd>
+          <dt>Renders to</dt><dd>UI Toolkit VisualElements</dd><dt>Elements</dt><dd>UI Toolkit controls as JSX</dd><dt>License</dt><dd>MIT core; Asset Store extras separate</dd><dt>Status</dt><dd>active; V3 needs Unity 6.3+</dd>
+          <dt>Why UITK ONLY</dt><dd>Its output is UI Toolkit, not uGUI. vsa-unity views are uGUI MonoBehaviours.</dd>
+        </dl>
+        <ul>
+          <li>V2 line uses Preact; V3 uses React 19 and QuickJS.</li>
+          <li>No uGUI output, so no direct use for vsa-unity views.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>UI Toolkit events <span class="sub">· DOM-like trickle-down and bubble-up</span> <span class="chip info">PRECEDENT</span></summary>
+      <div class="body">
+        <p class="what">Built-in Unity event system for UI Toolkit, with DOM-like propagation phases.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://docs.unity.com/en-us/engine/6000.6/manual/uitoolkits/uielements/uie-events/dispatching">Docs</a> <a href="https://docs.unity.com/en-us/engine/6000.6/manual/best-practice-guides/bpg-uiad-index/data-binding">Docs (binding)</a></dd>
+          <dt>Checked</dt><dd>Manual "Dispatch events" (6000.6); PropagationPhase reference via search; data binding guide (6000.6)</dd>
+          <dt>Renders to</dt><dd>UI Toolkit panel</dd><dt>Elements</dt><dd>Button, Toggle, Slider, TextField, DropdownField, ScrollView, Foldout</dd><dt>License</dt><dd>Unity Editor</dd><dt>Status</dt><dd>built in, 6000.6</dd>
+          <dt>Why PRECEDENT</dt><dd>Unity ships a DOM-like event model, but only for UI Toolkit. It shows a target design, not a part that uGUI can use.</dd>
+        </dl>
+        <ul>
+          <li>Each element on the path gets the event two times: TrickleDown, then BubbleUp.</li>
+          <li><code>StopPropagation()</code> and <code>StopImmediatePropagation()</code> match the DOM.</li>
+          <li>USS has <code>:hover</code>, <code>:active</code>, <code>:focus</code>, <code>:checked</code>, <code>:disabled</code>; runtime data binding is UI Toolkit only.</li>
+        </ul>
+        <pre>parent.RegisterCallback&lt;ClickEvent&gt;(OnClick, TrickleDown.TrickleDown);</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>PowerUI <span class="sub">· HTML and CSS engine on meshes</span> <span class="chip bad">AVOID</span></summary>
+      <div class="body">
+        <p class="what">HTML and CSS engine for Unity that draws its own meshes, not uGUI objects.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Kulestar/powerui">Repo</a></dd>
+          <dt>Checked</dt><dd>GitHub API: last push 2023-09-16, no license file; README text</dd>
+          <dt>Renders to</dt><dd>own engine (Spark CSS layout)</dd><dt>Elements</dt><dd>HTML subset: not confirmed</dd><dt>License</dt><dd>README says MIT; no LICENSE file in the repo</dd><dt>Status</dt><dd>last push 2023-09-16</dd>
+          <dt>Why AVOID</dt><dd>It makes no uGUI objects, and it has no push since 2023. The license is only a README line.</dd>
+        </dl>
+      </div>
+    </details>
+
+    <details>
+      <summary>Nova <span class="sub">· mesh UI with gesture events</span> <span class="chip bad">AVOID</span></summary>
+      <div class="body">
+        <p class="what">Paid Unity UI framework with its own mesh renderer and a gesture event system.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://novaui.io/manual/Events.html">Docs</a> <a href="https://assetstore.unity.com/packages/tools/gui/nova-free-trial-231156">Store (trial)</a></dd>
+          <dt>Checked</dt><dd>Store trial page via search (2.1.3, 2023-12-12); novaui.io Events and AddGestureHandler docs via search</dd>
+          <dt>Renders to</dt><dd>own mesh renderer, not uGUI</dd><dt>Elements</dt><dd>UIBlock, TextBlock, Interactable, Scroller</dd><dt>License</dt><dd>paid Asset Store asset</dd><dt>Status</dt><dd>last trial 2023-12-12; quiet</dd>
+          <dt>Why AVOID</dt><dd>It is paid, closed and not uGUI. The last release is from 2023-12.</dd>
+        </dl>
+        <ul><li>Gesture events propagate up the UIBlock hierarchy (docs). This is a useful idea for a parent listener.</li></ul>
+        <pre>button.UIBlock.AddGestureHandler&lt;Gesture.OnClick&gt;(OnClick);</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>NGUI <span class="sub">· predecessor of uGUI</span> <span class="chip info">HISTORY</span></summary>
+      <div class="body">
+        <p class="what">Early Unity UI kit (2011) with its own panels and a message event model.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/tasharen/ngui">Repo</a> <a href="https://assetstore.unity.com/packages/tools/gui/ngui-next-gen-ui-2413">Store</a></dd>
+          <dt>Checked</dt><dd>GitHub API: MIT, push 2026-04-27; store page shows "deprecated" (via search)</dd>
+          <dt>Renders to</dt><dd>own mesh panels</dd><dt>Elements</dt><dd>UIButton, UIToggle, UIInput, UIPopupList</dd><dt>License</dt><dd>MIT (GitHub repo)</dd><dt>Status</dt><dd>deprecated on the store</dd>
+          <dt>Why HISTORY</dt><dd>The store deprecates it, and it does not make uGUI objects. It only shows the event model before uGUI.</dd>
+        </dl>
+        <ul><li>UICamera sends OnHover, OnPress, OnClick, OnDrag, OnSelect as messages: from memory, not confirmed.</li><li>The NGUI author joined Unity for uGUI work: not confirmed.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>UnityFigmaBridge <span class="sub">· binds MonoBehaviours by name</span> <span class="chip good">COPY IDEA</span></summary>
+      <div class="body">
+        <p class="what">Editor importer that makes uGUI prefabs and screens from a Figma document.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/simonoliver/UnityFigmaBridge">Repo</a></dd>
+          <dt>Checked</dt><dd>README; GitHub API: release 1.0.8 (2023-07-27), push 2026-01-12, MIT</dd>
+          <dt>Renders to</dt><dd>uGUI prefabs (Canvas, TMP, Button)</dd><dt>Elements</dt><dd>Figma frames, components, instances</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>low activity</dd>
+          <dt>Why COPY IDEA</dt><dd>It is MIT, makes uGUI prefabs and binds screens and buttons by name. The name rule fits our screen import.</dd>
+        </dl>
+        <ul>
+          <li>Figma component → prefab; component instance → copy of that prefab with overrides.</li>
+          <li>Screen frame "PlayScreen" gets the MonoBehaviour <code>PlayScreen</code> (case-insensitive name match).</li>
+          <li>Serialized fields find children with the same name, depth 2. Names with "Button" get a Button.</li>
+        </ul>
+        <pre><span class="k">public class</span> PlayScreen : MonoBehaviour {
+    [SerializeField] TMP_Text score;   <span class="c">// child "score"</span>
+    [BindFigmaButtonPress("PlayButton")]
+    <span class="k">void</span> OnPlay() { }
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>D.A. Assets FCU <span class="sub">· Figma to Canvas, then prefabs</span> <span class="chip warn">PAID</span></summary>
+      <div class="body">
+        <p class="what">Paid Editor tool that converts a Figma layout to a uGUI Canvas and prefabs.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://da-assets.github.io/site">Site</a> <a href="https://assetstore.unity.com/packages/tools/utilities/figma-to-ui-toolkit-converter-272042">Store (UITK add-on)</a> <a href="https://da-assets.github.io/site/files/fcu/FCU_Manual_for_developers.pdf">Docs</a> (not opened)</dd>
+          <dt>Checked</dt><dd>Search summary only; UITK add-on store page (2.0.7, 2026-06-20)</dd>
+          <dt>Renders to</dt><dd>uGUI Canvas; UI Toolkit with add-on</dd><dt>Elements</dt><dd>Figma layers, components</dd><dt>License</dt><dd>paid Asset Store asset</dd><dt>Status</dt><dd>base v7.5.1: not confirmed</dd>
+          <dt>Why PAID</dt><dd>It makes uGUI prefabs, but it is paid and closed. We cannot vendor or change it.</dd>
+        </dl>
+        <ul><li>Menu "Tools/Figma Converter for Unity/Create Prefabs" makes prefabs from components.</li><li>Binding of events to scripts: not confirmed.</li></ul>
+      </div>
+    </details>
+
+    <h2>Data binding for uGUI</h2>
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>How it binds</th><th>License</th><th>Last release</th></tr>
+      <tr><td><a href="https://docs.unity.com/en-us/engine/6000.6/manual/best-practice-guides/bpg-uiad-index/data-binding">Unity runtime binding</a></td><td>UI Toolkit only</td><td>Unity</td><td>in 6000.6</td></tr>
+      <tr><td><a href="https://github.com/Real-Serious-Games/Unity-Weld">UnityWeld</a></td><td>binding components, INotifyPropertyChanged</td><td>MIT</td><td>v0.8.0, 2018-12-19</td></tr>
+      <tr><td><a href="https://github.com/vovgou/loxodon-framework">Loxodon Framework</a></td><td>fluent BindingSet in C#</td><td>MIT</td><td>v2.6.7, 2025-08-11</td></tr>
+      <tr><td><a href="https://github.com/LibraStack/UnityMvvmToolkit">UnityMvvmToolkit</a></td><td>CanvasView + Bindable components</td><td>MIT</td><td>v1.1.9, 2023-11-11</td></tr>
+      <tr><td><a href="https://assetstore.unity.com/packages/tools/gui/peppermint-data-binding-90687">Peppermint</a></td><td>reflection binders</td><td>paid asset</td><td>not confirmed</td></tr>
+    </table></div>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>UnityWeld <span class="sub">· no push since 2022-06</span> <span class="chip bad">STALE</span></summary>
+      <div class="body">
+        <p class="what">MVVM library that binds uGUI widgets to view model properties with components.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/Real-Serious-Games/Unity-Weld">Repo</a></dd>
+          <dt>Checked</dt><dd>README; GitHub API: v0.8.0 (2018-12-19), push 2022-06-23, not archived</dd>
+          <dt>Renders to</dt><dd>uGUI</dd><dt>Elements</dt><dd>any UnityEvent and property</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>not archived; no push since 2022-06-23</dd>
+          <dt>Why STALE</dt><dd>The last release is from 2018 and the last push from 2022. <code>Render</code> already gives one-way state.</dd>
+        </dl>
+        <ul><li>Two-way binding between widgets and a view model.</li><li>Component names OneWayPropertyBinding, EventBinding: from memory, not confirmed.</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Loxodon Framework <span class="sub">· full MVVM, active</span> <span class="chip warn">HEAVY</span></summary>
+      <div class="body">
+        <p class="what">Full MVVM framework for Unity with C# data binding, views and localization.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/vovgou/loxodon-framework">Repo</a></dd>
+          <dt>Checked</dt><dd>README quick start; GitHub API: v2.6.7 (2025-08-11), push 2026-11-13, MIT</dd>
+          <dt>Renders to</dt><dd>uGUI, TMP, UI Toolkit</dd><dt>Elements</dt><dd>any component member</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>active</dd>
+          <dt>Why HEAVY</dt><dd>It is active and MIT, but a full framework. It adds a second view model beside our presenters.</dd>
+        </dl>
+        <pre>bindingSet.Bind(this.progressSlider)
+    .For(v =&gt; v.value).To(vm =&gt; vm.Value).OneWay();</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>UnityMvvmToolkit <span class="sub">· binding path strings</span> <span class="chip warn">QUIET</span></summary>
+      <div class="body">
+        <p class="what">MVVM toolkit that binds uGUI and UI Toolkit elements to view models by path.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/LibraStack/UnityMvvmToolkit">Repo</a></dd>
+          <dt>Checked</dt><dd>README quick start; GitHub API: v1.1.9 (2023-11-11), push 2024-03-27, MIT</dd>
+          <dt>Renders to</dt><dd>uGUI and UI Toolkit</dd><dt>Elements</dt><dd>BindableLabel and other bindables</dd><dt>License</dt><dd>MIT</dd><dt>Status</dt><dd>no push since 2024-03-27</dd>
+          <dt>Why QUIET</dt><dd>It has no release since 2023-11. String paths give runtime errors, not compile errors.</dd>
+        </dl>
+        <pre><span class="k">public class</span> HelloView : CanvasView&lt;HelloViewModel&gt; { }
+<span class="c">// BindableLabel.BindingTextPath = "Text"</span></pre>
+      </div>
+    </details>
+
+    <h2>Relation to PresenterComponent</h2>
+    <div class="flow">
+      <div class="node"><b>Presenter</b> <small>state + commands</small></div>
+      <div class="arrow">Changed</div>
+      <div class="node hl"><b>PresenterComponent.Render()</b> <small>main thread; push all state</small></div>
+      <div class="arrow">sets</div>
+      <div class="node"><b>DS components</b> <small>SetLabel, SetDisabled</small></div>
+    </div>
+    <p><code>Render</code> is a one-way bind of the full state. A binding library adds per-property paths; vsa-unity does not need one for parity.</p>
+  </section>
+
+  <!-- ============ TOKENS ============ -->
+  <section class="tab" id="tokens" hidden>
+    <h2>One token file, two outputs</h2>
+    <div class="flow">
+      <div class="node hl"><b>tokens.json</b> <small>DTCG 2025.10</small></div>
+      <div class="arrow">Style Dictionary</div>
+      <div class="split">
+        <div class="node"><b>tokens.css</b> <small>CSS variables</small></div>
+        <div class="node"><b>Theme.json</b> <small>custom format</small></div>
+      </div>
+      <div class="arrow">Unity import</div>
+      <div class="node"><b>ThemeAsset</b> <small>ScriptableObject</small></div>
+      <div class="arrow">reads</div>
+      <div class="node"><b>DS components</b> <small>color, font, radius</small></div>
+    </div>
+
+    <div class="tbl"><table>
+      <tr><th>Tool</th><th>Role</th><th>License</th><th>Version</th></tr>
+      <tr><td><a href="https://www.designtokens.org/">DTCG format</a></td><td>JSON token standard</td><td>W3C CG report</td><td>2025.10, 2025-10-28</td></tr>
+      <tr><td><a href="https://github.com/style-dictionary/style-dictionary">Style Dictionary</a></td><td>token build tool (Node)</td><td>Apache-2.0</td><td>v5.8.0, 2026-11-03</td></tr>
+      <tr><td><a href="https://docs.tokens.studio/manage-settings/token-format">Tokens Studio</a></td><td>Figma plugin, DTCG export</td><td>commercial plugin</td><td>2025.10 support not confirmed</td></tr>
+      <tr><td>Unity exporter</td><td>none official found</td><td>—</td><td>not confirmed</td></tr>
+    </table></div>
+    <p>DTCG 2025.10 is the first stable version. It is a Community Group report, not a W3C Recommendation.</p>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <details>
+      <summary>DTCG token <span class="sub">· color as an object</span> <span class="chip good">USE</span></summary>
+      <div class="body">
+        <p class="what">W3C Community Group JSON format for design tokens, read by many token tools.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://www.designtokens.org/">Site</a> <a href="https://www.w3.org/community/reports/design-tokens/CG-FINAL-format-20251028/">Spec</a> <a href="https://w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/">Announcement</a></dd>
+          <dt>Checked</dt><dd>W3C announcement (2025-10-28); Format Module 2025.10 page; Style Dictionary GitHub API (v5.8.0, 2026-11-03)</dd>
+          <dt>Output</dt><dd><code>.tokens.json</code> files</dd><dt>License</dt><dd>open W3C CG report</dd><dt>Status</dt><dd>first stable version 2025.10</dd>
+          <dt>Why USE</dt><dd>It is a stable, open JSON format. The browser and the Unity Editor can both read one file.</dd>
+        </dl>
+        <pre>{ "color": { "accent": {
+  "$type": "color",
+  "$value": { "colorSpace": "srgb",
+              "components": [0.16, 0.38, 0.79] } } } }</pre>
+        <p>Style Dictionary v5 reads 2025.10 colors and dimensions as objects. String values still work.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Unity theme output <span class="sub">· ScriptableObject or USS</span> <span class="chip warn">BUILD IT</span></summary>
+      <div class="body">
+        <p class="what">A token import that writes a Unity ScriptableObject theme or USS variables.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://github.com/sinanata/unity-ui-toolkit-design-system">Repo (example)</a> <a href="https://docs.unity3d.com/6000.0/Documentation/Manual/UIE-USS-CustomProperties.html">Docs (USS variables)</a></dd>
+          <dt>Checked</dt><dd>sinanata repo (GitHub API: MIT, push 2026-11-11); USS custom properties manual; search for a Style Dictionary Unity format</dd>
+          <dt>Output</dt><dd>ThemeAsset or <code>.uss</code></dd><dt>License</dt><dd>example repo MIT</dd><dt>Status</dt><dd>no official exporter found</dd>
+          <dt>Why BUILD IT</dt><dd>No official Unity exporter exists in the search results. A small import to a ScriptableObject is enough for uGUI.</dd>
+        </dl>
+        <ul>
+          <li>For UI Toolkit: write <code>--name: value</code> variables to a USS file.</li>
+          <li>For uGUI: no stylesheet; a ScriptableObject plus apply components.</li>
+          <li>The example repo keeps tokens in a ScriptableObject and bakes USS.</li>
+        </ul>
+        <pre><span class="k">public sealed class</span> ThemeAsset : ScriptableObject {
+    <span class="k">public</span> Color accent;
+    <span class="k">public</span> float radius;
+    <span class="k">public</span> TMP_FontAsset bodyFont;
+}</pre>
+      </div>
+    </details>
+
+    <details>
+      <summary>Theme assets for uGUI <span class="sub">· one place for colors and fonts</span> <span class="chip warn">PAID</span></summary>
+      <div class="body">
+        <p class="what">Store assets and libraries that set uGUI colors and fonts from one theme.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://assetstore.unity.com/packages/tools/gui/modern-ui-pack-201717">Store (Modern UI Pack)</a> <a href="https://assetstore.unity.com/publishers/11264">Store (Doozy)</a> <a href="https://github.com/Haruma-K/uPalette">Repo (uPalette)</a> <a href="https://discussions.unity.com/t/ui-themes-asset/934206">Forum (UI Themes)</a> (not opened)</dd>
+          <dt>Checked</dt><dd>Modern UI Pack store page via search (5.5.29); Doozy publisher page via search; uPalette GitHub API (MIT, push 2026-10-24); UI Themes thread via search</dd>
+          <dt>Output</dt><dd>colors, fonts, sprites on uGUI</dd><dt>License</dt><dd>store EULA; uPalette MIT</dd><dt>Status</dt><dd>all active or sold</dd>
+          <dt>Why PAID</dt><dd>Most are paid store assets that we cannot vendor. Only the pattern is useful: a theme asset plus a small component.</dd>
+        </dl>
+        <div class="tbl"><table>
+          <tr><th>Asset</th><th>How it themes</th></tr>
+          <tr><td>Modern UI Pack</td><td>UI Manager changes the whole look</td></tr>
+          <tr><td>Doozy UI Manager</td><td>Theme Manager + color target components</td></tr>
+          <tr><td>UI Themes (New UI Widgets)</td><td>colors, textures, fonts from one place</td></tr>
+          <tr><td>uPalette</td><td>named color sets, theme switch</td></tr>
+        </table></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Storybook in Unity <span class="sub">· App UI has one, for UI Toolkit</span> <span class="chip info">IDEA</span></summary>
+      <div class="body">
+        <p class="what">App UI sample: an Editor window that shows UI components and their stories.</p>
+        <dl class="kv">
+          <dt>Links</dt><dd><a href="https://docs.unity3d.com/Packages/com.unity.dt.app-ui@2.0/manual/storybook.html">Docs</a></dd>
+          <dt>Checked</dt><dd>App UI 2.0 Storybook manual; search for a uGUI gallery tool</dd>
+          <dt>Output</dt><dd>Editor window (UI Toolkit)</dd><dt>License</dt><dd>Unity package</dd><dt>Status</dt><dd>sample in App UI 2.0</dd>
+          <dt>Why IDEA</dt><dd>It is UI Toolkit only. A gallery scene gives the same check for uGUI.</dd>
+        </dl>
+        <ul>
+          <li>Pages are StoryBookPage classes; a Canvas story edits props live.</li>
+          <li>For uGUI: no gallery tool found. A gallery scene with one row for each component and state is easy to make.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PLANS ============ -->
+  <section class="tab" id="plans" hidden>
+    <h2>Proposals</h2>
+    <div class="tbl"><table>
+      <tr><th>ID</th><th>Proposal</th><th>Effort (est.)</th><th>Needs</th><th>Verdict</th></tr>
+      <tr><td>P1</td><td>Button contract</td><td>2 days est.</td><td>None</td><td><span class="chip good">START</span></td></tr>
+      <tr><td>P2</td><td>Component set</td><td>1 day each est.</td><td>P1</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P3</td><td>Tokens and theme</td><td>4 days est.</td><td>P2 (3 components)</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P4</td><td>Screen import</td><td>5 days est.</td><td>P2, P5, snapshot importer</td><td><span class="chip warn">RISK</span></td></tr>
+      <tr><td>P5</td><td>Event link</td><td>3 days est.</td><td>P1</td><td><span class="chip good">VIABLE</span></td></tr>
+      <tr><td>P6</td><td>Parity checks and focus</td><td>4 days est.</td><td>P2</td><td><span class="chip good">VIABLE</span></td></tr>
+    </table></div>
+
+    <h2>Order</h2>
+    <div class="flow" aria-label="Order of the proposals">
+      <div class="node hl"><b>P1</b> Button contract <small>spike</small></div>
+      <div class="arrow">passes</div>
+      <div class="split">
+        <div class="node"><b>P2</b> Component set</div>
+        <div class="node"><b>P5</b> Event link</div>
+      </div>
+      <div class="arrow">3 components exist</div>
+      <div class="split">
+        <div class="node"><b>P3</b> Tokens and theme</div>
+        <div class="node"><b>P6</b> Parity checks and focus</div>
+      </div>
+      <div class="arrow">snapshot importer exists</div>
+      <div class="node"><b>P4</b> Screen import</div>
+    </div>
+    <p>Each proposal starts only after the earlier one passes. P4 also needs the snapshot importer of the "HTML to uGUI" page (its P1).</p>
+
+    <div class="foldbar"><button data-fold="open">Open all</button><button data-fold="close">Close all</button></div>
+
+    <!-- P1 -->
+    <details>
+      <summary>P1 · Button contract · 2 days est. <span class="chip good">START</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>One Button has the same props, states and click event in HTML and in uGUI.</dd><dt>Needs</dt><dd>None</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Write the Button contract</td><td>Button.contract.json</td><td>JSON parses in Edge and C#</td></tr>
+          <tr><td>2</td><td>Make the HTML button with CSS states</td><td>button.html</td><td>Edge shows hover, active, focus, disabled</td></tr>
+          <tr><td>3</td><td>Make DsButton and its prefab</td><td>DsButton.cs, DsButton.prefab</td><td>prefab shows four Selectable states</td></tr>
+          <tr><td>4</td><td>Put DsButton on the roll button</td><td>DiceGame scene, CounterView field</td><td>Play Mode roll still works</td></tr>
+          <tr><td>5</td><td>Link data-on-click="Roll" by hand</td><td>CounterView code</td><td>DiceGame.PlayTests pass</td></tr>
+          <tr><td>6</td><td>Add one EditMode contract test</td><td>ButtonContractTests.cs</td><td>test passes</td></tr>
+          <tr><td>7</td><td>Remove a contract prop in DsButton</td><td>broken DsButton</td><td>test fails; then restore</td></tr>
+        </table></div>
+        <details>
+          <summary>Snippets · contract, HTML, DsButton, CounterView</summary>
+          <div class="body">
+            <pre>{ "component": "Button",
+  "props":  { "label": "string", "disabled": "bool" },
+  "states": { "hover": "Highlighted", "active": "Pressed",
+              "focus": "Selected", "disabled": "Disabled" },
+  "events": { "click": "Clicked" },
+  "unity":  { "prefab": "DsButton.prefab", "component": "DsButton" } }</pre>
+            <pre>&lt;button class="ds-button" data-ui="Button"
+        data-id="roll" data-on-click="Roll"&gt;Roll&lt;/button&gt;</pre>
+            <pre><span class="c">// Parity component for contract "Button".</span>
+[RequireComponent(typeof(Button))]
+<span class="k">public sealed class</span> DsButton : MonoBehaviour {
+    [SerializeField] TMP_Text label;
+    [SerializeField] Button button;
+    <span class="k">public event</span> Action Clicked;
+
+    <span class="k">void</span> Awake() =&gt; button.onClick.AddListener(() =&gt; Clicked?.Invoke());
+    <span class="k">public void</span> SetLabel(string text) =&gt; label.text = text;
+    <span class="k">public void</span> SetDisabled(bool value) =&gt; button.interactable = !value;
+}</pre>
+            <pre><span class="k">public sealed class</span> CounterView : PresenterComponent&lt;CounterPresenter&gt; {
+    [SerializeField] DsButton roll;   <span class="c">// data-id="roll"</span>
+    <span class="k">void</span> Awake() =&gt; roll.Clicked += () =&gt; _ = Presenter.RollAsync();
+    <span class="k">protected override void</span> Render() { <span class="c">/* roll.SetDisabled(...) */</span> }
+}</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/design-system/contracts/Button.contract.json</code> (folder is a proposal)</li>
+          <li><code>Tools/design-system/html/button.html</code>, <code>ds.css</code></li>
+          <li><code>Assets/DiceGame/App/DesignSystem/DsButton.cs</code>, <code>DsButton.prefab</code> (folder is a proposal)</li>
+          <li><code>Assets/DiceGame/App/Views/CounterView.cs</code>, <code>Assets/DiceGame/Scenes/DiceGame.unity</code></li>
+          <li><code>Assets/Tests/DesignSystem.EditTests/ButtonContractTests.cs</code> + asmdef (proposal)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The EditMode test passes, and fails when a contract prop is absent from DsButton.</li>
+          <li>Screenshots of HTML and uGUI show the same four states.</li>
+          <li><code>run-tests.ps1</code> passes with the roll button on DsButton.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>If DsButton needs more than one script to keep parity, stop and examine the contract shape.</li></ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Contract source of truth: JSON, or C# with a JSON export?</li>
+          <li>Does "Roll" map to <code>RollAsync</code> by a name rule?</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- P2 -->
+    <details>
+      <summary>P2 · Component set · 1 day each est. <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>Grow to about 12 components, one at a time, each for a seen need.</dd><dt>Needs</dt><dd>P1; the element map and event map in the uGUI model tab.</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Name the screen that needs the component</td><td>one line in the issue</td><td>a real screen uses it</td></tr>
+          <tr><td>2</td><td>Find its row in the element map</td><td>uGUI base component</td><td>row is MATCH or PART</td></tr>
+          <tr><td>3</td><td>Write its contract</td><td>X.contract.json</td><td>states use the Selectable priority</td></tr>
+          <tr><td>4</td><td>Make the HTML part</td><td>x.html, CSS states</td><td>Edge shows each state</td></tr>
+          <tr><td>5</td><td>Make the Ds component and prefab</td><td>DsX.cs, DsX.prefab</td><td>prefab shows each state</td></tr>
+          <tr><td>6</td><td>Add its contract test</td><td>XContractTests.cs</td><td>test passes, then fails when broken</td></tr>
+        </table></div>
+        <p>Phase 1 (spike): Toggle, because it adds the <code>:checked</code> state. Phase 2: Slider, Input, Dropdown. Phase 3: Scroll, Image, Text, the rest by need.</p>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/design-system/contracts/*.contract.json</code>, <code>Tools/design-system/html/*.html</code></li>
+          <li><code>Assets/DiceGame/App/DesignSystem/Ds*.cs</code>, <code>Ds*.prefab</code></li>
+          <li><code>Assets/Tests/DesignSystem.EditTests/*ContractTests.cs</code></li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>Each component has a contract, an HTML part, a prefab and a passing test.</li>
+          <li>Each GAP row that a screen needs has a written decision.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>Stop a component that only a GAP row can give (for example <code>select multiple</code>) until a screen needs it.</li></ul>
+        <h3>Open decisions</h3>
+        <ul>
+          <li>Which 12 components form the first set?</li>
+          <li>When do Ds components move to <code>Packages/com.vsa.core/</code>?</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- P3 -->
+    <details>
+      <summary>P3 · Tokens and theme · 4 days est. <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>One DTCG token file gives the CSS variables and a Unity ThemeAsset.</dd><dt>Needs</dt><dd>P2 with 3 components; the Tokens tab.</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Write the colors of the 3 components as DTCG tokens</td><td>tokens.json</td><td>DTCG 2025.10 color objects</td></tr>
+          <tr><td>2</td><td>Write a PowerShell script for CSS</td><td>tokens.css</td><td>HTML parts look the same</td></tr>
+          <tr><td>3</td><td>Write an Editor import for ThemeAsset</td><td>Theme.asset</td><td>values equal tokens.json</td></tr>
+          <tr><td>4</td><td>Add one token component for Graphic color</td><td>DsColorToken.cs</td><td>prefabs look the same</td></tr>
+          <tr><td>5</td><td>Change one token and run both outputs</td><td>two screenshots</td><td>both sides show the change</td></tr>
+        </table></div>
+        <p>Phase 1 (spike): colors only. Phase 2: fonts and radius. Phase 3: Style Dictionary on the design side, only if the script becomes too large.</p>
+        <details>
+          <summary>Snippet · ThemeAsset and token component</summary>
+          <div class="body">
+            <pre><span class="k">public sealed class</span> ThemeAsset : ScriptableObject {
+    [SerializeField] List&lt;ColorToken&gt; colors;   <span class="c">// name + Color</span>
+    <span class="k">public</span> Color Color(string name) =&gt; ...;
+}
+<span class="k">public sealed class</span> DsColorToken : MonoBehaviour {
+    [SerializeField] ThemeAsset theme;
+    [SerializeField] string token;            <span class="c">// "color.accent"</span>
+    <span class="k">void</span> OnEnable() =&gt; GetComponent&lt;Graphic&gt;().color = theme.Color(token);
+}</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/design-system/tokens/tokens.json</code>, <code>Tools/design-system/tokens-to-css.ps1</code> (proposal)</li>
+          <li><code>Assets/DiceGame/App/DesignSystem/ThemeAsset.cs</code>, <code>DsColorToken.cs</code>, <code>Theme.asset</code></li>
+          <li>Editor import: <code>Assets/DiceGame/App/DesignSystem/Editor/ThemeImport.cs</code> (proposal)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>An EditMode test reads tokens.json and Theme.asset and finds equal values.</li>
+          <li>One token change shows in Edge and in the Game view.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>If the Unity side needs Node or another install, stop: zero-install rule.</li></ul>
+        <h3>Open decisions</h3>
+        <ul><li>One ThemeAsset, or token components on each Graphic?</li></ul>
+      </div>
+    </details>
+
+    <!-- P4 -->
+    <details>
+      <summary>P4 · Screen import · 5 days est. <span class="chip warn">RISK</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>An HTML screen of <code>data-ui</code> nodes becomes a screen prefab of contract prefab copies.</dd><dt>Needs</dt><dd>P2, P5; the snapshot importer (P1 of the "HTML to uGUI" page).</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Add data-ui nodes to the snapshot output</td><td>layout.json with type, id, props</td><td>roll node has type Button</td></tr>
+          <tr><td>2</td><td>Find the contract for each node</td><td>contract lookup in import</td><td>unknown type gives an error</td></tr>
+          <tr><td>3</td><td>Make a prefab copy for each node</td><td>screen prefab</td><td>copies stay linked to prefabs</td></tr>
+          <tr><td>4</td><td>Set props and absolute rects</td><td>RectTransform values</td><td>screenshot matches Edge</td></tr>
+          <tr><td>5</td><td>Run the P5 link step</td><td>screen view with fields</td><td>roll field is set</td></tr>
+          <tr><td>6</td><td>Import the dice screen and play</td><td>DiceGame scene with import</td><td>DiceGame.PlayTests pass</td></tr>
+        </table></div>
+        <p>Phase 1 (spike): one screen, absolute rects. Phase 2: LayoutGroups from CSS flex, only if a screen needs resize.</p>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/ui-snapshot/</code> (snapshot tool, proposal)</li>
+          <li>Editor import: <code>Packages/com.vsa.core/Editor/ScreenImport/</code> (proposal)</li>
+          <li><code>Assets/DiceGame/App/Views/</code> screen prefab</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>The imported dice screen has prefab copies, not plain GameObjects.</li>
+          <li>A screenshot pair shows the same layout in Edge and in the Game view.</li>
+          <li>DiceGame.PlayTests pass with the imported screen.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>If rects drift more than a few pixels because of fonts, stop and fix fonts first.</li></ul>
+        <h3>Open decisions</h3>
+        <ul><li>Absolute rects from the snapshot, or LayoutGroups from CSS flex?</li><li>Does a re-import keep prefab overrides?</li></ul>
+      </div>
+    </details>
+
+    <!-- P5 -->
+    <details>
+      <summary>P5 · Event link · 3 days est. <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>Each <code>data-on-*</code> attribute calls a presenter method through the screen view.</dd><dt>Needs</dt><dd>P1</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Write the name rule (Roll → RollAsync)</td><td>rule in the contract doc</td><td>CounterPresenter fits the rule</td></tr>
+          <tr><td>2</td><td>Generate a partial screen class</td><td>CounterView.Links.g.cs</td><td>it compiles</td></tr>
+          <tr><td>3</td><td>Use a wrong name on purpose</td><td>data-on-click="Rol"</td><td>compile error names the attribute</td></tr>
+          <tr><td>4</td><td>Remove the hand link of P1</td><td>CounterView.cs</td><td>DiceGame.PlayTests pass</td></tr>
+        </table></div>
+        <details>
+          <summary>Snippet · generated link</summary>
+          <div class="body">
+            <pre><span class="c">// Generated from data-on-click="Roll" on data-id="roll".</span>
+<span class="k">partial class</span> CounterView {
+    <span class="k">void</span> LinkEvents() =&gt; roll.Clicked += () =&gt; _ = Presenter.RollAsync();
+}</pre>
+          </div>
+        </details>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Assets/DiceGame/App/Views/CounterView.cs</code> (partial), <code>CounterView.Links.g.cs</code></li>
+          <li>Generator: <code>Packages/com.vsa.core/Editor/ScreenImport/LinkGenerator.cs</code> (proposal)</li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>A wrong method name gives a compile error, not a runtime error.</li>
+          <li>DiceGame.PlayTests pass with the generated link.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>If the generated class needs reflection at runtime, stop: IL2CPP risk (<code>il2cpp-check.ps1</code>).</li></ul>
+        <h3>Open decisions</h3>
+        <ul><li>Generated class, or a method name string with an Editor check?</li></ul>
+      </div>
+    </details>
+
+    <!-- P6 -->
+    <details>
+      <summary>P6 · Parity checks and focus · 4 days est. <span class="chip good">VIABLE</span></summary>
+      <div class="body">
+        <dl class="kv"><dt>Goal</dt><dd>A gallery shows each component state on both sides, and Tab moves focus in uGUI.</dd><dt>Needs</dt><dd>P2</dd></dl>
+        <div class="tbl"><table>
+          <tr><th>#</th><th>Step</th><th>Output</th><th>Check</th></tr>
+          <tr><td>1</td><td>Make a gallery page of all contracts</td><td>gallery.html</td><td>each state shows in Edge</td></tr>
+          <tr><td>2</td><td>Make a gallery scene of all prefabs</td><td>Gallery.unity</td><td>each state shows in Game view</td></tr>
+          <tr><td>3</td><td>Take screenshots of both galleries</td><td>two PNG files</td><td>a person compares them</td></tr>
+          <tr><td>4</td><td>Write a Tab navigator component</td><td>DsTabNavigator.cs</td><td>Tab and Shift+Tab move selection</td></tr>
+          <tr><td>5</td><td>Add a Play Mode test for Tab order</td><td>TabOrderTests.cs</td><td>test fails when order breaks</td></tr>
+        </table></div>
+        <p>Phase 1 (spike): the gallery scene only. Phase 2: Tab navigator, when a screen with two fields exists.</p>
+        <h3>Files</h3>
+        <ul>
+          <li><code>Tools/design-system/html/gallery.html</code></li>
+          <li><code>Assets/DiceGame/Scenes/Gallery.unity</code> (proposal)</li>
+          <li><code>Assets/DiceGame/App/DesignSystem/DsTabNavigator.cs</code>, <code>Assets/Tests/DiceGame/TabOrderTests.cs</code></li>
+        </ul>
+        <h3>Done when</h3>
+        <ul>
+          <li>Both galleries show the same components and states.</li>
+          <li>The Tab order test passes, and fails when the order breaks.</li>
+        </ul>
+        <h3>Stop rule</h3>
+        <ul><li>Add a screenshot diff tool only after a manual compare misses a real problem.</li></ul>
+        <h3>Open decisions</h3>
+        <ul><li>Does the Tab navigator also give <code>:focus-visible</code> (focus from keyboard only)?</li></ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Use, copy or avoid · license notes <span class="chip info">REFERENCE</span></summary>
+      <div class="body">
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Action</th><th>License note</th></tr>
+      <tr><td>ReactUnity element and event map</td><td><span class="chip good">COPY IDEA</span></td><td>MIT; keep notice if code copied</td></tr>
+      <tr><td>ReactUnity uGUI state handlers</td><td><span class="chip good">COPY</span></td><td>MIT; small files</td></tr>
+      <tr><td>UnityFigmaBridge name binding</td><td><span class="chip good">COPY IDEA</span></td><td>MIT</td></tr>
+      <tr><td>DTCG token format</td><td><span class="chip good">USE</span></td><td>open spec</td></tr>
+      <tr><td>Style Dictionary</td><td><span class="chip warn">DESIGN SIDE</span></td><td>Apache-2.0; Node, not in package</td></tr>
+      <tr><td>PresenterComponent.Render</td><td><span class="chip good">USE</span></td><td>ours</td></tr>
+      <tr><td>Loxodon, UnityMvvmToolkit</td><td><span class="chip bad">AVOID</span></td><td>MIT, but extra model</td></tr>
+      <tr><td>Nova, Doozy, FCU, Peppermint</td><td><span class="chip bad">AVOID</span></td><td>paid; no vendor copy</td></tr>
+      <tr><td>PowerUI</td><td><span class="chip bad">AVOID</span></td><td>license not clear</td></tr>
+      <tr><td>JS runtime (ReactUnity, OneJS)</td><td><span class="chip bad">AVOID</span></td><td>native engine; second UI model</td></tr>
+    </table></div>
+        <p>The Unity side reads only generated JSON or C#. This keeps the zero-install rule.</p>
+        <h3>Risks</h3>
+        <div class="tbl"><table>
+          <tr><th>Risk</th><th>Effect</th><th>Plan</th></tr>
+          <tr><td>One exclusive Selectable state</td><td>hover + focus look differs</td><td>P2 contract states</td></tr>
+          <tr><td>No Tab order, no :focus-visible</td><td>keyboard parity gap</td><td>P6 Tab navigator</td></tr>
+          <tr><td>Flexbox vs LayoutGroup</td><td>layout drifts</td><td>P4 absolute rects first</td></tr>
+          <tr><td>Browser fonts vs TMP</td><td>text width differs</td><td>P3 same font files</td></tr>
+          <tr><td>No full bubble</td><td>parent listeners do not fire</td><td>P5 links in screen view</td></tr>
+        </table></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Sources <span class="chip info">LINKS</span></summary>
+      <div class="body">
+      <li><a href="https://github.com/StarrDream/HTML-to-UGUI-Baker">HTML-to-UGUI-Baker (GitHub)</a></li>
+      <li><a href="https://github.com/codedeefmd/HtmlToUGUI">HtmlToUGUI (GitHub, codedeefmd)</a></li>
+      <li><a href="https://context7.com/jixinhaoqi/htmltougui">HtmlToUGUI (jixinhaoqi, Context7)</a></li>
+      <li><a href="https://github.com/xzzhuu/html-to-unity-ugui-workflow">html-to-unity-ugui-workflow (GitHub)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/htmltounitycanvas-381380">HtmlToUnityCanvas (Asset Store)</a></li>
+      <li><a href="https://github.com/sassembla/UUebView">UUebView (GitHub)</a></li>
+      <li><a href="https://www.npmjs.com/package/html2uuitk">html2uuitk (npm)</a></li>
+      <li><a href="https://discussions.unity.com/t/html-css-converter-to-ui-toolkit/1655030">html2uuitk forum thread</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/utilities/figma-converter-for-unity-198134">Figma Converter for Unity (Asset Store)</a></li>
+      <li><a href="https://da-assets.github.io/site/files/fcu/FCU_Manual_for_designers.pdf">FCU manual for designers</a></li>
+      <li><a href="https://github.com/simonoliver/UnityFigmaBridge">UnityFigmaBridge (GitHub)</a></li>
+      <li><a href="https://github.com/havokentity/FigForge">FigForge (GitHub)</a></li>
+      <li><a href="https://github.com/kyubuns/AkyuiUnity">AkyuiUnity (GitHub)</a></li>
+      <li><a href="https://github.com/natsu1211/FigmaToUnity">FigmaToUnity, natsu1211 (GitHub)</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.7/manual/assets/figma-ui.html">Unity AI Assistant: Create UI from Figma</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.11/manual/reference/figma-ui-reference.html">Unity AI Assistant: UI settings</a></li>
+      <li><a href="https://discussions.unity.com/t/experimental-ui-toolkit-connector-for-figma-design/1736969">Unity UI Toolkit Figma connector (forum)</a></li>
+      <li><a href="https://discussions.unity.com/t/unity-ai-s-open-beta-now-live-for-unity-6/1718560">Unity AI open beta (forum)</a></li>
+      <li><a href="https://html.to.design/docs/pro-plan">html.to.design PRO plan</a></li>
+      <li><a href="https://html.to.design/docs/free-features">html.to.design free features</a></li>
+      <li><a href="https://www.npmjs.com/package/@builder.io/html-to-figma">@builder.io/html-to-figma (npm)</a></li>
+      <li><a href="https://github.com/aca-so/tofig">tofig (GitHub)</a></li>
+      <li><a href="https://coplaydev.github.io/unity-mcp/reference/tools/core/manage_gameobject">CoplayDev unity-mcp: manage_gameobject</a></li>
+      <li><a href="https://coplaydev.github.io/unity-mcp/reference/tools/ui/manage_ui">CoplayDev unity-mcp: manage_ui</a></li>
+      <li><a href="https://github.com/emeryporter/UnityMCP/">emeryporter UnityMCP (GitHub)</a></li>
+      <li><a href="https://github.com/gilzoide/unity-flex-ui">Flex UI, gilzoide (GitHub)</a></li>
+      <li><a href="https://openupm.com/packages/com.gilzoide.flex-ui/">Flex UI (OpenUPM)</a></li>
+      <li><a href="https://discussions.unity.com/t/flexbox-in-unity-ui/934362">Flexbox in Unity UI (forum)</a></li>
+      <li><a href="https://discussions.unity.com/t/released-advanced-procedural-ui-generation-create-modify-animate-ui-even-at-runtime/780753">MPUIKit release (forum)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/procedural-ui-image-52200">Procedural UI Image (Asset Store)</a></li>
+      <li><a href="https://github.com/gilzoide/unity-rounded-corners">unity-rounded-corners, gilzoide (GitHub)</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.vectorgraphics@3.0/manual/index.html">Vector Graphics 3.0 manual</a></li>
+      <li><a href="https://issuetracker.unity3d.com/issues/svg-importer-settings-are-lost-when-upgrading-to-unity-6-dot-3">SVG importer settings lost (issue)</a></li>
+      <li><a href="https://coherent-labs.com/frequently-asked-questions">Coherent Labs FAQ</a></li>
+      <li><a href="https://assets.coherent-labs.com/pricing">Coherent Labs pricing</a></li>
+      <li><a href="https://developer.vuplex.com/webview/overview">Vuplex 3D WebView overview</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/3d-webview-for-windows-and-macos-web-browser-154144">Vuplex Windows/macOS (Asset Store)</a></li>
+      <li><a href="https://ultralig.ht/">Ultralight</a></li>
+      <li><a href="https://www.nuget.org/packages/UltralightNet/">UltralightNet (NuGet)</a></li>
+      <li><a href="https://assetstore.unity.com/packages/tools/gui/embedded-browser-55459/reviews">Embedded Browser reviews (Asset Store)</a></li>
+      <li><a href="https://github.com/gree/unity-webview">gree unity-webview (GitHub)</a></li>
+      <li><a href="https://teamdev.com/dotnetbrowser/blog/how-to-render-web-content-as-a-texture-in-unity3d/">DotNetBrowser in Unity (TeamDev)</a></li>
+      <li><a href="https://relatedrepos.com/gh/Kulestar/powerui">PowerUI (Kulestar listing)</a></li>
+    </ul>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('nav.tabs button')];
+  const show = id => {
+    if (!document.getElementById(id)) id = tabs[0].dataset.tab;
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    document.querySelectorAll('section.tab').forEach(s => { s.hidden = s.id !== id; });
+  };
+  tabs.forEach(b => b.addEventListener('click', () => { show(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); window.scrollTo(0, 0); }));
+  document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => {
+    const open = b.dataset.fold === 'open';
+    b.closest('section').querySelectorAll('details').forEach(d => { d.open = open; });
+  }));
+  show(location.hash.slice(1));
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+})();
+</script>

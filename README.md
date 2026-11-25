@@ -34,7 +34,7 @@ For offline or patched use, copy `Packages/com.umpire.unity/` into the `Packages
 | `./update-umpire.ps1 [-Version <version>]` | Copies the DLLs of a template release to the package (default: the newest release) |
 | `./run-tests.ps1` | Runs the EditMode and PlayMode tests |
 | `./il2cpp-check.ps1` | Builds and runs the IL2CPP player |
-| `dotnet run --file e2e.cs` (in `Assets/TestSuite/Client~/Samples`) | Runs the test suite checks against an open Editor of this project |
+| `dotnet test Assets/TestSuite/Client~/Tests` | Runs the tests of the status checker |
 
 `update-umpire.ps1` downloads `umpire-<version>.zip` from the vsa-template release. It needs no token and no .NET SDK. It checks the SHA-256 value of each file in `manifest.json`.
 

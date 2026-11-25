@@ -1,8 +1,0 @@
-{
-    "name": "Spike",
-    "rootNamespace": "Spike",
-    "references": [
-        "VContainer"
-    ],
-    "autoReferenced": true
-}

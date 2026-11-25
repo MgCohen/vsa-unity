@@ -4,7 +4,7 @@
 > Since Umpire 0.2.0-preview.12, `[TypeArgument]` is named `[AutoClose]`. The sections below keep the old name where they describe older results.
 Umpire uses open generic classes for handlers, hooks, validators and services. It does not register open presenters (`PresenterServiceCollectionExtensions.cs:26`). Microsoft DI has two limits for them, and the Unity linker adds a third. The Umpire scan closes the generics itself to avoid the DI limits. This document lists the limits, the uses, the current solution, the other solutions, and the requirements for a final solution.
 
-Test data: [Probe/RESULTS.md](Probe/RESULTS.md) (Umpire `0.2.0-preview.2`, Unity 6000.6.6f1, Microsoft DI 8.0.1).
+Test data: [Probe/RESULTS.md](https://github.com/MgCohen/vsa-unity/blob/testsuite-before-cleanup/Probe/RESULTS.md) (Umpire `0.2.0-preview.2`, Unity 6000.6.6f1, Microsoft DI 8.0.1).
 
 ## 1. The limits
 
@@ -52,7 +52,7 @@ Stripping removes two kinds of code:
 | Kind | Example | Who uses it by reflection | Fix that works |
 |---|---|---|---|
 | Types | A handler that only the scan finds | The Umpire scan, `ActivatorUtilities` | Markers on the bases, or generated code |
-| Members | `IDictionary<,>.set_Item` (P5) | `ConfigurationBinder`, not Umpire | One call in code: `Probe/Assets/Probe/Lab/DictionaryUse.cs` |
+| Members | `IDictionary<,>.set_Item` (P5) | `ConfigurationBinder`, not Umpire | One call in code: [`Probe/Assets/Probe/Lab/DictionaryUse.cs`](https://github.com/MgCohen/vsa-unity/blob/testsuite-before-cleanup/Probe/Assets/Probe/Lab/DictionaryUse.cs) |
 
 The member kind is not a generics problem, but it has the same cause. A marker on an Umpire base cannot keep a member of `mscorlib`. Only a call in code or a `link.xml` entry keeps it.
 
@@ -60,7 +60,7 @@ A consumer type that is not below a marked base needs its own marker or a `link.
 
 ## 2. The cases
 
-"Editor, Mono" is the Editor Play Mode and the Mono player: their results are the same. "IL2CPP" is the IL2CPP player. Each check name is in `Probe/Assets/Probe/Lab/LabChecks.cs`.
+"Editor, Mono" is the Editor Play Mode and the Mono player: their results are the same. "IL2CPP" is the IL2CPP player. Each check name is in [`Probe/Assets/Probe/Lab/LabChecks.cs`](https://github.com/MgCohen/vsa-unity/blob/testsuite-before-cleanup/Probe/Assets/Probe/Lab/LabChecks.cs).
 
 <details>
 <summary>Plain DI registrations · 12 cases, 4 fail on IL2CPP</summary>
@@ -352,7 +352,7 @@ After the modules run `Configure`, Umpire replaces each open descriptor with clo
 
 | Fact | Source |
 |---|---|
-| The closing prototype passes C1 to C3 on Mono, IL2CPP Minimal and IL2CPP High | `Probe/Assets/Spike/OpenClosing.cs`, checks `spike:C*:closing` |
+| The closing prototype passes C1 to C3 on Mono, IL2CPP Minimal and IL2CPP High | [`Probe/Assets/Spike/OpenClosing.cs`](https://github.com/MgCohen/vsa-unity/blob/testsuite-before-cleanup/Probe/Assets/Spike/OpenClosing.cs), checks `spike:C*:closing` |
 | No source generator is necessary. A generator is a later option | Plan step 8 |
 
 ### Attributes

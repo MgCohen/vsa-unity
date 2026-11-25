@@ -17,12 +17,9 @@ TestResults*.xml
 /Assets/Check.unity
 /Assets/Check.unity.meta
 
-# com.vsa.testsuite client
+# Test suite client
 /Assets/TestSuite/Client~/bin/
 /Assets/TestSuite/Client~/obj/
-
-# com.vsa.testsuite run folders
-/Runs/
 
 # Run folders of the test suite spike
 /TestRuns/

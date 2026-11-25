@@ -8,7 +8,6 @@
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Samples/**" />
     <Compile Remove="Cli/**" />
     <Compile Remove="Tests/**" />
     <None Remove="Cli/**;Tests/**" />
